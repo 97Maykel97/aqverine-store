@@ -1,17 +1,27 @@
 {
-  "name": "aqverine-scaffold",
+  "name": "aqverine-fashion-store",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test:run": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.9.2",
+    "@prisma/client": "^7.10.1",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.118.0",
+    "@tanstack/react-query": "^5.104.4",
     "next": "16.4.2",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "react-hook-form": "^7.90.0",
+    "sass": "^1.105.2",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/node": "^20",
@@ -19,6 +29,8 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.4.2",
-    "typescript": "^5"
+    "prisma": "^7.10.1",
+    "typescript": "^5",
+    "vitest": "^3.2.4"
   }
 }
