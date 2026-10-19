@@ -25,7 +25,7 @@ export default function HomePage() {
             fill
             priority
             sizes="(max-width: 800px) 100vw, 58vw"
-            src="https://images.unsplash.com/photo-1485230895905-ec40ba36b9bc?auto=format&fit=crop&w=1800&q=90"
+            src="/images/aqverine-hero.png"
           />
         </div>
       </section>

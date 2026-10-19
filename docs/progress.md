@@ -1,5 +1,14 @@
 # Журнал прогресса AQVERINE
 
+## 2026-10-19 — Frontend MVP: главная страница и каталог
+
+- Подготовлена клиентская основа: root layout, адаптивные header и footer, глобальные design tokens, SCSS Modules, metadata и доступный keyboard focus.
+- Реализованы главная страница и каталог с интерактивной фильтрацией по категориям; для каталога использованы локальные mock-данные до подключения API и БД.
+- Добавлены loading и error boundaries каталога, responsive layout для desktop и mobile, оптимизированный `next/image` и локальный editorial hero asset.
+- Изменены `src/app/*`, `src/features/catalog/*`, `src/shared/types/catalog.ts`, `src/shared/ui/*`, `public/images/aqverine-hero.png`, `next.config.ts` и `docs/progress.md`.
+- Новые переменные окружения: отсутствуют.
+- Изменения БД: отсутствуют.
+
 ## 2026-10-17 — Каркас проекта и локальная конфигурация
 
 - Подготовлены структура `src/app`, feature-модули, shared-слои, Prisma migrations и тесты без реализации бизнес-логики.
