@@ -1,0 +1,53 @@
+:root {
+  --color-ink: #151515;
+  --color-canvas: #f6f4f0;
+  --color-surface: #ffffff;
+  --color-muted: #6e6a63;
+  --color-line: #d9d5cd;
+  --color-accent: #8d3125;
+  --page-width: 1440px;
+  --page-padding: clamp(1.25rem, 3vw, 2.5rem);
+  --font-display: Georgia, "Times New Roman", serif;
+  --font-ui: Arial, Helvetica, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--color-canvas);
+}
+
+body {
+  margin: 0;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-ui);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

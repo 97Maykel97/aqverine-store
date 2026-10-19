@@ -1,0 +1,46 @@
+.card {
+  min-width: 0;
+}
+
+.imageLink {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: #dedad2;
+}
+
+.image {
+  object-fit: cover;
+  transition: transform 350ms ease;
+}
+
+.imageLink:hover .image {
+  transform: scale(1.025);
+}
+
+.details {
+  display: grid;
+  gap: 0.36rem;
+  padding-top: 0.88rem;
+}
+
+.details a {
+  color: var(--color-ink);
+  font-size: 0.98rem;
+  line-height: 1.3;
+}
+
+.details p,
+.details span {
+  margin: 0;
+}
+
+.details p {
+  font-size: 0.9rem;
+}
+
+.details span {
+  color: var(--color-muted);
+  font-size: 0.78rem;
+}

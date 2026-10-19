@@ -1,0 +1,42 @@
+.footer {
+  border-top: 1px solid var(--color-line);
+}
+
+.inner {
+  display: grid;
+  grid-template-columns: 1fr 2fr auto;
+  gap: 2rem;
+  align-items: center;
+  max-width: var(--page-width);
+  margin: 0 auto;
+  padding: 2rem var(--page-padding);
+  color: var(--color-muted);
+  font-size: 0.78rem;
+}
+
+.logo {
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  letter-spacing: 0.18em;
+}
+
+.inner p {
+  margin: 0;
+}
+
+.inner nav {
+  display: flex;
+  gap: 1.25rem;
+}
+
+.inner nav a {
+  color: inherit;
+}
+
+@media (max-width: 600px) {
+  .inner {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
