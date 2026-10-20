@@ -23,11 +23,14 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
           sizes="(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 25vw"
           src={product.image}
         />
+        <span className={styles.imageAction}>Смотреть товар <span aria-hidden="true">↗</span></span>
       </Link>
       <div className={styles.details}>
-        <Link href={`/products/${product.slug}`}>{product.name}</Link>
-        <p>{formatPrice(product.price)}</p>
-        <span>{product.colors.join(" · ")}</span>
+        <div>
+          <Link href={`/products/${product.slug}`}>{product.name}</Link>
+          <strong>{formatPrice(product.price)}</strong>
+        </div>
+        <p>{product.colors.join(" / ")}</p>
       </div>
     </article>
   );

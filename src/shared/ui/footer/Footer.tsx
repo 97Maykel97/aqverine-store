@@ -6,14 +6,15 @@ export function Footer() {
   return (
     <footer className={styles.footer}>
       <div className={styles.inner}>
-        <Link className={styles.logo} href="/">
-          AQVERINE
-        </Link>
-        <p>Одежда для города, который не стоит на месте.</p>
+        <div>
+          <Link className={styles.logo} href="/">AQVERINE</Link>
+          <p>Твой город. Твой ритм. Твоя одежда.</p>
+        </div>
         <nav aria-label="Навигация в подвале">
           <Link href="/catalog">Каталог</Link>
-          <Link href="/account">Аккаунт</Link>
+          <Link href="/#about">О бренде</Link>
         </nav>
+        <span className={styles.copyright}>© AQVERINE</span>
       </div>
     </footer>
   );

@@ -1,13 +1,14 @@
 :root {
-  --color-ink: #151515;
-  --color-canvas: #f6f4f0;
+  --color-ink: #171717;
+  --color-canvas: #fbfaf7;
   --color-surface: #ffffff;
-  --color-muted: #6e6a63;
-  --color-line: #d9d5cd;
-  --color-accent: #8d3125;
-  --page-width: 1440px;
-  --page-padding: clamp(1.25rem, 3vw, 2.5rem);
-  --font-display: Georgia, "Times New Roman", serif;
+  --color-muted: #69655f;
+  --color-line: #ddd9d3;
+  --color-accent: #ff5b3d;
+  --color-cobalt: #294bc9;
+  --page-width: 1500px;
+  --page-padding: clamp(1.25rem, 4vw, 4.5rem);
+  --font-display: Arial, Helvetica, sans-serif;
   --font-ui: Arial, Helvetica, sans-serif;
 }
 
@@ -31,6 +32,15 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
 }
 
 button,

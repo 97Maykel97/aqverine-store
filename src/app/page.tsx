@@ -1,69 +1,72 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { mockProducts } from "@/features/catalog/model/mock-products";
+import { categories, mockProducts } from "@/features/catalog/model/mock-products";
 import { ProductCard } from "@/features/catalog/ui/ProductCard";
 
 import styles from "./page.module.scss";
 
-const categories = ["Верхняя одежда", "Трикотаж", "Рубашки", "Брюки", "Аксессуары"] as const;
-
 export default function HomePage() {
   return (
     <>
-      <section className={styles.hero}>
-        <div className={styles.heroCopy}>
-          <h1>Одежда для города, который не стоит на месте.</h1>
-          <Link className={styles.primaryLink} href="/catalog">
-            Смотреть каталог
-            <span aria-hidden="true">→</span>
-          </Link>
-        </div>
+      <section className={styles.hero} aria-labelledby="hero-title">
         <div className={styles.heroMedia}>
           <Image
-            alt="Модель в тёмном пальто в городском пространстве"
+            alt="Две модели AQVERINE в городской одежде на фоне яркой стены"
             fill
             priority
-            sizes="(max-width: 800px) 100vw, 58vw"
-            src="/images/aqverine-hero.png"
+            sizes="(max-width: 900px) 100vw, 57vw"
+            src="/images/hero-city.png"
           />
+          <span className={styles.heroIndex}>AQVERINE / 01</span>
+        </div>
+        <div className={styles.heroContent}>
+          <h1 id="hero-title">ГОРОД.<br />ТВОИ<br />ПРАВИЛА.</h1>
+          <p>Одежда для каждого твоего движения.</p>
+          <Link className={styles.heroCta} href="/catalog">
+            Смотреть коллекцию <span aria-hidden="true">↗</span>
+          </Link>
+          <span className={styles.heroBottom}>ОДЕЖДА ДЛЯ ЖИЗНИ В ДВИЖЕНИИ</span>
         </div>
       </section>
 
-      <section className={styles.collection}>
-        <div className={styles.categoryRow}>
-          <h2>Новая форма повседневности</h2>
+      <nav className={styles.categoryRail} aria-label="Категории товаров">
+        {categories.slice(1).map((category) => (
+          <Link href={`/catalog?category=${encodeURIComponent(category.value)}`} key={category.value}>
+            {category.label} <span aria-hidden="true">↗</span>
+          </Link>
+        ))}
+      </nav>
+
+      <section className={styles.featured} aria-labelledby="featured-title">
+        <div className={styles.sectionHeader}>
           <div>
-            {categories.map((category) => (
-              <Link href="/catalog" key={category}>
-                {category}
-              </Link>
-            ))}
+            <span className={styles.sectionNumber}>01 / КОЛЛЕКЦИЯ</span>
+            <h2 id="featured-title">ВЫБИРАЮТ СЕЙЧАС</h2>
           </div>
+          <Link href="/catalog">Смотреть всё <span aria-hidden="true">↗</span></Link>
         </div>
         <div className={styles.productGrid}>
-          {mockProducts.slice(0, 4).map((product, index) => (
-            <ProductCard key={product.id} product={product} priority={index < 2} />
+          {mockProducts.slice(0, 4).map((product) => (
+            <ProductCard key={product.id} product={product} />
           ))}
         </div>
       </section>
 
-      <section className={styles.notes} aria-label="Принципы AQVERINE">
-        <article>
-          <span className={styles.noteMark} aria-hidden="true">01</span>
-          <h2>Натуральные материалы</h2>
-          <p>Выбираем ткани, которые остаются комфортными в течение всего дня.</p>
-        </article>
-        <article>
-          <span className={styles.noteMark} aria-hidden="true">02</span>
-          <h2>Продуманные детали</h2>
-          <p>Функциональность в каждой вещи — без лишнего и случайного.</p>
-        </article>
-        <article>
-          <span className={styles.noteMark} aria-hidden="true">03</span>
-          <h2>Современная классика</h2>
-          <p>Вещи, которые органично становятся частью вашего гардероба.</p>
-        </article>
+      <section className={styles.campaign} id="about" aria-labelledby="campaign-title">
+        <div className={styles.campaignMedia}>
+          <Image
+            alt="Две модели в одежде AQVERINE у синей городской стены"
+            fill
+            sizes="100vw"
+            src="/images/campaign-cobalt.png"
+          />
+        </div>
+        <div className={styles.campaignContent}>
+          <h2 id="campaign-title">БОЛЬШЕ<br />ЧЕМ БАЗА.</h2>
+          <p>Вещи, которые подстраиваются под твой ритм, а не наоборот.</p>
+          <Link href="/catalog">Открыть весь каталог <span aria-hidden="true">↗</span></Link>
+        </div>
       </section>
     </>
   );

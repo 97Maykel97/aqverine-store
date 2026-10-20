@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
+import { CartProvider } from "@/features/cart/ui/CartProvider";
 import { Footer } from "@/shared/ui/footer/Footer";
 import { Header } from "@/shared/ui/header/Header";
 
@@ -22,9 +23,11 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="ru">
       <body>
-        <Header />
-        <main>{children}</main>
-        <Footer />
+        <CartProvider>
+          <Header />
+          <main id="main-content">{children}</main>
+          <Footer />
+        </CartProvider>
       </body>
     </html>
   );

@@ -1,14 +1,29 @@
 .catalog {
   max-width: var(--page-width);
   margin: 0 auto;
-  padding: clamp(3rem, 7vw, 6.25rem) var(--page-padding) clamp(5rem, 9vw, 9rem);
+  padding: clamp(2.6rem, 5vw, 5rem) var(--page-padding) clamp(5rem, 9vw, 9rem);
 }
 
-.catalog h1 {
-  margin: 0 0 clamp(2rem, 4vw, 3.5rem);
-  font-family: var(--font-display);
-  font-size: clamp(3.2rem, 7vw, 6rem);
-  font-weight: 400;
-  letter-spacing: -0.06em;
-  line-height: 0.88;
+.intro {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: clamp(2rem, 3vw, 3.5rem);
+}
+
+.intro span { color: var(--color-accent); font-size: .7rem; font-weight: 900; letter-spacing: .14em; }
+.intro h1 { margin: .9rem 0 0; font-family: var(--font-display); font-size: clamp(3.4rem, 6vw, 6.5rem); font-weight: 900; letter-spacing: -.09em; line-height: .87; }
+.intro p { max-width: 235px; margin: 0 0 .4rem; color: var(--color-muted); font-size: .88rem; line-height: 1.55; }
+
+.state { min-height: 55vh; padding-top: 5rem; }
+.state h1 { max-width: 800px; margin: 1rem 0; font-family: var(--font-display); font-size: clamp(3rem, 7vw, 6rem); font-weight: 900; letter-spacing: -.08em; line-height: .9; }
+.state p { color: var(--color-muted); }
+.state button { min-height: 52px; margin-top: 1.5rem; padding: 0 1.5rem; border: 0; background: var(--color-ink); color: white; font-weight: 700; }
+.stateLabel { color: var(--color-accent); font-size: .7rem; font-weight: 900; letter-spacing: .13em; }
+
+@media (max-width: 720px) {
+  .intro { display: block; }
+  .intro h1 { font-size: clamp(3.4rem, 11vw, 5.2rem); }
+  .intro p { max-width: 380px; margin-top: 1.5rem; }
 }

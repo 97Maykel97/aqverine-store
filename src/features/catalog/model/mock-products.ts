@@ -1,4 +1,23 @@
-import type { CatalogProduct } from "@/shared/types/catalog";
+import type { CatalogProduct, CatalogVariant, ProductCategory } from "@/shared/types/catalog";
+
+const createVariants = (
+  slug: string,
+  colors: readonly string[],
+  sizes: readonly string[],
+): readonly CatalogVariant[] =>
+  colors.flatMap((color, colorIndex) =>
+    sizes.map((size) => ({ id: `${slug}-${colorIndex}-${size}`, color, size, stock: 8 })),
+  );
+
+export const categories: ReadonlyArray<{ label: string; value: ProductCategory | "All" }> = [
+  { label: "Все", value: "All" },
+  { label: "Футболки", value: "T-shirts" },
+  { label: "Худи", value: "Hoodies" },
+  { label: "Рубашки", value: "Shirts" },
+  { label: "Брюки", value: "Trousers" },
+  { label: "Верхняя одежда", value: "Outerwear" },
+  { label: "Аксессуары", value: "Accessories" },
+];
 
 export const mockProducts: readonly CatalogProduct[] = [
   {
@@ -8,9 +27,11 @@ export const mockProducts: readonly CatalogProduct[] = [
     category: "T-shirts",
     price: 249000,
     colors: ["Белый", "Чёрный", "Графит"],
-    image:
-      "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1200&q=85",
-    imageAlt: "Белая базовая футболка на модели",
+    image: "/images/products/essential-t-shirt.png",
+    imageAlt: "Модель в белой футболке Essential и чёрных брюках",
+    description: "Чистая форма на каждый день. Свободная посадка и плотный хлопок, который держит силуэт.",
+    composition: "100% хлопок",
+    variants: createVariants("essential-t-shirt", ["Белый", "Чёрный", "Графит"], ["S", "M", "L", "XL"]),
   },
   {
     id: "everyday-hoodie",
@@ -18,10 +39,12 @@ export const mockProducts: readonly CatalogProduct[] = [
     slug: "everyday-hoodie",
     category: "Hoodies",
     price: 599000,
-    colors: ["Бежевый", "Чёрный"],
-    image:
-      "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=1200&q=85",
-    imageAlt: "Тёмное худи на модели",
+    colors: ["Чёрный", "Бежевый"],
+    image: "/images/products/everyday-hoodie.png",
+    imageAlt: "Модель в тёмном худи Everyday",
+    description: "Мягкое худи свободного кроя для маршрутов без расписания.",
+    composition: "80% хлопок, 20% полиэстер",
+    variants: createVariants("everyday-hoodie", ["Чёрный", "Бежевый"], ["S", "M", "L", "XL"]),
   },
   {
     id: "oversize-shirt",
@@ -29,10 +52,12 @@ export const mockProducts: readonly CatalogProduct[] = [
     slug: "oversize-shirt",
     category: "Shirts",
     price: 479000,
-    colors: ["Молочный", "Голубой"],
-    image:
-      "https://images.unsplash.com/photo-1605763240000-7e93b172d754?auto=format&fit=crop&w=1200&q=85",
-    imageAlt: "Свободная светлая рубашка",
+    colors: ["Голубой", "Молочный"],
+    image: "/images/products/oversize-shirt.png",
+    imageAlt: "Модель в голубой рубашке свободного кроя",
+    description: "Лёгкая рубашка с выразительным объёмом. Работает самостоятельно и поверх базового слоя.",
+    composition: "100% хлопок",
+    variants: createVariants("oversize-shirt", ["Голубой", "Молочный"], ["S", "M", "L"]),
   },
   {
     id: "relaxed-trousers",
@@ -41,9 +66,11 @@ export const mockProducts: readonly CatalogProduct[] = [
     category: "Trousers",
     price: 549000,
     colors: ["Чёрный", "Песочный"],
-    image:
-      "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&w=1200&q=85",
-    imageAlt: "Чёрные брюки свободного кроя",
+    image: "/images/products/relaxed-trousers.png",
+    imageAlt: "Чёрные брюки Relaxed свободного кроя",
+    description: "Широкая посадка и выверенные линии: комфорт на весь день без компромисса в силуэте.",
+    composition: "65% вискоза, 35% полиэстер",
+    variants: createVariants("relaxed-trousers", ["Чёрный", "Песочный"], ["S", "M", "L", "XL"]),
   },
   {
     id: "core-denim-jacket",
@@ -52,9 +79,11 @@ export const mockProducts: readonly CatalogProduct[] = [
     category: "Outerwear",
     price: 799000,
     colors: ["Голубой"],
-    image:
-      "https://images.unsplash.com/photo-1542272604-787c3835535d?auto=format&fit=crop&w=1200&q=85",
-    imageAlt: "Джинсовая куртка голубого цвета",
+    image: "/images/products/core-denim-jacket.png",
+    imageAlt: "Модель в голубой джинсовой куртке Core",
+    description: "Деним в правильной пропорции: расслабленный крой и уверенная фактура.",
+    composition: "100% хлопок",
+    variants: createVariants("core-denim-jacket", ["Голубой"], ["S", "M", "L", "XL"]),
   },
   {
     id: "canvas-tote",
@@ -63,11 +92,16 @@ export const mockProducts: readonly CatalogProduct[] = [
     category: "Accessories",
     price: 129000,
     colors: ["Натуральный", "Чёрный"],
-    image:
-      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=1200&q=85",
-    imageAlt: "Светлый холщовый шопер",
+    image: "/images/products/canvas-tote.png",
+    imageAlt: "Шопер Canvas из светлого плотного холста",
+    description: "Вместительная сумка из плотного холста для всего, что нужно в городе.",
+    composition: "100% хлопок",
+    variants: createVariants("canvas-tote", ["Натуральный", "Чёрный"], ["ONE SIZE"]),
   },
 ];
+
+export const getProductBySlug = (slug: string): CatalogProduct | undefined =>
+  mockProducts.find((product) => product.slug === slug);
 
 export const formatPrice = (amount: number): string =>
   new Intl.NumberFormat("ru-RU", {

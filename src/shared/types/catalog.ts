@@ -15,4 +15,14 @@ export interface CatalogProduct {
   colors: readonly string[];
   image: string;
   imageAlt: string;
+  description: string;
+  composition: string;
+  variants: readonly CatalogVariant[];
+}
+
+export interface CatalogVariant {
+  id: string;
+  color: string;
+  size: string;
+  stock: number;
 }
