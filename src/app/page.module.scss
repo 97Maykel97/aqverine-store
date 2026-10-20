@@ -37,10 +37,11 @@
   max-width: 600px;
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(4rem, 6vw, 6.5rem);
+  font-size: clamp(3.7rem, 5.1vw, 5.6rem);
   font-weight: 900;
   letter-spacing: -.088em;
   line-height: .84;
+  text-transform: uppercase;
 }
 
 .heroContent p {
@@ -145,13 +146,13 @@
 .campaignMedia { position: absolute; inset: 0; }
 .campaignMedia img { object-fit: cover; object-position: center; }
 .campaignContent { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; min-height: 440px; padding: 4rem var(--page-padding); }
-.campaign h2 { margin: 0; font-family: var(--font-display); font-size: clamp(4.2rem, 7.3vw, 8.5rem); font-weight: 900; letter-spacing: -.085em; line-height: .86; }
+.campaign h2 { margin: 0; font-family: var(--font-display); font-size: clamp(4.2rem, 7.3vw, 8.5rem); font-weight: 900; letter-spacing: -.085em; line-height: .86; text-transform: uppercase; }
 .campaign p { max-width: 350px; margin: 1.4rem 0; font-size: 1rem; font-weight: 600; }
 .campaign a { border-bottom: 2px solid white; padding-bottom: .45rem; font-size: .9rem; font-weight: 800; }
 .campaign a span { margin-left: 1.5rem; }
 
 @media (max-width: 1050px) {
-  .heroContent h1 { font-size: clamp(3.3rem, 6vw, 5.5rem); }
+  .heroContent h1 { font-size: clamp(3.1rem, 5.1vw, 5.5rem); }
   .categoryRail { grid-template-columns: repeat(3, 1fr); }
   .categoryRail a { border-bottom: 1px solid var(--color-line); }
   .productGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -161,14 +162,14 @@
   .hero { display: flex; flex-direction: column; }
   .heroMedia { min-height: min(120vw, 530px); }
   .heroContent { min-height: 425px; padding: 3.2rem var(--page-padding) 3.8rem; }
-  .heroContent h1 { font-size: clamp(3.8rem, 13vw, 6rem); }
+  .heroContent h1 { font-size: clamp(2.9rem, 11.6vw, 5.8rem); }
   .heroContent p { margin-top: 1.5rem; }
   .heroCta { margin-top: 1.5rem; }
   .heroBottom { right: var(--page-padding); bottom: 1.2rem; }
   .campaign { min-height: 550px; }
   .campaignMedia img { object-position: 67% center; }
   .campaignContent { justify-content: flex-start; min-height: 550px; padding-top: 3rem; }
-  .campaign h2 { font-size: clamp(3.7rem, 14vw, 6rem); }
+  .campaign h2 { font-size: clamp(2.6rem, 12vw, 5rem); }
   .campaign p { max-width: 290px; }
 }
 
@@ -182,4 +183,8 @@
   .campaignMedia { position: relative; height: 300px; }
   .campaignMedia img { object-position: 70% center; }
   .campaignContent { min-height: 270px; background: var(--color-cobalt); }
+}
+
+@media (max-width: 360px) {
+  .heroContent h1 { font-size: 2.6rem; }
 }

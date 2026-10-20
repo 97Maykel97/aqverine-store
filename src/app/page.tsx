@@ -21,7 +21,7 @@ export default function HomePage() {
           <span className={styles.heroIndex}>AQVERINE / 01</span>
         </div>
         <div className={styles.heroContent}>
-          <h1 id="hero-title">ГОРОД.<br />ТВОИ<br />ПРАВИЛА.</h1>
+          <h1 id="hero-title">Твой город{" "}<br />твои{" "}<br />правила</h1>
           <p>Одежда для каждого твоего движения.</p>
           <Link className={styles.heroCta} href="/catalog">
             Смотреть коллекцию <span aria-hidden="true">↗</span>
@@ -63,7 +63,7 @@ export default function HomePage() {
           />
         </div>
         <div className={styles.campaignContent}>
-          <h2 id="campaign-title">БОЛЬШЕ<br />ЧЕМ БАЗА.</h2>
+          <h2 id="campaign-title">Больше{" "}<br />чем стиль</h2>
           <p>Вещи, которые подстраиваются под твой ритм, а не наоборот.</p>
           <Link href="/catalog">Открыть весь каталог <span aria-hidden="true">↗</span></Link>
         </div>
