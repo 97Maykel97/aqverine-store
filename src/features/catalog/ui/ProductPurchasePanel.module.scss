@@ -29,3 +29,9 @@
 .extra strong { text-align: right; font-weight: 600; }
 
 @media (max-width: 550px) { .purchase { grid-template-columns: 90px 1fr; } .addButton { padding: 0 .8rem; font-size: .74rem; } }
+
+@media (max-width: 380px) {
+  .purchase { grid-template-columns: 1fr; }
+  .purchase .quantity { width: 112px; min-height: 50px; }
+  .addButton { min-height: 52px; font-size: .84rem; }
+}

@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image, { getImageProps } from "next/image";
 import Link from "next/link";
 
 import { categories, mockProducts } from "@/features/catalog/model/mock-products";
@@ -6,18 +6,33 @@ import { ProductCard } from "@/features/catalog/ui/ProductCard";
 
 import styles from "./page.module.scss";
 
+const heroAlt = "Две модели AQVERINE в городской одежде на фоне яркой стены";
+const { props: { srcSet: desktopHeroSrcSet } } = getImageProps({
+  alt: heroAlt,
+  src: "/images/hero-city.png",
+  width: 1586,
+  height: 992,
+  sizes: "(min-width: 1200px) 57vw, 100vw",
+  loading: "eager",
+});
+const { props: mobileHeroProps } = getImageProps({
+  alt: heroAlt,
+  src: "/images/hero-city-mobile.png",
+  width: 1122,
+  height: 1402,
+  sizes: "100vw",
+  loading: "eager",
+});
+
 export default function HomePage() {
   return (
     <>
       <section className={styles.hero} aria-labelledby="hero-title">
         <div className={styles.heroMedia}>
-          <Image
-            alt="Две модели AQVERINE в городской одежде на фоне яркой стены"
-            fill
-            priority
-            sizes="(max-width: 900px) 100vw, 57vw"
-            src="/images/hero-city.png"
-          />
+          <picture>
+            <source media="(min-width: 681px)" srcSet={desktopHeroSrcSet} />
+            <img {...mobileHeroProps} alt={heroAlt} className={styles.heroPhoto} />
+          </picture>
           <span className={styles.heroIndex}>AQVERINE / 01</span>
         </div>
         <div className={styles.heroContent}>

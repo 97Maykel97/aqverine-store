@@ -25,7 +25,7 @@ export const mockProducts: readonly CatalogProduct[] = [
     name: "Футболка Essential",
     slug: "essential-t-shirt",
     category: "T-shirts",
-    price: 249000,
+    price: 2900,
     colors: ["Белый", "Чёрный", "Графит"],
     image: "/images/products/essential-t-shirt.png",
     imageAlt: "Модель в белой футболке Essential и чёрных брюках",
@@ -38,7 +38,7 @@ export const mockProducts: readonly CatalogProduct[] = [
     name: "Худи Everyday",
     slug: "everyday-hoodie",
     category: "Hoodies",
-    price: 599000,
+    price: 6900,
     colors: ["Чёрный", "Бежевый"],
     image: "/images/products/everyday-hoodie.png",
     imageAlt: "Модель в тёмном худи Everyday",
@@ -51,7 +51,7 @@ export const mockProducts: readonly CatalogProduct[] = [
     name: "Рубашка Oversize",
     slug: "oversize-shirt",
     category: "Shirts",
-    price: 479000,
+    price: 5500,
     colors: ["Голубой", "Молочный"],
     image: "/images/products/oversize-shirt.png",
     imageAlt: "Модель в голубой рубашке свободного кроя",
@@ -64,7 +64,7 @@ export const mockProducts: readonly CatalogProduct[] = [
     name: "Брюки Relaxed",
     slug: "relaxed-trousers",
     category: "Trousers",
-    price: 549000,
+    price: 6500,
     colors: ["Чёрный", "Песочный"],
     image: "/images/products/relaxed-trousers.png",
     imageAlt: "Чёрные брюки Relaxed свободного кроя",
@@ -77,7 +77,7 @@ export const mockProducts: readonly CatalogProduct[] = [
     name: "Джинсовая куртка Core",
     slug: "core-denim-jacket",
     category: "Outerwear",
-    price: 799000,
+    price: 9900,
     colors: ["Голубой"],
     image: "/images/products/core-denim-jacket.png",
     imageAlt: "Модель в голубой джинсовой куртке Core",
@@ -90,7 +90,7 @@ export const mockProducts: readonly CatalogProduct[] = [
     name: "Шопер Canvas",
     slug: "canvas-tote",
     category: "Accessories",
-    price: 129000,
+    price: 1900,
     colors: ["Натуральный", "Чёрный"],
     image: "/images/products/canvas-tote.png",
     imageAlt: "Шопер Canvas из светлого плотного холста",
@@ -103,9 +103,17 @@ export const mockProducts: readonly CatalogProduct[] = [
 export const getProductBySlug = (slug: string): CatalogProduct | undefined =>
   mockProducts.find((product) => product.slug === slug);
 
+const usdFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  maximumFractionDigits: 0,
+});
+const usdCentsFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
 export const formatPrice = (amount: number): string =>
-  new Intl.NumberFormat("ru-RU", {
-    style: "currency",
-    currency: "RUB",
-    maximumFractionDigits: 0,
-  }).format(amount / 100);
+  (amount % 100 === 0 ? usdFormatter : usdCentsFormatter).format(amount / 100);

@@ -20,7 +20,7 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
           className={styles.image}
           fill
           priority={priority}
-          sizes="(max-width: 600px) 100vw, (max-width: 1024px) 50vw, 25vw"
+          sizes="(max-width: 700px) 46vw, (max-width: 1100px) 46vw, 23vw"
           src={product.image}
         />
         <span className={styles.imageAction}>Смотреть товар <span aria-hidden="true">↗</span></span>

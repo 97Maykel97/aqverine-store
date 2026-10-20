@@ -9,6 +9,9 @@ import type { CatalogProduct, ProductCategory } from "@/shared/types/catalog";
 
 import styles from "./CatalogClient.module.scss";
 
+const productCountForms = { zero: "товаров", one: "товар", two: "товара", few: "товара", many: "товаров", other: "товаров" } as const;
+const productCountRules = new Intl.PluralRules("ru-RU");
+
 interface CatalogClientProps {
   products: readonly CatalogProduct[];
   initialCategory: ProductCategory | "All";
@@ -40,7 +43,7 @@ export function CatalogClient({ products, initialCategory, query }: CatalogClien
             </button>
           ))}
         </div>
-        <p aria-live="polite">{filteredProducts.length} товаров</p>
+        <p aria-live="polite">{filteredProducts.length} {productCountForms[productCountRules.select(filteredProducts.length)]}</p>
       </div>
       {query ? <p className={styles.searchInfo}>Результаты поиска: «{query}»</p> : null}
       {filteredProducts.length > 0 ? (
