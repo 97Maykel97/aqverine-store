@@ -1,7 +1,7 @@
 .hero {
   display: grid;
   grid-template-columns: minmax(0, 57fr) minmax(0, 43fr);
-  min-height: min(690px, calc(100svh - 100px));
+  min-height: clamp(690px, 32vw, 880px);
   background: var(--color-accent);
 }
 
@@ -13,7 +13,7 @@
 }
 
 .heroMedia picture { position: absolute; inset: 0; display: block; }
-.heroPhoto { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 51% center; }
+.heroPhoto { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 51% top; }
 .heroIndex {
   position: absolute;
   bottom: 1.6rem;
@@ -138,15 +138,15 @@
 
 .campaign {
   position: relative;
-  min-height: 440px;
+  min-height: clamp(440px, 26vw, 660px);
   overflow: hidden;
   background: var(--color-cobalt);
   color: white;
 }
 
 .campaignMedia { position: absolute; inset: 0; }
-.campaignMedia img { object-fit: cover; object-position: center; }
-.campaignContent { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; min-height: 440px; padding: 4rem var(--page-padding); }
+.campaignMedia img { object-fit: cover; object-position: center top; }
+.campaignContent { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; min-height: clamp(440px, 26vw, 660px); padding: 4rem var(--page-padding); }
 .campaign h2 { margin: 0; font-family: var(--font-display); font-size: clamp(4.2rem, 7.3vw, 8.5rem); font-weight: 900; letter-spacing: -.085em; line-height: .86; text-transform: uppercase; }
 .campaign p { max-width: 350px; margin: 1.4rem 0; font-size: 1rem; font-weight: 600; }
 .campaign a { border-bottom: 2px solid white; padding-bottom: .45rem; font-size: .9rem; font-weight: 800; }
