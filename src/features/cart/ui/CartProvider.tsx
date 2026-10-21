@@ -29,23 +29,24 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    const readStoredCart = () => {
+    const readStoredCart = (): GuestCartLine[] => {
       try {
         const stored = window.localStorage.getItem(GUEST_CART_STORAGE_KEY);
-        setLines(stored ? normalizeGuestCart(JSON.parse(stored) as unknown) : []);
+        return stored ? normalizeGuestCart(JSON.parse(stored) as unknown) : [];
       } catch {
-        setLines([]);
+        return [];
       }
     };
 
     const timer = window.setTimeout(() => {
-      readStoredCart();
+      setLines((current) => normalizeGuestCart([...readStoredCart(), ...current]));
       setHydrated(true);
     }, 0);
-    window.addEventListener("storage", readStoredCart);
+    const onStorage = () => setLines(readStoredCart());
+    window.addEventListener("storage", onStorage);
     return () => {
       window.clearTimeout(timer);
-      window.removeEventListener("storage", readStoredCart);
+      window.removeEventListener("storage", onStorage);
     };
   }, []);
 

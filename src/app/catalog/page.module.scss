@@ -1,7 +1,7 @@
 .catalog {
   max-width: var(--page-width);
   margin: 0 auto;
-  padding: clamp(2.6rem, 5vw, 5rem) var(--page-padding) clamp(5rem, 9vw, 9rem);
+  padding: clamp(2rem, 3vw, 3.5rem) var(--page-padding) clamp(5rem, 9vw, 9rem);
 }
 
 .intro {
@@ -9,11 +9,11 @@
   align-items: end;
   justify-content: space-between;
   gap: 2rem;
-  margin-bottom: clamp(2rem, 3vw, 3.5rem);
+  margin-bottom: clamp(1.4rem, 2.2vw, 2.5rem);
 }
 
 .intro span { color: var(--color-accent); font-size: .7rem; font-weight: 900; letter-spacing: .14em; }
-.intro h1 { margin: .9rem 0 0; font-family: var(--font-display); font-size: clamp(3.4rem, 6vw, 6.5rem); font-weight: 900; letter-spacing: -.09em; line-height: .87; }
+.intro h1 { margin: .8rem 0 0; font-family: var(--font-display); font-size: clamp(3.4rem, 5vw, 5.5rem); font-weight: 900; letter-spacing: -.09em; line-height: .88; }
 .intro p { max-width: 235px; margin: 0 0 .4rem; color: var(--color-muted); font-size: .88rem; line-height: 1.55; }
 
 .state { min-height: 55vh; padding-top: 5rem; }
