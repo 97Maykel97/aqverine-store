@@ -46,11 +46,13 @@ export default function HomePage() {
       </section>
 
       <nav className={styles.categoryRail} aria-label="Категории товаров">
-        {categories.slice(1).map((category) => (
-          <Link href={`/catalog?category=${encodeURIComponent(category.value)}`} key={category.value}>
-            {category.label} <span aria-hidden="true">↗</span>
-          </Link>
-        ))}
+        <div className={styles.categoryRailInner}>
+          {categories.slice(1).map((category) => (
+            <Link href={`/catalog?category=${encodeURIComponent(category.value)}`} key={category.value}>
+              {category.label} <span aria-hidden="true">↗</span>
+            </Link>
+          ))}
+        </div>
       </nav>
 
       <section className={styles.featured} aria-labelledby="featured-title">
