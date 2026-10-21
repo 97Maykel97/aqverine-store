@@ -15,6 +15,7 @@ export interface CatalogProduct {
   colors: readonly string[];
   image: string;
   imageAlt: string;
+  imagesByColor: Readonly<Record<string, string>>;
   description: string;
   composition: string;
   variants: readonly CatalogVariant[];

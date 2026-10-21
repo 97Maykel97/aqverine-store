@@ -26,12 +26,18 @@ export const mockProducts: readonly CatalogProduct[] = [
     slug: "essential-t-shirt",
     category: "T-shirts",
     price: 2900,
-    colors: ["Белый", "Чёрный", "Графит"],
+    colors: ["Белый", "Чёрный", "Графит", "Синий"],
     image: "/images/products/essential-t-shirt.png",
     imageAlt: "Модель в белой футболке Essential и чёрных брюках",
+    imagesByColor: {
+      "Белый": "/images/products/essential-t-shirt.png",
+      "Чёрный": "/images/products/essential-t-shirt-black.png",
+      "Графит": "/images/products/essential-t-shirt-graphite.png",
+      "Синий": "/images/products/essential-t-shirt-blue.png",
+    },
     description: "Чистая форма на каждый день. Свободная посадка и плотный хлопок, который держит силуэт.",
     composition: "100% хлопок",
-    variants: createVariants("essential-t-shirt", ["Белый", "Чёрный", "Графит"], ["S", "M", "L", "XL"]),
+    variants: createVariants("essential-t-shirt", ["Белый", "Чёрный", "Графит", "Синий"], ["S", "M", "L", "XL"]),
   },
   {
     id: "everyday-hoodie",
@@ -42,6 +48,10 @@ export const mockProducts: readonly CatalogProduct[] = [
     colors: ["Чёрный", "Бежевый"],
     image: "/images/products/everyday-hoodie.png",
     imageAlt: "Модель в тёмном худи Everyday",
+    imagesByColor: {
+      "Чёрный": "/images/products/everyday-hoodie.png",
+      "Бежевый": "/images/products/everyday-hoodie-beige.png",
+    },
     description: "Мягкое худи свободного кроя для маршрутов без расписания.",
     composition: "80% хлопок, 20% полиэстер",
     variants: createVariants("everyday-hoodie", ["Чёрный", "Бежевый"], ["S", "M", "L", "XL"]),
@@ -55,6 +65,10 @@ export const mockProducts: readonly CatalogProduct[] = [
     colors: ["Голубой", "Молочный"],
     image: "/images/products/oversize-shirt.png",
     imageAlt: "Модель в голубой рубашке свободного кроя",
+    imagesByColor: {
+      "Голубой": "/images/products/oversize-shirt.png",
+      "Молочный": "/images/products/oversize-shirt-milk.png",
+    },
     description: "Лёгкая рубашка с выразительным объёмом. Работает самостоятельно и поверх базового слоя.",
     composition: "100% хлопок",
     variants: createVariants("oversize-shirt", ["Голубой", "Молочный"], ["S", "M", "L"]),
@@ -68,6 +82,10 @@ export const mockProducts: readonly CatalogProduct[] = [
     colors: ["Чёрный", "Песочный"],
     image: "/images/products/relaxed-trousers.png",
     imageAlt: "Чёрные брюки Relaxed свободного кроя",
+    imagesByColor: {
+      "Чёрный": "/images/products/relaxed-trousers.png",
+      "Песочный": "/images/products/relaxed-trousers-sand.png",
+    },
     description: "Широкая посадка и выверенные линии: комфорт на весь день без компромисса в силуэте.",
     composition: "65% вискоза, 35% полиэстер",
     variants: createVariants("relaxed-trousers", ["Чёрный", "Песочный"], ["S", "M", "L", "XL"]),
@@ -81,6 +99,7 @@ export const mockProducts: readonly CatalogProduct[] = [
     colors: ["Голубой"],
     image: "/images/products/core-denim-jacket.png",
     imageAlt: "Модель в голубой джинсовой куртке Core",
+    imagesByColor: { "Голубой": "/images/products/core-denim-jacket.png" },
     description: "Деним в правильной пропорции: расслабленный крой и уверенная фактура.",
     composition: "100% хлопок",
     variants: createVariants("core-denim-jacket", ["Голубой"], ["S", "M", "L", "XL"]),
@@ -94,6 +113,10 @@ export const mockProducts: readonly CatalogProduct[] = [
     colors: ["Натуральный", "Чёрный"],
     image: "/images/products/canvas-tote.png",
     imageAlt: "Шопер Canvas из светлого плотного холста",
+    imagesByColor: {
+      "Натуральный": "/images/products/canvas-tote.png",
+      "Чёрный": "/images/products/canvas-tote-black.png",
+    },
     description: "Вместительная сумка из плотного холста для всего, что нужно в городе.",
     composition: "100% хлопок",
     variants: createVariants("canvas-tote", ["Натуральный", "Чёрный"], ["ONE SIZE"]),
@@ -102,6 +125,11 @@ export const mockProducts: readonly CatalogProduct[] = [
 
 export const getProductBySlug = (slug: string): CatalogProduct | undefined =>
   mockProducts.find((product) => product.slug === slug);
+
+export const getProductImage = (product: CatalogProduct, color: string): { src: string; alt: string } => ({
+  src: product.imagesByColor[color] ?? product.image,
+  alt: `${product.name}, цвет ${color.toLocaleLowerCase("ru-RU")}`,
+});
 
 const usdFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
