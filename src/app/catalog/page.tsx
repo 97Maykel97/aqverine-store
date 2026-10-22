@@ -8,6 +8,13 @@ import styles from "./page.module.scss";
 export const metadata: Metadata = {
   title: "Каталог",
   description: "Каталог городской одежды AQVERINE.",
+  alternates: { canonical: "/catalog" },
+  openGraph: {
+    title: "Каталог AQVERINE",
+    description: "Выбирай одежду для своего ритма: футболки, худи, рубашки и другие вещи AQVERINE.",
+    url: "/catalog",
+    images: [{ url: "/images/campaign-cobalt.png", alt: "Коллекция AQVERINE" }],
+  },
 };
 
 interface CatalogPageProps {

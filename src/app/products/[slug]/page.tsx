@@ -20,7 +20,18 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
   const product = getProductBySlug(slug);
-  return product ? { title: product.name, description: product.description } : { title: "Товар не найден" };
+  return product ? {
+    title: product.name,
+    description: product.description,
+    alternates: { canonical: `/products/${product.slug}` },
+    openGraph: {
+      type: "website",
+      title: `${product.name} — AQVERINE`,
+      description: product.description,
+      url: `/products/${product.slug}`,
+      images: [{ url: product.image, alt: product.imageAlt }],
+    },
+  } : { title: "Товар не найден", robots: { index: false } };
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
