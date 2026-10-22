@@ -98,6 +98,7 @@
   .mobileNavigation { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--color-line); }
   .mobileNavigation a { display: flex; align-items: center; justify-content: space-between; min-height: 54px; padding: 0 var(--page-padding); font-size: .83rem; font-weight: 800; }
   .mobileNavigation a + a { border-left: 1px solid var(--color-line); }
+  .mobileNavigation a:last-child { grid-column: 1 / -1; border-top: 1px solid var(--color-line); border-left: 0; }
 }
 
 @media (max-width: 540px) {

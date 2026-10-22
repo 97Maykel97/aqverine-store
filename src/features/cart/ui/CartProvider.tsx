@@ -14,6 +14,7 @@ import { CartDrawer } from "@/features/cart/ui/CartDrawer";
 interface CartContextValue {
   lines: readonly GuestCartLine[];
   count: number;
+  hydrated: boolean;
   isOpen: boolean;
   openCart: () => void;
   closeCart: () => void;
@@ -72,6 +73,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       value={{
         lines,
         count,
+        hydrated,
         isOpen,
         openCart: () => setIsOpen(true),
         closeCart: () => setIsOpen(false),

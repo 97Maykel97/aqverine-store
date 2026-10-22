@@ -104,8 +104,8 @@ export function CartDrawer() {
             ) : null}
             <div className={styles.summary}>
               <div><span>Итого</span><strong>{formatPrice(total)}</strong></div>
-              <p>Корзина сохранена в этом браузере. Онлайн-оплата пока недоступна.</p>
-              <button disabled type="button">Оформление скоро откроется</button>
+              <p>Корзина сохранена в этом браузере. Можно посмотреть демо-оформление; заказ и оплата пока недоступны.</p>
+              <Link className={styles.checkoutLink} href="/checkout" onClick={closeCart}>Посмотреть оформление <span aria-hidden="true">↗</span></Link>
               <Link href="/catalog" onClick={closeCart}>Продолжить покупки</Link>
             </div>
           </>

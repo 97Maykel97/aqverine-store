@@ -13,6 +13,7 @@ export function Footer() {
         <nav aria-label="Навигация в подвале">
           <Link href="/catalog">Каталог</Link>
           <Link href="/#about">О бренде</Link>
+          <Link href="/login">Аккаунт</Link>
         </nav>
         <span className={styles.copyright}>© AQVERINE</span>
       </div>

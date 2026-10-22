@@ -58,6 +58,8 @@
 .summary > div { display: flex; justify-content: space-between; font-size: 1.25rem; font-weight: 800; }
 .summary p { margin: 0; color: var(--color-muted); font-size: .78rem; line-height: 1.4; }
 .summary > button { min-height: 50px; border: 0; background: var(--color-ink); color: white; font: inherit; font-size: .82rem; font-weight: 700; opacity: .5; cursor: not-allowed; }
+.summary > .checkoutLink { display: flex; align-items: center; justify-content: space-between; justify-self: stretch; min-height: 50px; padding: 0 1rem; border: 0; background: var(--color-ink); color: #fff; font-size: .82rem; font-weight: 800; transition: background .2s ease; }
+.summary > .checkoutLink:hover { background: var(--color-accent); color: var(--color-ink); }
 .summary > a { justify-self: center; border-bottom: 1px solid currentColor; font-size: .82rem; }
 
 @media (max-width: 600px) {

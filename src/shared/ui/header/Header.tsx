@@ -29,6 +29,7 @@ export function Header() {
         <nav className={styles.navigation} aria-label="Основная навигация">
           <Link href="/catalog">Каталог</Link>
           <Link href="/#about">О бренде</Link>
+          <Link href="/login">Войти</Link>
         </nav>
         <div className={styles.actions}>
           <form action="/catalog" className={styles.search} role="search">
@@ -75,6 +76,7 @@ export function Header() {
         <nav aria-label="Мобильная навигация" className={styles.mobileNavigation} id="mobile-navigation">
           <Link href="/catalog" onClick={() => setMenuOpen(false)}>Каталог <span aria-hidden="true">↗</span></Link>
           <Link href="/#about" onClick={() => setMenuOpen(false)}>О бренде <span aria-hidden="true">↗</span></Link>
+          <Link href="/login" onClick={() => setMenuOpen(false)}>Личный кабинет <span aria-hidden="true">↗</span></Link>
         </nav>
       ) : null}
     </header>

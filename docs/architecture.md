@@ -45,6 +45,8 @@ prisma/                      # schema, migrations, seed
 
 Публичные: `/`, `/catalog`, `/products/[slug]`, `/checkout`, `/payment/success`, `/payment/failure`, `/login`, `/register`, `/forgot-password`. Авторизованный покупатель: `/account`. Администратор: `/aqverine-control` и `/aqverine-control/login`. Публичные API располагаются в `/api/*`; webhook — `/api/payments/webhook`.
 
+На текущем frontend-этапе формы входа и checkout демонстрируют только локальную валидацию: они не отправляют персональные данные, не создают аккаунт или заказ и не подтверждают платёж. `/account` не показывает персональные данные, а `/aqverine-control` безусловно перенаправляет на закрытый экран. Перед включением настоящих действий эти маршруты должны получить серверную проверку сессии и роли, API и PaymentProvider flow.
+
 ## Данные и состояния
 
 PostgreSQL — единственный источник истины для товаров, вариантов, остатков, серверных корзин, заказов, платежей и webhook-событий. Prisma миграции версионируют схему. Деньги — integer minor units. Заказ создаётся транзакционно и сохраняет `OrderItem` snapshots.

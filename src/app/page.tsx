@@ -70,6 +70,19 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className={styles.benefits} aria-labelledby="benefits-title">
+        <div className={styles.benefitsIntro}>
+          <span className={styles.sectionNumber}>02 / ТВОЙ ВЫБОР</span>
+          <h2 id="benefits-title">НЕ ПРОСТО<br />ВЕЩИ. ТВОИ.</h2>
+          <p>В AQVERINE ты выбираешь не только силуэт — ты собираешь образ под свой день.</p>
+        </div>
+        <div className={styles.benefitsGrid}>
+          <article><span>01 /</span><h3>ВИДИШЬ СВОЙ ЦВЕТ</h3><p>Выбери оттенок и сразу посмотри, как именно эта вещь выглядит на фото.</p></article>
+          <article><span>02 /</span><h3>НАХОДИШЬ СВОЙ РАЗМЕР</h3><p>Цвет, размер и наличие — на одной странице, без лишних шагов.</p></article>
+          <article><span>03 /</span><h3>СОБИРАЕШЬ СВОЙ ОБРАЗ</h3><p>Добавляй варианты в корзину и меняй количество в своём ритме.</p></article>
+        </div>
+      </section>
+
       <section className={styles.campaign} id="about" aria-labelledby="campaign-title">
         <div className={styles.campaignMedia}>
           <Image

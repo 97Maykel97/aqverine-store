@@ -1,0 +1,14 @@
+.page { display: grid; place-items: center; min-height: calc(100svh - 100px); padding: clamp(1.25rem, 5vw, 5rem); background: var(--color-canvas); }
+.panel { display: flex; flex-direction: column; width: min(100%, 1220px); min-height: 690px; background: var(--color-cobalt); color: #fff; }
+.top, .bottom { display: flex; justify-content: space-between; gap: 1rem; padding: 1.35rem clamp(1.5rem, 4vw, 4rem); border-bottom: 1px solid rgb(255 255 255 / 28%); font-size: .72rem; font-weight: 900; letter-spacing: .1em; }
+.bottom { margin-top: auto; border-top: 1px solid rgb(255 255 255 / 28%); border-bottom: 0; }
+.content { padding: clamp(3rem, 6vw, 6rem) clamp(1.5rem, 4vw, 4rem); }
+.symbol { display: block; margin-bottom: 1rem; color: var(--color-accent); font-size: clamp(4rem, 8vw, 7rem); line-height: .8; }
+.eyebrow { color: #d5defe; font-size: .74rem; font-weight: 900; letter-spacing: .13em; }
+.content h1 { max-width: 1000px; margin: 1rem 0 1.5rem; font-size: clamp(3.5rem, 7.4vw, 7rem); font-weight: 900; letter-spacing: -.08em; line-height: .87; }
+.content p { max-width: 43rem; margin: 0; color: #e2e7ff; font-size: clamp(.9rem, 1.15vw, 1.08rem); }
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1.5rem; margin-top: 2rem; }
+.actions a:first-child { display: flex; align-items: center; justify-content: space-between; gap: 2rem; min-width: 250px; min-height: 54px; padding: 0 1rem; background: #fff; color: var(--color-ink); font-size: .8rem; font-weight: 900; }
+.actions a:first-child:hover { background: var(--color-accent); }
+.actions a:last-child { border-bottom: 1px solid currentColor; font-size: .8rem; font-weight: 800; }
+@media (max-width: 600px) { .panel { min-height: 680px; } .top span:last-child, .bottom span:last-child { display: none; } .content h1 { font-size: clamp(2.2rem, 10vw, 5.5rem); } }

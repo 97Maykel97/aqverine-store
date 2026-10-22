@@ -144,6 +144,16 @@
 .sectionHeader > a span { margin-left: 1.4rem; font-size: 1rem; }
 .productGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.2rem; }
 
+.benefits { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(2rem, 6vw, 7rem); max-width: var(--page-width); margin: 0 auto; padding: 0 var(--page-padding) clamp(5rem, 8vw, 8rem); }
+.benefitsIntro h2 { margin: .85rem 0 1.2rem; font-size: clamp(2.8rem, 4.6vw, 5rem); font-weight: 900; letter-spacing: -.08em; line-height: .9; }
+.benefitsIntro p { max-width: 27rem; margin: 0; color: var(--color-muted); font-size: .94rem; }
+.benefitsGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--color-ink); }
+.benefitsGrid article { min-width: 0; padding: 1.4rem 1rem 0; border-left: 1px solid var(--color-line); }
+.benefitsGrid article:first-child { padding-left: 0; border-left: 0; }
+.benefitsGrid article > span { color: var(--color-accent); font-size: .72rem; font-weight: 900; }
+.benefitsGrid h3 { margin: 2.5rem 0 .8rem; font-size: clamp(1.2rem, 1.65vw, 1.8rem); font-weight: 900; letter-spacing: -.06em; line-height: 1; }
+.benefitsGrid p { margin: 0; color: var(--color-muted); font-size: .84rem; }
+
 .campaign {
   position: relative;
   min-height: clamp(440px, 26vw, 660px);
@@ -187,6 +197,8 @@
 
 @media (max-width: 1050px) {
   .productGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .benefits { grid-template-columns: 1fr; gap: 2.5rem; }
+  .benefitsGrid h3 { margin-top: 1.5rem; }
 }
 
 @media (max-width: 900px) {
@@ -206,6 +218,12 @@
   .heroBottom { bottom: 1rem; font-size: .55rem; }
   .categoryRailInner a { min-height: 62px; }
   .featured { padding-top: 3.6rem; padding-bottom: 4.5rem; }
+  .benefits { padding-bottom: 4.5rem; }
+  .benefitsGrid { grid-template-columns: 1fr; }
+  .benefitsGrid article { display: grid; grid-template-columns: 2rem minmax(0, 1fr); column-gap: .9rem; padding: 1.2rem 0; border-left: 0; border-bottom: 1px solid var(--color-line); }
+  .benefitsGrid article:first-child { padding-left: 0; }
+  .benefitsGrid h3 { margin: 0 0 .4rem; font-size: 1.4rem; }
+  .benefitsGrid p { grid-column: 2; }
   .campaignMedia { height: clamp(270px, 78vw, 390px); }
   .campaignContent { min-height: 260px; padding-top: 2.8rem; padding-bottom: 3rem; }
   .campaign h2 { font-size: clamp(2.6rem, 12vw, 5rem); }
