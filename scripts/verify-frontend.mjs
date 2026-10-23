@@ -49,7 +49,14 @@ async function checkPage(path, width, screenshotName) {
 
 try {
   for (const width of [320, 390, 768, 1440, 2560]) {
-    const { context } = await checkPage("/", width, `home-${width}.png`);
+    const { context, page } = await checkPage("/", width, `home-${width}.png`);
+    if (width === 320 || width === 1440) {
+      await page.getByRole("link", { name: "Личный кабинет — демо" }).click();
+      await page.waitForURL("**/account");
+      if (!(await page.getByText("Это открытый предпросмотр кабинета").count())) failures.push(`Account preview was not reached from header at ${width}px`);
+      if (await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)) failures.push(`Account preview overflows at ${width}px`);
+      if (screenshotDir) await page.screenshot({ path: join(screenshotDir, `account-from-header-${width}.png`), fullPage: false });
+    }
     await context.close();
   }
 

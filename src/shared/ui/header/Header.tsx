@@ -59,6 +59,7 @@ export function Header() {
         <nav className={styles.navigation} aria-label="Основная навигация"><Link href="/catalog">Каталог</Link><Link href="/#about">О бренде</Link></nav>
         <div className={styles.actions}>
           <button aria-label="Поиск товаров" className={styles.iconButton} onClick={() => { setActiveSuggestion(-1); setPanel("search"); }} type="button"><SearchIcon /></button>
+          <Link aria-label="Личный кабинет — демо" className={styles.iconButton} href="/account" title="Личный кабинет"><AccountIcon /></Link>
           <button aria-label={`Открыть корзину, товаров: ${count}`} className={`${styles.iconButton} ${styles.cart}`} onClick={() => { closePanel(); openCart(); }} type="button"><BagIcon /><span>{count}</span></button>
           <button aria-label="Открыть меню" className={styles.iconButton} onClick={() => setPanel("menu")} type="button"><MenuIcon /></button>
         </div>
@@ -106,6 +107,7 @@ export function Header() {
 }
 
 function SearchIcon() { return <svg aria-hidden="true" fill="none" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.5" /><path d="m16 16 4.5 4.5" /></svg>; }
+function AccountIcon() { return <svg aria-hidden="true" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5" /><path d="M5.5 20v-1.3a6.5 6.5 0 0 1 13 0V20H5.5Z" /></svg>; }
 function BagIcon() { return <svg aria-hidden="true" fill="none" viewBox="0 0 24 24"><path d="M5 8h14l-1.1 12H6.1L5 8Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg>; }
 function MenuIcon() { return <svg aria-hidden="true" fill="none" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18" /></svg>; }
 function CloseIcon() { return <svg aria-hidden="true" fill="none" viewBox="0 0 24 24"><path d="M5 5 19 19M19 5 5 19" /></svg>; }
