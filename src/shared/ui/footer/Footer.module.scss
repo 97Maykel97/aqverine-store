@@ -16,7 +16,7 @@
 .logo { font-size: 1.7rem; font-weight: 900; letter-spacing: -.065em; }
 .inner p { margin: .55rem 0 0; color: #bbb7b0; font-size: .77rem; }
 .inner nav { display: flex; gap: 1.8rem; padding-top: .55rem; font-size: .8rem; }
-.inner nav a:hover { color: var(--color-accent); }
+.inner nav a:hover { color: var(--color-accent-text); }
 .copyright { justify-self: end; padding-top: .55rem; color: #bbb7b0; font-size: .72rem; }
 
 @media (max-width: 800px) {

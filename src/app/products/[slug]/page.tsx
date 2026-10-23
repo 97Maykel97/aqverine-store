@@ -45,7 +45,23 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <div className={styles.breadcrumbs}>
         <Link href="/catalog">Каталог</Link><span aria-hidden="true">/</span><span>{product.name}</span>
       </div>
-      <Suspense fallback={<div className={styles.productFallback} aria-label="Загрузка товара" />}>
+      <Suspense fallback={(
+        <div aria-label="Загрузка товара" className={styles.productFallback} role="status">
+          <div className={styles.fallbackGallery}>
+            <div className={styles.fallbackPhoto} />
+            <div className={styles.fallbackThumbnails}><span /><span /><span /></div>
+          </div>
+          <div className={styles.fallbackDetails}>
+            <span className={styles.fallbackLine} />
+            <span className={styles.fallbackTitle} />
+            <span className={styles.fallbackLine} />
+            <span className={styles.fallbackDescription} />
+            <span className={styles.fallbackOptions} />
+            <span className={styles.fallbackOptions} />
+            <span className={styles.fallbackButton} />
+          </div>
+        </div>
+      )}>
         <ProductPurchasePanel product={product} />
       </Suspense>
       <section className={styles.related}>

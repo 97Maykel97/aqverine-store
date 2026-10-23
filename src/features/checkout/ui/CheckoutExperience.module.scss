@@ -1,7 +1,7 @@
 .page { max-width: 1680px; min-height: 72vh; margin: 0 auto; padding: 0 var(--page-padding) clamp(5rem, 7vw, 8rem); }
 .topline { display: flex; justify-content: space-between; gap: 1rem; padding: 1.1rem 0; border-bottom: 1px solid var(--color-line); font-size: .68rem; font-weight: 800; letter-spacing: .13em; }
 .intro { display: flex; align-items: end; justify-content: space-between; gap: 2.5rem; padding: clamp(2.5rem, 5vw, 5rem) 0 clamp(2.5rem, 4vw, 4.5rem); }
-.intro > div > span { color: var(--color-accent); font-size: .73rem; font-weight: 900; letter-spacing: .14em; }
+.intro > div > span { color: var(--color-accent-text); font-size: .73rem; font-weight: 900; letter-spacing: .14em; }
 .intro h1 { margin: .95rem 0 0; font-size: clamp(3.4rem, 8vw, 8rem); font-weight: 900; letter-spacing: -.088em; line-height: .84; }
 .intro p { max-width: 330px; margin: 0 0 .4rem; color: var(--color-muted); font-size: clamp(.88rem, 1.2vw, 1.05rem); }
 .columns { display: grid; grid-template-columns: minmax(0, 1.28fr) minmax(310px, .72fr); align-items: start; gap: clamp(2.5rem, 8vw, 9rem); border-top: 1px solid var(--color-ink); padding-top: 2rem; }
@@ -36,7 +36,7 @@
 .itemPhoto img { object-fit: cover; }
 .item > div:last-child { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; gap: .25rem; font-size: .84rem; }
 .item a { font-weight: 800; }
-.item a:hover { color: var(--color-accent); }
+.item a:hover { color: var(--color-accent-text); }
 .item span { color: var(--color-muted); font-size: .77rem; }
 .item strong { margin-top: auto; }
 .total { display: flex; align-items: baseline; justify-content: space-between; padding: 1.4rem 0 .75rem; font-size: 1.15rem; font-weight: 900; }

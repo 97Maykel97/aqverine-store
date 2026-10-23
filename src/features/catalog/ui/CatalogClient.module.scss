@@ -33,7 +33,7 @@
   .mobileFilterContent { position: relative; height: 100%; overflow-y: auto; }
   .mobileFilterContent > :last-child { border: 0; padding: 1.4rem var(--page-padding) 2rem; }
 }
-@media (max-width: 560px) { .toolbarActions label { display: none; } .toolbarActions { gap: .45rem; } .toolbar p { font-size: .75rem; } .toolbarActions select { max-width: 142px; font-size: .72rem; } .grid { gap: 2rem .7rem; } }
+@media (max-width: 560px) { .toolbarActions label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; } .toolbarActions { gap: .45rem; } .toolbar p { font-size: .75rem; } .toolbarActions select { max-width: 142px; font-size: .72rem; } .grid { gap: 2rem .7rem; } }
 @media (max-width: 440px) { .grid { grid-template-columns: 1fr; gap: 2.5rem; } .toolbar { flex-wrap: wrap; padding: .65rem 0; } .toolbarActions { width: 100%; justify-content: space-between; } .toolbarActions select { max-width: none; flex: 1; } }
 @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
 @media (prefers-reduced-motion: reduce) { .mobileFilterDialog[open] { animation: none; } }

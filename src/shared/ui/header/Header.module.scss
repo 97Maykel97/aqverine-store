@@ -35,7 +35,7 @@
 .suggestionText small { color: var(--color-muted); font-size: .78rem; }
 .suggestions a > span:last-child { padding-right: .5rem; }
 .noResults { margin: 1.5rem 0; color: var(--color-muted); font-size: .86rem; }
-.allResults { display: flex; align-items: center; justify-content: space-between; min-height: 44px; margin-top: .7rem; color: var(--color-accent); font-size: .84rem; font-weight: 800; }
+.allResults { display: flex; align-items: center; justify-content: space-between; min-height: 44px; margin-top: .7rem; color: var(--color-accent-text); font-size: .84rem; font-weight: 800; }
 .allResults:hover { text-decoration: underline; text-underline-offset: 4px; }
 .menuPanel { top: 30px; right: 0; left: 0; width: 100%; max-width: none; max-height: calc(100dvh - 30px); overflow-y: auto; }
 .menuContent { max-width: var(--page-width); margin: 0 auto; padding: 1.5rem var(--page-padding) 2rem; }
@@ -44,7 +44,7 @@
 .menuBody { display: grid; grid-template-columns: minmax(280px, 1fr) minmax(340px, .8fr); gap: clamp(2rem, 6vw, 7rem); padding-top: 1.5rem; }
 .menuLinks { display: grid; align-content: start; }
 .menuLinks a { display: flex; align-items: center; justify-content: space-between; min-height: 51px; border-bottom: 1px solid var(--color-line); font-size: clamp(.88rem, 1vw, 1.05rem); font-weight: 700; transition: color 150ms ease, padding 150ms ease; }
-.menuLinks a:hover { padding-left: .5rem; color: var(--color-accent); }
+.menuLinks a:hover { padding-left: .5rem; color: var(--color-accent-text); }
 .menuLinks a span { font-weight: 400; }
 .menuLinks .menuLead { min-height: 65px; font-family: var(--font-display); font-size: clamp(1.5rem, 2.5vw, 2.7rem); font-weight: 900; letter-spacing: -.06em; }
 .menuLinks .menuAbout { margin-top: 1rem; border-bottom: 0; }

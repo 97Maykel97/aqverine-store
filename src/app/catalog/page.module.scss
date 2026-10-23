@@ -12,7 +12,7 @@
   margin-bottom: clamp(1.4rem, 2.2vw, 2.5rem);
 }
 
-.intro span { color: var(--color-accent); font-size: .7rem; font-weight: 900; letter-spacing: .14em; }
+.intro span { color: var(--color-accent-text); font-size: .7rem; font-weight: 900; letter-spacing: .14em; }
 .intro h1 { margin: .8rem 0 0; font-family: var(--font-display); font-size: clamp(3.4rem, 5vw, 5.5rem); font-weight: 900; letter-spacing: -.09em; line-height: .88; }
 .intro p { max-width: 235px; margin: 0 0 .4rem; color: var(--color-muted); font-size: .88rem; line-height: 1.55; }
 
@@ -20,7 +20,7 @@
 .state h1 { max-width: 800px; margin: 1rem 0; font-family: var(--font-display); font-size: clamp(3rem, 7vw, 6rem); font-weight: 900; letter-spacing: -.08em; line-height: .9; }
 .state p { color: var(--color-muted); }
 .state button { min-height: 52px; margin-top: 1.5rem; padding: 0 1.5rem; border: 0; background: var(--color-ink); color: white; font-weight: 700; }
-.stateLabel { color: var(--color-accent); font-size: .7rem; font-weight: 900; letter-spacing: .13em; }
+.stateLabel { color: var(--color-accent-text); font-size: .7rem; font-weight: 900; letter-spacing: .13em; }
 
 @media (max-width: 720px) {
   .intro { display: block; }

@@ -2,7 +2,7 @@
 .header { display: flex; justify-content: space-between; gap: 1rem; padding: 1.1rem 0; border-bottom: 1px solid var(--color-line); font-size: .68rem; font-weight: 800; letter-spacing: .13em; }
 .content { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr); min-height: 700px; }
 .copy { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; min-width: 0; padding: clamp(3rem, 7vw, 7rem) clamp(2rem, 5vw, 6rem) clamp(3rem, 7vw, 7rem) 0; }
-.eyebrow { color: var(--color-accent); font-size: .74rem; font-weight: 900; letter-spacing: .12em; }
+.eyebrow { color: var(--color-accent-text); font-size: .74rem; font-weight: 900; letter-spacing: .12em; }
 .copy h1 { margin: 1.25rem 0 1.5rem; font-size: clamp(3.6rem, 7.3vw, 8rem); font-weight: 900; letter-spacing: -.09em; line-height: .86; }
 .copy h1 em { color: var(--color-cobalt); font-style: normal; }
 .copy > p { max-width: 31rem; margin: 0; color: var(--color-muted); font-size: clamp(.9rem, 1.15vw, 1.08rem); }
