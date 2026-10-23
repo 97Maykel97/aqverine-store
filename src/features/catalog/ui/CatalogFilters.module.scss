@@ -1,0 +1,28 @@
+.panel { background: var(--color-surface); border: 1px solid var(--color-line); padding: 1.25rem 1.35rem 1.5rem; }
+.heading { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding-bottom: 1.2rem; border-bottom: 1px solid var(--color-line); }
+.heading h2 { margin: 0; font-family: var(--font-display); font-size: 1.45rem; font-weight: 900; letter-spacing: -.065em; }
+.heading > div { display: flex; align-items: center; gap: 1rem; }
+.heading button { border: 0; border-bottom: 1px solid currentColor; padding: 0; background: transparent; font-size: .75rem; font-weight: 700; }
+.heading button.close { width: 32px; height: 32px; border: 0; font-size: 1.6rem; font-weight: 400; line-height: 1; }
+.group { min-width: 0; margin: 0; border: 0; border-bottom: 1px solid var(--color-line); padding: 1.2rem 0; }
+.group legend { float: left; width: 100%; margin-bottom: .75rem; padding: 0; font-size: .81rem; font-weight: 800; }
+.categoryList { display: grid; clear: both; }
+.categoryList button { display: flex; align-items: center; justify-content: space-between; min-height: 32px; border: 0; padding: 0; background: transparent; color: var(--color-muted); font-size: .79rem; text-align: left; }
+.categoryList button:hover, .categoryList button.selectedCategory { color: var(--color-ink); font-weight: 800; }
+.categoryList button.selectedCategory span:last-child { color: var(--color-accent); font-size: .85rem; }
+.categoryList button span:last-child { font-size: .9rem; }
+.colors { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem .25rem; clear: both; }
+.colors button { display: flex; align-items: center; gap: .42rem; min-width: 0; min-height: 32px; border: 1px solid transparent; padding: .15rem .25rem; background: transparent; font-size: .74rem; text-align: left; }
+.colors button:hover, .colors button.selectedColor { border-color: var(--color-ink); }
+.swatch { flex: none; width: 18px; height: 18px; border: 1px solid #17171730; border-radius: 50%; }
+.sizes { display: flex; flex-wrap: wrap; gap: .4rem; clear: both; }
+.sizes button { min-width: 40px; min-height: 38px; border: 1px solid var(--color-line); padding: 0 .55rem; background: transparent; font-size: .74rem; font-weight: 700; }
+.sizes button:hover { border-color: var(--color-ink); }
+.sizes button.selectedSize { border-color: var(--color-ink); background: var(--color-ink); color: white; }
+.priceGroup { padding-top: 1.2rem; }
+.priceGroup > div:first-child, .priceEnds { display: flex; justify-content: space-between; align-items: center; }
+.priceGroup label { font-size: .81rem; font-weight: 800; }
+.priceGroup strong { font-size: .86rem; }
+.priceGroup input { width: 100%; margin: 1rem 0 .35rem; accent-color: var(--color-accent); }
+.priceEnds { color: var(--color-muted); font-size: .72rem; }
+.apply { position: sticky; bottom: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 48px; margin-top: 1.4rem; border: 0; padding: 0 1rem; background: var(--color-accent); color: var(--color-ink); font-size: .8rem; font-weight: 800; box-shadow: 0 -8px 0 var(--color-surface); }

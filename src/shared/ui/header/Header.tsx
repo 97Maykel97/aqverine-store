@@ -69,7 +69,7 @@ export function Header() {
             <div className={styles.panelHeading}><strong>Поиск по коллекции</strong><button aria-label="Закрыть поиск" className={styles.closeButton} onClick={closePanel} type="button"><CloseIcon /></button></div>
             <form className={styles.searchForm} onSubmit={submitSearch} role="search">
               <SearchIcon />
-              <input aria-activedescendant={activeSuggestion >= 0 && query.trim() ? `search-suggestion-${activeSuggestion}` : undefined} aria-autocomplete="list" aria-controls="search-suggestions" aria-expanded={Boolean(query.trim())} autoComplete="off" maxLength={80} onChange={(event) => { setQuery(event.target.value); setActiveSuggestion(-1); }} onKeyDown={handleSearchKeys} placeholder="Название вещи или категория" ref={searchRef} role="combobox" type="search" value={query} />
+              <input aria-activedescendant={activeSuggestion >= 0 && query.trim() ? `search-suggestion-${activeSuggestion}` : undefined} aria-autocomplete="list" aria-controls="search-suggestions" aria-expanded={Boolean(query.trim())} aria-label="Поиск товаров" autoComplete="off" maxLength={80} onChange={(event) => { setQuery(event.target.value); setActiveSuggestion(-1); }} onKeyDown={handleSearchKeys} placeholder="Название вещи или категория" ref={searchRef} role="combobox" type="search" value={query} />
               <button aria-label="Показать все результаты" type="submit">↗</button>
             </form>
             <div className={styles.resultHeading}>{query.trim() ? "Найденные вещи" : "Начни с этих вещей"}</div>

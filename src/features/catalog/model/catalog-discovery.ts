@@ -34,8 +34,7 @@ export function searchProducts(products: readonly CatalogProduct[], query: strin
 export function filterCatalogProducts(products: readonly CatalogProduct[], filters: CatalogFilters): CatalogProduct[] {
   const matches = searchProducts(products, filters.query).filter((product) =>
     (filters.category === "All" || product.category === filters.category) &&
-    (!filters.color || product.colors.includes(filters.color)) &&
-    (!filters.size || product.variants.some((variant) => variant.size === filters.size && variant.stock > 0)) &&
+    product.variants.some((variant) => variant.stock > 0 && (!filters.color || variant.color === filters.color) && (!filters.size || variant.size === filters.size)) &&
     product.price <= filters.maxPrice,
   );
 

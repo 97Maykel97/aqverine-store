@@ -36,4 +36,10 @@ describe("catalog discovery", () => {
     expect(filterCatalogProducts(mockProducts, { ...defaultFilters, sort: "price-asc" })[0]?.price).toBe(1900);
     expect(filterCatalogProducts(mockProducts, { ...defaultFilters, sort: "price-desc" })[0]?.price).toBe(9900);
   });
+
+  it("does not match a color and size whose shared variant is out of stock", () => {
+    const shirt = mockProducts[0];
+    const products = [{ ...shirt, variants: shirt.variants.map((variant) => variant.color === "Синий" && variant.size === "M" ? { ...variant, stock: 0 } : variant) }];
+    expect(filterCatalogProducts(products, { ...defaultFilters, color: "Синий", size: "M" })).toEqual([]);
+  });
 });
