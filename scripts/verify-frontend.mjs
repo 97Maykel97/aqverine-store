@@ -40,6 +40,7 @@ async function checkPage(path, width, screenshotName) {
     scrollWidth: document.documentElement.scrollWidth,
     title: document.title,
   }));
+  if (/\b0[1-9]\s*\/\s*(?=\p{L})/u.test(await page.locator("main").innerText())) failures.push(`${path} at ${width}px still shows a decorative index`);
   if (metrics.scrollWidth > metrics.width) failures.push(`${path} at ${width}px overflows by ${metrics.scrollWidth - metrics.width}px`);
   if (errors.length) failures.push(`${path} at ${width}px: ${errors.join("; ")}`);
   if (screenshotDir && screenshotName) await page.screenshot({ path: join(screenshotDir, screenshotName), fullPage: true });

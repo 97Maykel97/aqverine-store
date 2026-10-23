@@ -21,17 +21,17 @@ type AuthMode = "login" | "register" | "reset";
 
 const pages: Record<AuthMode, { eyebrow: string; heading: string; subheading: string }> = {
   login: {
-    eyebrow: "01 / ТВОЁ ПРОСТРАНСТВО",
+    eyebrow: "ТВОЁ ПРОСТРАНСТВО",
     heading: "СНОВА\nВ РИТМЕ.",
     subheading: "Один аккаунт — твои вещи, заказы и новые маршруты.",
   },
   register: {
-    eyebrow: "02 / НОВЫЙ МАРШРУТ",
+    eyebrow: "НОВЫЙ МАРШРУТ",
     heading: "ВХОДИ\nВ РИТМ.",
     subheading: "Создай своё пространство AQVERINE.",
   },
   reset: {
-    eyebrow: "03 / ВОССТАНОВЛЕНИЕ",
+    eyebrow: "ВОССТАНОВЛЕНИЕ",
     heading: "ВЕРНЁМСЯ\nВМЕСТЕ.",
     subheading: "Укажи email, чтобы восстановить доступ после подключения сервиса.",
   },

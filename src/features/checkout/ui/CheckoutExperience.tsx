@@ -31,7 +31,7 @@ export function CheckoutExperience() {
     <section className={styles.page} aria-labelledby="checkout-title">
       <div className={styles.topline}><span>CHECKOUT / AQVERINE</span><span>ТВОЙ ГОРОД. ТВОИ ПРАВИЛА.</span></div>
       <div className={styles.intro}>
-        <div><span>01 / ФИНАЛЬНЫЙ ШТРИХ</span><h1 id="checkout-title">ТВОЙ ВЫБОР.<br />ТВОЙ РИТМ.</h1></div>
+        <div><span>ФИНАЛЬНЫЙ ШТРИХ</span><h1 id="checkout-title">ТВОЙ ВЫБОР.<br />ТВОЙ РИТМ.</h1></div>
         <p>Проверь вещи и контактные данные. Доставка не требуется — здесь только состав заказа и подготовка к оплате.</p>
       </div>
 
@@ -44,7 +44,7 @@ export function CheckoutExperience() {
       ) : (
         <div className={styles.columns}>
           <div className={styles.mainColumn}>
-            <div className={styles.sectionHeading}><span>01</span><h2>Контактные данные</h2></div>
+            <div className={styles.sectionHeading}><h2>Контактные данные</h2></div>
             <p className={styles.supportText}>В реальном заказе сюда придёт информация о платеже. Сейчас это только локальная демонстрация формы.</p>
             <form className={styles.form} noValidate onSubmit={handleSubmit(() => { setValidated(true); reset(); })}>
               <div className={styles.fieldGrid}>
@@ -70,7 +70,7 @@ export function CheckoutExperience() {
                 {errors.comment ? <span role="alert">{errors.comment.message}</span> : null}
               </div>
               <div className={styles.paymentBlock}>
-                <div className={styles.sectionHeading}><span>02</span><h2>Оплата</h2></div>
+                <div className={styles.sectionHeading}><h2>Оплата</h2></div>
                 <p>Visa / Mastercard через защищённую страницу платёжного провайдера — после подключения backend. Реквизиты карты здесь не вводятся и не сохраняются.</p>
                 <span>ОПЛАТА НЕДОСТУПНА В ДЕМО</span>
               </div>

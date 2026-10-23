@@ -8,7 +8,7 @@ export function PaymentResultPreview({ variant }: { variant: "success" | "failur
   return (
     <section className={styles.page} aria-labelledby="payment-result-title">
       <div className={styles.panel}>
-        <div className={styles.top}><span>AQVERINE / PAYMENT</span><span>{isSuccess ? "RETURN / 01" : "RETURN / 02"}</span></div>
+        <div className={styles.top}><span>AQVERINE / PAYMENT</span><span>ДЕМО-РЕЗУЛЬТАТ</span></div>
         <div className={styles.content}>
           <span className={styles.symbol} aria-hidden="true">{isSuccess ? "↗" : "×"}</span>
           <span className={styles.eyebrow}>СТАТУС ПЛАТЕЖА / ДЕМО</span>

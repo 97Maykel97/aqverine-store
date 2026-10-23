@@ -9,7 +9,7 @@ export default function AdminLoginPage() {
   return (
     <section className={styles.page} aria-labelledby="admin-title">
       <div className={styles.frame}>
-        <div className={styles.top}><strong>AQVERINE / CONTROL</strong><span>PRIVATE AREA / 01</span></div>
+        <div className={styles.top}><strong>AQVERINE / CONTROL</strong><span>PRIVATE AREA</span></div>
         <div className={styles.content}>
           <span className={styles.eyebrow}>ДОСТУП ДЛЯ КОМАНДЫ</span>
           <h1 id="admin-title">ЗАКРЫТО.<br /><em>ПО ДЕЛУ.</em></h1>
