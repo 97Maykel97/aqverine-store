@@ -50,7 +50,7 @@ export function CheckoutExperience() {
               <div className={styles.fieldGrid}>
                 <div className={styles.field}>
                   <label htmlFor="checkout-name">Имя *</label>
-                  <input aria-invalid={Boolean(errors.name)} autoComplete="name" id="checkout-name" placeholder="Как к тебе обращаться?" {...register("name")} />
+                  <input aria-invalid={Boolean(errors.name)} autoComplete="name" id="checkout-name" placeholder="Ваше имя" {...register("name")} />
                   {errors.name ? <span role="alert">{errors.name.message}</span> : null}
                 </div>
                 <div className={styles.field}>
@@ -79,7 +79,7 @@ export function CheckoutExperience() {
                 <span>Я понимаю, что это демонстрация: заказ не создаётся и оплата не списывается.</span>
               </label>
               {errors.consent ? <span className={styles.consentError} role="alert">{errors.consent.message}</span> : null}
-              <button className={styles.submit} type="submit">Проверить заполнение <span aria-hidden="true">↗</span></button>
+              <button className={styles.submit} type="submit">Продолжить в демо <span aria-hidden="true">↗</span></button>
               {validated ? <p className={styles.validated} role="status">Данные прошли проверку. Заказ не создан, оплата не началась и контактные данные никуда не отправлены.</p> : null}
             </form>
           </div>
