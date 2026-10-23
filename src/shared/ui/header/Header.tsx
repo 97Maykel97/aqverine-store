@@ -25,10 +25,13 @@ export function Header() {
 
   useEffect(() => {
     const dialog = dialogRef.current;
-    if (!dialog || panel === null) return;
+    if (!dialog) return;
+    if (panel === null) {
+      if (dialog.open) dialog.close();
+      return;
+    }
     if (!dialog.open) dialog.showModal();
     if (panel === "search") searchRef.current?.focus();
-    return () => { if (dialog.open) dialog.close(); };
   }, [panel]);
 
   const closePanel = () => setPanel(null);
@@ -77,7 +80,7 @@ export function Header() {
             {results.length > 0 ? (
               <div className={styles.suggestions} id="search-suggestions" role="listbox">
                 {results.map((product, index) => (
-                  <Link aria-selected={index === activeSuggestion} className={index === activeSuggestion ? styles.activeSuggestion : undefined} href={`/products/${product.slug}`} id={`search-suggestion-${index}`} key={product.id} onClick={closePanel} role="option">
+                  <Link aria-selected={index === activeSuggestion} className={index === activeSuggestion ? styles.activeSuggestion : undefined} href={`/products/${product.slug}`} id={`search-suggestion-${index}`} key={product.id} onNavigate={closePanel} role="option">
                     <span className={styles.suggestionImage}><Image alt="" fill sizes="60px" src={product.image} /></span>
                     <span className={styles.suggestionText}><strong>{product.name}</strong><small>{formatPrice(product.price)}</small></span>
                     <span aria-hidden="true">↗</span>
@@ -85,18 +88,18 @@ export function Header() {
                 ))}
               </div>
             ) : <p className={styles.noResults} role="status">Пока ничего не нашли. Попробуй другой запрос.</p>}
-            <Link className={styles.allResults} href={query.trim() ? searchHref : "/catalog"} onClick={closePanel}>{query.trim() ? "Все результаты поиска" : "Весь каталог"}<span aria-hidden="true">↗</span></Link>
+            <Link className={styles.allResults} href={query.trim() ? searchHref : "/catalog"} onNavigate={closePanel}>{query.trim() ? "Все результаты поиска" : "Весь каталог"}<span aria-hidden="true">↗</span></Link>
           </div>
         ) : panel === "menu" ? (
           <div className={styles.menuContent}>
             <div className={styles.panelHeading}><strong>Меню</strong><button aria-label="Закрыть меню" className={styles.closeButton} onClick={closePanel} type="button"><CloseIcon /></button></div>
             <div className={styles.menuBody}>
               <nav aria-label="Категории товаров" className={styles.menuLinks}>
-                <Link className={styles.menuLead} href="/catalog" onClick={closePanel}>Вся коллекция <span aria-hidden="true">↗</span></Link>
-                {categories.slice(1).map((category) => <Link href={`/catalog?category=${category.value}`} key={category.value} onClick={closePanel}>{category.label}<span aria-hidden="true">↗</span></Link>)}
-                <Link className={styles.menuAbout} href="/#about" onClick={closePanel}>О бренде <span aria-hidden="true">↗</span></Link>
+                <Link className={styles.menuLead} href="/catalog" onNavigate={closePanel}>Вся коллекция <span aria-hidden="true">↗</span></Link>
+                {categories.slice(1).map((category) => <Link href={`/catalog?category=${category.value}`} key={category.value} onNavigate={closePanel}>{category.label}<span aria-hidden="true">↗</span></Link>)}
+                <Link className={styles.menuAbout} href="/#about" onNavigate={closePanel}>О бренде <span aria-hidden="true">↗</span></Link>
               </nav>
-              <Link className={styles.menuCampaign} href="/catalog" onClick={closePanel}><Image alt="Коллекция AQVERINE в городском ритме" fill sizes="(max-width: 700px) 100vw, 38vw" src="/images/campaign-cobalt.png" /><span>ОДЕЖДА ДЛЯ ЖИЗНИ<br />В ДВИЖЕНИИ <b aria-hidden="true">↗</b></span></Link>
+              <Link className={styles.menuCampaign} href="/catalog" onNavigate={closePanel}><Image alt="Коллекция AQVERINE в городском ритме" fill sizes="(max-width: 740px) 100vw, (max-width: 1100px) 45vw, 40vw" src="/images/hero-city-mobile.png" /><span>ОДЕЖДА ДЛЯ ЖИЗНИ<br />В ДВИЖЕНИИ <b aria-hidden="true">↗</b></span></Link>
             </div>
             <span className={styles.menuFootnote}>ТВОЙ ГОРОД. ТВОИ ПРАВИЛА.</span>
           </div>

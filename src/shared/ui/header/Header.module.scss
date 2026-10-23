@@ -48,7 +48,7 @@
 .menuLinks a span { font-weight: 400; }
 .menuLinks .menuLead { min-height: 65px; font-family: var(--font-display); font-size: clamp(1.5rem, 2.5vw, 2.7rem); font-weight: 900; letter-spacing: -.06em; }
 .menuLinks .menuAbout { margin-top: 1rem; border-bottom: 0; }
-.menuCampaign { position: relative; display: flex; align-items: end; min-height: 390px; overflow: hidden; background: var(--color-cobalt); color: white; }
+.menuCampaign { position: relative; display: flex; align-items: end; min-height: 390px; overflow: hidden; background: var(--color-accent); color: white; }
 .menuCampaign img { object-fit: cover; object-position: center top; transition: transform 450ms ease; }
 .menuCampaign:hover img { transform: scale(1.035); }
 .menuCampaign > span { position: relative; display: block; width: 100%; padding: 1.4rem; background: linear-gradient(transparent, #17171796); font-family: var(--font-display); font-size: clamp(1.4rem, 2.3vw, 2.6rem); font-weight: 900; letter-spacing: -.06em; line-height: 1; }

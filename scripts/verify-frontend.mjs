@@ -51,11 +51,27 @@ try {
   for (const width of [320, 390, 768, 1440, 2560]) {
     const { context, page } = await checkPage("/", width, `home-${width}.png`);
     if (width === 320 || width === 1440) {
+      await page.evaluate(() => { window.__aqverineNavigationProbe = "preserved"; });
       await page.getByRole("link", { name: "Личный кабинет — демо" }).click();
       await page.waitForURL("**/account");
+      if (!(await page.evaluate(() => window.__aqverineNavigationProbe === "preserved"))) failures.push(`Account navigation reloaded the document at ${width}px`);
       if (!(await page.getByText("Это открытый предпросмотр кабинета").count())) failures.push(`Account preview was not reached from header at ${width}px`);
       if (await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)) failures.push(`Account preview overflows at ${width}px`);
       if (screenshotDir) await page.screenshot({ path: join(screenshotDir, `account-from-header-${width}.png`), fullPage: false });
+    }
+    if (width === 390 || width === 768 || width === 1440) {
+      await page.getByRole("button", { name: "Открыть меню" }).click();
+      const menu = page.getByRole("dialog", { name: "Меню сайта" });
+      await menu.waitFor({ state: "visible" });
+      const campaignImage = menu.getByRole("img", { name: "Коллекция AQVERINE в городском ритме" });
+      await campaignImage.evaluate((image) => image.decode());
+      await page.waitForTimeout(250);
+      if (screenshotDir) await page.screenshot({ path: join(screenshotDir, `menu-${width}.png`), fullPage: false });
+      await page.evaluate(() => { window.__aqverineNavigationProbe = "preserved"; });
+      await menu.getByRole("link", { name: "Вся коллекция" }).click();
+      await page.waitForURL("**/catalog");
+      if (!(await page.evaluate(() => window.__aqverineNavigationProbe === "preserved"))) failures.push(`Menu navigation reloaded the document at ${width}px`);
+      await menu.waitFor({ state: "hidden" });
     }
     await context.close();
   }
@@ -72,8 +88,10 @@ try {
       await page.getByRole("button", { name: "Поиск товаров" }).click();
       await page.getByRole("combobox", { name: "Поиск товаров" }).fill("худи");
       if (!(await page.getByRole("option", { name: /Худи Everyday/ }).count())) failures.push("Live search did not suggest the hoodie");
+      await page.evaluate(() => { window.__aqverineNavigationProbe = "preserved"; });
       await page.getByRole("option", { name: /Худи Everyday/ }).click();
       await page.waitForURL("**/products/everyday-hoodie");
+      if (!(await page.evaluate(() => window.__aqverineNavigationProbe === "preserved"))) failures.push("Search navigation reloaded the document");
     }
     await context.close();
   }
@@ -108,8 +126,10 @@ try {
   await page.getByRole("group", { name: "Размер товара" }).getByRole("button", { name: "M", exact: true }).click();
   if (screenshotDir) await page.screenshot({ path: join(screenshotDir, "product-selected-390.png"), fullPage: true });
   await page.getByRole("button", { name: "Добавить в корзину" }).click();
+  await page.evaluate(() => { window.__aqverineNavigationProbe = "preserved"; });
   await page.getByRole("link", { name: "Посмотреть оформление" }).click();
   await page.waitForURL("**/checkout");
+  if (!(await page.evaluate(() => window.__aqverineNavigationProbe === "preserved"))) failures.push("Cart to checkout navigation reloaded the document");
   await page.locator('dialog[aria-label="Корзина"]').waitFor({ state: "hidden" });
   await page.getByRole("heading", { name: "Контактные данные" }).waitFor();
   if (!(await page.getByText("Футболка Essential").count())) failures.push("Checkout lost cart item after navigation");
