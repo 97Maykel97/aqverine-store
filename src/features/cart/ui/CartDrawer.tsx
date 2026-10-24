@@ -95,7 +95,7 @@ export function CartDrawer() {
                 <div className={styles.recommendGrid}>
                   {recommendations.map((product) => (
                     <Link href={`/products/${product.slug}`} key={product.id} onClick={closeCart}>
-                      <span className={styles.recommendPhoto}><Image alt={product.imageAlt} fill sizes="(max-width: 520px) 120px, 180px" src={product.image} /></span>
+                      <span className={styles.recommendPhoto}><Image alt={product.imageAlt} fill sizes="(max-width: 540px) 46vw, 240px" src={product.image} /></span>
                       <span>{product.name}<small>{formatPrice(product.price)}</small></span>
                     </Link>
                   ))}

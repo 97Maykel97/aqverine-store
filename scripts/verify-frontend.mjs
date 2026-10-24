@@ -120,13 +120,40 @@ try {
   }
 
   const context = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 1 });
+  await context.addInitScript(() => {
+    window.__aqverineLayoutShiftScore = 0;
+    new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        if (!entry.hadRecentInput) window.__aqverineLayoutShiftScore += entry.value;
+      }
+    }).observe({ type: "layout-shift", buffered: true });
+  });
   const page = await context.newPage();
   await page.goto(new URL("/products/essential-t-shirt", baseUrl).toString(), { waitUntil: "networkidle" });
+  if ((await page.evaluate(() => window.__aqverineLayoutShiftScore)) > 0.1) failures.push("Product loading causes visible layout shift");
   await page.getByRole("group", { name: "Цвет товара" }).getByRole("button", { name: "Синий" }).click();
   if (!(await page.locator("main img[alt*='цвет синий']").count())) failures.push("Selected blue color did not update product image");
   await page.getByRole("group", { name: "Размер товара" }).getByRole("button", { name: "M", exact: true }).click();
+  if (/\b0[1-9]\s*\/\s*(?=\p{L})/u.test(await page.locator("main").innerText())) failures.push("Product photo still shows a decorative index");
+  await page.getByRole("button", { name: /Увеличить фото/ }).click();
+  const zoom = page.getByRole("dialog", { name: /Фото товара/ });
+  await zoom.waitFor({ state: "visible" });
+  if (!(await zoom.getByRole("img", { name: /цвет синий/ }).count())) failures.push("Photo zoom did not keep the selected color");
+  await zoom.getByRole("button", { name: "Закрыть увеличенное фото" }).click();
+  await page.getByRole("button", { name: "Как выбрать размер" }).click();
+  const fitGuide = page.getByRole("dialog", { name: "Как выбрать размер" });
+  await fitGuide.waitFor({ state: "visible" });
+  if (!(await fitGuide.getByText("Точные замеры этой вещи пока не опубликованы").count())) failures.push("Size guidance is missing its accuracy notice");
+  await fitGuide.getByRole("button", { name: "Вернуться к выбору" }).click();
   if (screenshotDir) await page.screenshot({ path: join(screenshotDir, "product-selected-390.png"), fullPage: true });
   await page.getByRole("button", { name: "Добавить в корзину" }).click();
+  const cart = page.getByRole("dialog", { name: "Корзина" });
+  await cart.waitFor({ state: "visible" });
+  await page.waitForTimeout(280);
+  const itemBounds = await cart.locator("article").first().boundingBox();
+  const recommendationBounds = await cart.getByText("ДОПОЛНИ ОБРАЗ").boundingBox();
+  if (itemBounds && recommendationBounds && recommendationBounds.y - itemBounds.y - itemBounds.height > 60) failures.push("Cart has an oversized gap after its first item");
+  if (screenshotDir) await page.screenshot({ path: join(screenshotDir, "cart-filled-390.png") });
   await page.evaluate(() => { window.__aqverineNavigationProbe = "preserved"; });
   await page.getByRole("link", { name: "Посмотреть оформление" }).click();
   await page.waitForURL("**/checkout");
@@ -138,6 +165,21 @@ try {
   await page.getByRole("button", { name: "Продолжить в демо" }).click();
   if (await page.getByRole("alert").count() < 3) failures.push("Checkout validation errors were not shown");
   await context.close();
+
+  for (const width of [320, 1440]) {
+    const cartContext = await browser.newContext({ viewport: { width, height: 844 }, deviceScaleFactor: 1 });
+    const cartPage = await cartContext.newPage();
+    await cartPage.goto(new URL("/products/essential-t-shirt", baseUrl).toString(), { waitUntil: "networkidle" });
+    await cartPage.getByRole("group", { name: "Размер товара" }).getByRole("button", { name: "M", exact: true }).click();
+    await cartPage.getByRole("button", { name: "Добавить в корзину" }).click();
+    const drawer = cartPage.getByRole("dialog", { name: "Корзина" });
+    await drawer.waitFor({ state: "visible" });
+    await cartPage.waitForTimeout(280);
+    if (!(await drawer.getByRole("link", { name: "Посмотреть оформление" }).isVisible())) failures.push(`Cart checkout action is hidden at ${width}px`);
+    if (await drawer.evaluate((element) => element.scrollWidth > element.clientWidth)) failures.push(`Cart overflows horizontally at ${width}px`);
+    if (screenshotDir) await cartPage.screenshot({ path: join(screenshotDir, `cart-filled-${width}.png`) });
+    await cartContext.close();
+  }
 
   for (const path of ["/register", "/forgot-password", "/account", "/aqverine-control/login", "/payment/success", "/payment/failure"]) {
     const { context } = await checkPage(path, 390, `${path.replaceAll("/", "-").slice(1)}-390.png`);

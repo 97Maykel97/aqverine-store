@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { useCart } from "@/features/cart/ui/CartProvider";
 import { formatPrice, getProductImage } from "@/features/catalog/model/mock-products";
@@ -23,6 +23,8 @@ export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
 
 function ProductExperience({ product, initialColor }: ProductPurchasePanelProps & { initialColor: string }) {
   const { addItem, openCart } = useCart();
+  const zoomDialogRef = useRef<HTMLDialogElement>(null);
+  const fitDialogRef = useRef<HTMLDialogElement>(null);
   const [color, setColor] = useState(initialColor);
   const [size, setSize] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
@@ -61,7 +63,7 @@ function ProductExperience({ product, initialColor }: ProductPurchasePanelProps 
             sizes="(max-width: 820px) 100vw, (max-width: 1600px) 48vw, 740px"
             src={image.src}
           />
-          <span className={styles.photoIndex}>AQVERINE / {String(product.colors.indexOf(color) + 1).padStart(2, "0")}</span>
+          <button aria-label={`Увеличить фото: ${product.name}, ${color}`} className={styles.zoomTrigger} onClick={() => zoomDialogRef.current?.showModal()} type="button">Увеличить фото <span aria-hidden="true">↗</span></button>
         </div>
         <div aria-label="Фотографии цветов" className={styles.thumbnails} role="group">
           {product.colors.map((item) => {
@@ -122,6 +124,7 @@ function ProductExperience({ product, initialColor }: ProductPurchasePanelProps 
               );
             })}
           </div>
+          {product.category !== "Accessories" ? <button className={styles.fitHelp} onClick={() => fitDialogRef.current?.showModal()} type="button">Как выбрать размер <span aria-hidden="true">↗</span></button> : null}
         </div>
 
         <div className={styles.purchase}>
@@ -140,6 +143,19 @@ function ProductExperience({ product, initialColor }: ProductPurchasePanelProps 
           <div><span>УХОД</span><strong>Бережная стирка при 30°C</strong></div>
         </div>
       </div>
+      <dialog aria-label={`Фото товара ${product.name}, цвет ${color}`} className={styles.zoomDialog} onClick={(event) => { if (event.target === zoomDialogRef.current) zoomDialogRef.current.close(); }} ref={zoomDialogRef}>
+        <div className={styles.dialogHeader}><strong>{product.name} · {color}</strong><form method="dialog"><button aria-label="Закрыть увеличенное фото" type="submit">×</button></form></div>
+        <div className={styles.zoomedPhoto}><Image alt={image.alt} fill sizes="(max-width: 700px) 90vw, 600px" src={image.src} /></div>
+      </dialog>
+      {product.category !== "Accessories" ? (
+        <dialog aria-label="Как выбрать размер" className={styles.fitDialog} onClick={(event) => { if (event.target === fitDialogRef.current) fitDialogRef.current.close(); }} ref={fitDialogRef}>
+          <div className={styles.dialogHeader}><strong>ПОСАДКА / AQVERINE</strong><form method="dialog"><button aria-label="Закрыть подсказку по размеру" type="submit">×</button></form></div>
+          <h2>Выбирай свой размер</h2>
+          <p>У этой модели свободная посадка. Начни с размера, который обычно носишь; если любишь более собранный силуэт, рассмотри размер меньше.</p>
+          <p>Точные замеры этой вещи пока не опубликованы. Мы не показываем универсальную таблицу как измерения конкретного товара — она может ошибиться.</p>
+          <button className={styles.fitClose} onClick={() => fitDialogRef.current?.close()} type="button">Вернуться к выбору</button>
+        </dialog>
+      ) : null}
     </section>
   );
 }
