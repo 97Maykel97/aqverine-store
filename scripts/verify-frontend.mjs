@@ -182,7 +182,16 @@ try {
   }
 
   for (const path of ["/register", "/forgot-password", "/account", "/aqverine-control/login", "/payment/success", "/payment/failure"]) {
-    const { context } = await checkPage(path, 390, `${path.replaceAll("/", "-").slice(1)}-390.png`);
+    const { context, page } = await checkPage(path, 390, `${path.replaceAll("/", "-").slice(1)}-390.png`);
+    if (path === "/account") {
+      const previewText = await page.locator("main").innerText();
+      if (previewText.includes("Контакты и настройки") || previewText.includes("История и статусы")) {
+        failures.push("Account preview still shows inactive profile and order placeholders");
+      }
+      if (!(await page.getByRole("link", { name: /Посмотреть демо-форму входа/ }).isVisible())) {
+        failures.push("Account preview lost its useful login action");
+      }
+    }
     await context.close();
   }
   for (const path of ["/payment/success", "/payment/failure"]) {
