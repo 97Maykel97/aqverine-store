@@ -21,4 +21,12 @@ describe("product fit profiles", () => {
   it("does not substitute another product's measurements for an unknown product", () => {
     expect(getProductFitProfile("unknown-product")).toBeUndefined();
   });
+
+  it("labels the flat garment measurement clearly", () => {
+    for (const product of mockProducts.filter((entry) => entry.category !== "Trousers" && entry.category !== "Accessories")) {
+      const profile = getProductFitProfile(product.slug);
+      expect(profile?.columns[0]).toBe("Ширина по груди");
+      expect(profile?.measurementTip).toContain("от одной подмышки до другой");
+    }
+  });
 });

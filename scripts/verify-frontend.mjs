@@ -144,6 +144,7 @@ try {
   const fitGuide = page.getByRole("dialog", { name: /Размеры и посадка/ });
   await fitGuide.waitFor({ state: "visible" });
   if (!(await fitGuide.getByText("Ориентировочные замеры, см").count())) failures.push("Size guide is missing its measurement label");
+  if (!(await fitGuide.getByRole("columnheader", { name: "Ширина по груди" }).count())) failures.push("Size guide has an unclear chest-width label");
   if (!(await fitGuide.getByText(/могут отличаться от фактических замеров/).count())) failures.push("Size guide is missing its accuracy notice");
   if (screenshotDir) await page.screenshot({ path: join(screenshotDir, "fit-guide-390.png"), fullPage: false });
   await fitGuide.getByRole("button", { name: "Выбрать размер L" }).click();
