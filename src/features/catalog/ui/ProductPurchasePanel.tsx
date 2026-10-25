@@ -7,8 +7,10 @@ import { useRef, useState } from "react";
 import { useCart } from "@/features/cart/ui/CartProvider";
 import { formatPrice, getProductImage } from "@/features/catalog/model/mock-products";
 import { productColorValues } from "@/features/catalog/model/product-colors";
+import { getProductFitProfile } from "@/features/catalog/model/product-fit";
 import type { CatalogProduct } from "@/shared/types/catalog";
 
+import { ProductFitGuide } from "./ProductFitGuide";
 import styles from "./ProductPurchasePanel.module.scss";
 
 interface ProductPurchasePanelProps {
@@ -30,6 +32,7 @@ function ProductExperience({ product, initialColor }: ProductPurchasePanelProps 
   const [quantity, setQuantity] = useState(1);
   const [message, setMessage] = useState("");
   const image = getProductImage(product, color);
+  const hasFitGuide = Boolean(getProductFitProfile(product.slug));
   const sizes = [...new Set(product.variants.filter((variant) => variant.color === color).map((variant) => variant.size))];
   const selectedVariant = product.variants.find((variant) => variant.color === color && variant.size === size);
 
@@ -124,7 +127,7 @@ function ProductExperience({ product, initialColor }: ProductPurchasePanelProps 
               );
             })}
           </div>
-          {product.category !== "Accessories" ? <button className={styles.fitHelp} onClick={() => fitDialogRef.current?.showModal()} type="button">Как выбрать размер <span aria-hidden="true">↗</span></button> : null}
+          {hasFitGuide ? <button className={styles.fitHelp} onClick={() => fitDialogRef.current?.showModal()} type="button">Размеры и посадка <span aria-hidden="true">↗</span></button> : null}
         </div>
 
         <div className={styles.purchase}>
@@ -147,15 +150,7 @@ function ProductExperience({ product, initialColor }: ProductPurchasePanelProps 
         <div className={styles.dialogHeader}><strong>{product.name} · {color}</strong><form method="dialog"><button aria-label="Закрыть увеличенное фото" type="submit">×</button></form></div>
         <div className={styles.zoomedPhoto}><Image alt={image.alt} fill sizes="(max-width: 700px) 90vw, 600px" src={image.src} /></div>
       </dialog>
-      {product.category !== "Accessories" ? (
-        <dialog aria-label="Как выбрать размер" className={styles.fitDialog} onClick={(event) => { if (event.target === fitDialogRef.current) fitDialogRef.current.close(); }} ref={fitDialogRef}>
-          <div className={styles.dialogHeader}><strong>ПОСАДКА / AQVERINE</strong><form method="dialog"><button aria-label="Закрыть подсказку по размеру" type="submit">×</button></form></div>
-          <h2>Выбирай свой размер</h2>
-          <p>У этой модели свободная посадка. Начни с размера, который обычно носишь; если любишь более собранный силуэт, рассмотри размер меньше.</p>
-          <p>Точные замеры этой вещи пока не опубликованы. Мы не показываем универсальную таблицу как измерения конкретного товара — она может ошибиться.</p>
-          <button className={styles.fitClose} onClick={() => fitDialogRef.current?.close()} type="button">Вернуться к выбору</button>
-        </dialog>
-      ) : null}
+      {hasFitGuide ? <ProductFitGuide color={color} dialogRef={fitDialogRef} onSelectSize={(nextSize) => { setSize(nextSize); setQuantity(1); setMessage(""); }} product={product} selectedSize={size} /> : null}
     </section>
   );
 }

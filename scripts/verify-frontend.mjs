@@ -140,11 +140,15 @@ try {
   await zoom.waitFor({ state: "visible" });
   if (!(await zoom.getByRole("img", { name: /цвет синий/ }).count())) failures.push("Photo zoom did not keep the selected color");
   await zoom.getByRole("button", { name: "Закрыть увеличенное фото" }).click();
-  await page.getByRole("button", { name: "Как выбрать размер" }).click();
-  const fitGuide = page.getByRole("dialog", { name: "Как выбрать размер" });
+  await page.getByRole("button", { name: "Размеры и посадка" }).click();
+  const fitGuide = page.getByRole("dialog", { name: /Размеры и посадка/ });
   await fitGuide.waitFor({ state: "visible" });
-  if (!(await fitGuide.getByText("Точные замеры этой вещи пока не опубликованы").count())) failures.push("Size guidance is missing its accuracy notice");
-  await fitGuide.getByRole("button", { name: "Вернуться к выбору" }).click();
+  if (!(await fitGuide.getByText("Ориентировочные замеры, см").count())) failures.push("Size guide is missing its measurement label");
+  if (!(await fitGuide.getByText(/могут отличаться от фактических замеров/).count())) failures.push("Size guide is missing its accuracy notice");
+  if (screenshotDir) await page.screenshot({ path: join(screenshotDir, "fit-guide-390.png"), fullPage: false });
+  await fitGuide.getByRole("button", { name: "Выбрать размер L" }).click();
+  await fitGuide.waitFor({ state: "hidden" });
+  if (!(await page.getByRole("group", { name: "Размер товара" }).getByRole("button", { name: "L", exact: true }).getAttribute("aria-pressed") === "true")) failures.push("Size guide selection did not update product size");
   if (screenshotDir) await page.screenshot({ path: join(screenshotDir, "product-selected-390.png"), fullPage: true });
   await page.getByRole("button", { name: "Добавить в корзину" }).click();
   const cart = page.getByRole("dialog", { name: "Корзина" });
@@ -170,6 +174,13 @@ try {
     const cartContext = await browser.newContext({ viewport: { width, height: 844 }, deviceScaleFactor: 1 });
     const cartPage = await cartContext.newPage();
     await cartPage.goto(new URL("/products/essential-t-shirt", baseUrl).toString(), { waitUntil: "networkidle" });
+    if (width === 1440) {
+      await cartPage.getByRole("button", { name: "Размеры и посадка" }).click();
+      const desktopFitGuide = cartPage.getByRole("dialog", { name: /Размеры и посадка/ });
+      await desktopFitGuide.waitFor({ state: "visible" });
+      if (screenshotDir) await cartPage.screenshot({ path: join(screenshotDir, "fit-guide-1440.png"), fullPage: false });
+      await desktopFitGuide.getByRole("button", { name: "Закрыть таблицу размеров" }).click();
+    }
     await cartPage.getByRole("group", { name: "Размер товара" }).getByRole("button", { name: "M", exact: true }).click();
     await cartPage.getByRole("button", { name: "Добавить в корзину" }).click();
     const drawer = cartPage.getByRole("dialog", { name: "Корзина" });

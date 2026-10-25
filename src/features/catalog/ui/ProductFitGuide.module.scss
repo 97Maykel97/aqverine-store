@@ -1,0 +1,27 @@
+.dialog { width: min(calc(100vw - 1.5rem), 740px); max-width: none; max-height: calc(100dvh - 1.5rem); overflow-y: auto; border: 0; padding: clamp(1.2rem, 4vw, 2.5rem); background: var(--color-surface); color: var(--color-ink); box-shadow: 0 16px 60px #0004; }
+.dialog::backdrop { background: #171717b8; }
+.header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; font-size: .72rem; font-weight: 900; letter-spacing: .12em; }
+.close { display: grid; place-items: center; width: 42px; height: 42px; border: 1px solid var(--color-line); background: var(--color-surface); color: var(--color-ink); font-size: 1.5rem; line-height: 1; cursor: pointer; }
+.dialog h2 { margin: 1.8rem 0 .25rem; font-family: var(--font-display); font-size: clamp(2.3rem, 6vw, 3.7rem); font-weight: 900; letter-spacing: -.07em; line-height: .94; text-transform: uppercase; }
+.productName { margin: 0 0 1.4rem; color: var(--color-accent-text); font-size: .82rem; font-weight: 800; }
+.fit { max-width: 570px; margin: 0 0 2rem; color: var(--color-muted); font-size: .96rem; line-height: 1.55; }
+.tableHeading { display: flex; align-items: end; justify-content: space-between; flex-wrap: wrap; gap: .3rem 1rem; margin-bottom: .9rem; }
+.tableHeading strong { font-size: .9rem; }
+.tableHeading span { color: var(--color-muted); font-size: .73rem; }
+.mobileHint { display: none; }
+.tableScroll { max-width: 100%; overflow-x: auto; scrollbar-width: thin; }
+.tableScroll:focus-visible { outline: 2px solid var(--color-accent-text); outline-offset: 3px; }
+.tableScroll table { width: 100%; min-width: 540px; border-collapse: collapse; text-align: left; font-size: .85rem; }
+.tableScroll th, .tableScroll td { padding: .85rem .7rem; border-bottom: 1px solid var(--color-line); white-space: nowrap; }
+.tableScroll thead th { border-top: 1px solid var(--color-line); color: var(--color-muted); font-size: .7rem; font-weight: 800; letter-spacing: .04em; }
+.tableScroll tbody th { padding: .35rem .7rem; }
+.tableScroll tbody button { min-width: 62px; min-height: 39px; border: 1px solid var(--color-line); background: transparent; color: var(--color-ink); font-size: .8rem; font-weight: 900; cursor: pointer; }
+.tableScroll tbody button:hover, .tableScroll tbody button:focus-visible { border-color: var(--color-ink); }
+.tableScroll tbody button:disabled { opacity: .4; cursor: not-allowed; }
+.selected { background: #f3eee8; }
+.tableScroll tbody .selected button { border-color: var(--color-ink); background: var(--color-ink); color: white; }
+.measurementTip, .disclaimer { margin: .9rem 0 0; color: var(--color-muted); font-size: .78rem; line-height: 1.55; }
+.disclaimer { margin-top: .3rem; }
+.back { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 50px; margin-top: 1.5rem; border: 0; padding: 0 1rem; background: var(--color-ink); color: white; font-size: .84rem; font-weight: 800; cursor: pointer; }
+.back:hover { background: var(--color-accent); color: var(--color-ink); }
+@media (max-width: 520px) { .dialog { padding: 1.25rem; } .mobileHint { display: block; margin: -.35rem 0 .55rem; color: var(--color-accent-text); font-size: .72rem; font-weight: 800; } .tableScroll table { min-width: 460px; } .tableScroll th, .tableScroll td { padding-inline: .45rem; } }
