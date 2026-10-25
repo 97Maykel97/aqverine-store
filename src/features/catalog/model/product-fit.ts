@@ -6,6 +6,7 @@ export interface ProductFitProfile {
 }
 
 const apparelSizes = ["S", "M", "L", "XL"] as const;
+const topMeasurementTip = "Ширина по груди — от подмышки до подмышки; длина — от верхней точки плеча до низа; рукав — от плечевого шва.";
 
 const rows = (sizes: readonly string[], values: readonly (readonly number[])[]): ProductFitProfile["measurements"] =>
   sizes.map((size, index) => ({ size, values: values[index] }));
@@ -13,19 +14,19 @@ const rows = (sizes: readonly string[], values: readonly (readonly number[])[]):
 export const productFitProfiles: Readonly<Record<string, ProductFitProfile>> = {
   "essential-t-shirt": {
     fit: "Свободная прямая посадка. Для более собранного силуэта сравни замеры с любимой футболкой.",
-    measurementTip: "Ширина по груди измеряется у разложенного изделия от одной подмышки до другой. Это не обхват тела.",
+    measurementTip: topMeasurementTip,
     columns: ["Ширина по груди", "Длина", "Рукав"],
     measurements: rows(apparelSizes, [[52, 68, 22], [54, 70, 23], [56, 72, 24], [58, 74, 25]]),
   },
   "everyday-hoodie": {
     fit: "Свободная посадка с запасом для дополнительного слоя под худи.",
-    measurementTip: "Ширина по груди измеряется у разложенного изделия от одной подмышки до другой; рукав — от плечевого шва.",
+    measurementTip: topMeasurementTip,
     columns: ["Ширина по груди", "Длина", "Рукав"],
     measurements: rows(apparelSizes, [[56, 68, 60], [58, 70, 61], [60, 72, 62], [62, 74, 63]]),
   },
   "oversize-shirt": {
     fit: "Выраженный oversize: свободно в плечах и по корпусу. Не обязательно брать размер больше обычного.",
-    measurementTip: "Ширина по груди измеряется у разложенного изделия от одной подмышки до другой; рукав — от плечевого шва.",
+    measurementTip: topMeasurementTip,
     columns: ["Ширина по груди", "Длина", "Рукав"],
     measurements: rows(["S", "M", "L"], [[58, 72, 56], [60, 74, 57], [62, 76, 58]]),
   },
@@ -37,7 +38,7 @@ export const productFitProfiles: Readonly<Record<string, ProductFitProfile>> = {
   },
   "core-denim-jacket": {
     fit: "Прямой свободный крой: под курткой остаётся место для футболки или тонкого слоя.",
-    measurementTip: "Ширина по груди измеряется у разложенного изделия от одной подмышки до другой; рукав — от плечевого шва.",
+    measurementTip: topMeasurementTip,
     columns: ["Ширина по груди", "Длина", "Рукав"],
     measurements: rows(apparelSizes, [[54, 63, 60], [56, 65, 61], [58, 67, 62], [60, 69, 63]]),
   },

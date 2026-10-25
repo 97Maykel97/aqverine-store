@@ -24,4 +24,4 @@
 .disclaimer { margin-top: .3rem; }
 .back { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 50px; margin-top: 1.5rem; border: 0; padding: 0 1rem; background: var(--color-ink); color: white; font-size: .84rem; font-weight: 800; cursor: pointer; }
 .back:hover { background: var(--color-accent); color: var(--color-ink); }
-@media (max-width: 520px) { .dialog { padding: 1.25rem; } .mobileHint { display: block; margin: -.35rem 0 .55rem; color: var(--color-accent-text); font-size: .72rem; font-weight: 800; } .tableScroll table { min-width: 460px; } .tableScroll th, .tableScroll td { padding-inline: .45rem; } }
+@media (max-width: 520px) { .dialog { padding: 1.25rem; } .dialog h2 { margin-top: 1.25rem; } .fit { margin-bottom: 1.4rem; } .mobileHint { display: block; margin: -.35rem 0 .55rem; color: var(--color-accent-text); font-size: .72rem; font-weight: 800; } .tableScroll table { min-width: 460px; } .tableScroll th, .tableScroll td { padding-inline: .45rem; } .back { margin-top: 1rem; } }

@@ -145,7 +145,10 @@ try {
   await fitGuide.waitFor({ state: "visible" });
   if (!(await fitGuide.getByText("Ориентировочные замеры, см").count())) failures.push("Size guide is missing its measurement label");
   if (!(await fitGuide.getByRole("columnheader", { name: "Ширина по груди" }).count())) failures.push("Size guide has an unclear chest-width label");
+  if (!(await fitGuide.getByText(/длина — от верхней точки плеча до низа/).count())) failures.push("Size guide does not explain the garment length measurement");
   if (!(await fitGuide.getByText(/могут отличаться от фактических замеров/).count())) failures.push("Size guide is missing its accuracy notice");
+  const fitBackBounds = await fitGuide.getByRole("button", { name: "Вернуться к товару" }).boundingBox();
+  if (fitBackBounds && fitBackBounds.y + fitBackBounds.height > page.viewportSize().height - 8) failures.push("Size guide return action is clipped on mobile");
   if (screenshotDir) await page.screenshot({ path: join(screenshotDir, "fit-guide-390.png"), fullPage: false });
   await fitGuide.getByRole("button", { name: "Выбрать размер L" }).click();
   await fitGuide.waitFor({ state: "hidden" });

@@ -22,11 +22,13 @@ describe("product fit profiles", () => {
     expect(getProductFitProfile("unknown-product")).toBeUndefined();
   });
 
-  it("labels the flat garment measurement clearly", () => {
+  it("explains how width, length and sleeve are measured", () => {
     for (const product of mockProducts.filter((entry) => entry.category !== "Trousers" && entry.category !== "Accessories")) {
       const profile = getProductFitProfile(product.slug);
       expect(profile?.columns[0]).toBe("Ширина по груди");
-      expect(profile?.measurementTip).toContain("от одной подмышки до другой");
+      expect(profile?.measurementTip).toContain("от подмышки до подмышки");
+      expect(profile?.measurementTip).toContain("длина — от верхней точки плеча до низа");
+      expect(profile?.measurementTip).toContain("рукав — от плечевого шва");
     }
   });
 });
