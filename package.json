@@ -8,7 +8,11 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
     "test:run": "vitest run --passWithNoTests",
+    "test:unit": "vitest run --exclude=tests/integration/** --exclude=tests/component/**",
+    "test:integration": "vitest run tests/integration",
+    "test:component": "vitest run tests/component",
     "test:browser": "node scripts/verify-frontend.mjs"
   },
   "dependencies": {
@@ -25,11 +29,13 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@testing-library/react": "^16.3.3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.4.2",
+    "jsdom": "^29.1.1",
     "playwright-core": "^1.64.1",
     "prisma": "^7.10.1",
     "typescript": "^5",
