@@ -1,5 +1,13 @@
 # Журнал прогресса AQVERINE
 
+## 2026-10-27 — Критические unit-, integration- и component-тесты
+
+- Добавлены unit-тест изоляции строк корзины, integration-тест восстановления гостевой корзины и суммы checkout, component-тест управления фильтрами каталога.
+- Архитектурные решения: Vitest остаётся единым тестовым раннером; `jsdom` подключается только для тестов с DOM. Существующие тесты не редактировались, а backend-сценарии, которых ещё нет в коде, не имитировались.
+- Добавлены команды `npm test`, `npm run test:unit`, `npm run test:integration` и `npm run test:component`. Обновлены `package.json`, `package-lock.json`, `docs/technologies.md` и `docs/progress.md`; созданы `tests/cart-quantity.unit.test.ts`, `tests/integration/cart-checkout.integration.test.tsx` и `tests/component/catalog-filters.component.test.tsx`.
+- Новые переменные окружения: отсутствуют. Изменения БД: отсутствуют.
+- Проверено: lint, typecheck, 22 Vitest-теста, отдельные команды unit/integration/component и production build. Браузерный сценарий не запускался, поскольку внешний вид и пользовательское поведение приложения не менялись.
+
 ## 2026-10-26 — Пояснение длины изделия в таблице размеров
 
 - В подсказке для футболки, худи, рубашки и куртки добавлено определение длины изделия — от верхней точки плеча до низа. Уточнены также точки измерения ширины и рукава.
