@@ -43,9 +43,9 @@ prisma/                      # schema, migrations, seed
 
 ## Маршруты
 
-Публичные: `/`, `/catalog`, `/products/[slug]`, `/checkout`, `/payment/success`, `/payment/failure`, `/login`, `/register`, `/forgot-password`. Авторизованный покупатель: `/account`. Администратор: `/aqverine-control` и `/aqverine-control/login`. Публичные API располагаются в `/api/*`; webhook — `/api/payments/webhook`.
+Публичные: `/`, `/catalog`, `/products/[slug]`, `/checkout`, `/payment/success`, `/payment/failure`, `/login`, `/register`, `/forgot-password`. Авторизованный покупатель: `/account` и `/account/update-password`. Администратор: `/aqverine-control` и `/aqverine-control/login`. Серверные auth endpoints — `/api/auth/*`, email callback — `/auth/callback`; будущий платёжный webhook — `/api/payments/webhook`.
 
-На текущем frontend-этапе формы входа и checkout демонстрируют только локальную валидацию: они не отправляют персональные данные, не создают аккаунт или заказ и не подтверждают платёж. `/account` не показывает персональные данные, а `/aqverine-control` безусловно перенаправляет на закрытый экран. Перед включением настоящих действий эти маршруты должны получить серверную проверку сессии и роли, API и PaymentProvider flow.
+Формы входа, регистрации и восстановления отправляют данные только в серверные auth endpoints; без настроенных Supabase и PostgreSQL они возвращают 503 без создания аккаунта. При настроенном окружении `/account` показывает данные только после проверки Supabase-сессии, а `/aqverine-control` проверяет роль `admin` из локальной БД. Checkout по-прежнему демонстрирует локальную валидацию: заказ и платёж не создаются. Профиль, история заказов и административный CRUD ожидают доменный API.
 
 ## Данные и состояния
 
@@ -57,7 +57,7 @@ prisma/                      # schema, migrations, seed
 
 ## Авторизация и безопасность
 
-Supabase Auth управляет сессией в защищённых HTTP-only cookies. Сервер проверяет сессию и роль `admin` в каждом admin layout, server action и Route Handler; URL `/aqverine-control` не является защитой. Любой внешний input проходит Zod. Service-role key, payment keys и webhook secret доступны только на сервере.
+Supabase Auth управляет сессией в защищённых HTTP-only cookies с `SameSite=Lax` и `Secure` в production. Next.js proxy обновляет сессию перед закрытыми страницами; сервер сверяет пользователя через Supabase Auth и читает роль из PostgreSQL, не из пользовательских metadata. `/aqverine-control` проверяет роль `admin` при каждом запросе; будущие admin API обязаны повторить эту проверку. URL панели не является защитой. Auth-запросы проходят Zod, проверку Origin, ограничение частоты попыток и безопасную обработку ошибок. Текущий limiter работает в памяти одного Node.js-процесса; перед масштабированием на несколько инстансов нужен общий store. Service-role key, payment keys и webhook secret доступны только на сервере.
 
 ## Оплата
 
