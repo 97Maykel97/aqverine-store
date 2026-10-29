@@ -2,17 +2,17 @@
 
 При любом изменении кода прочитайте `architecture.md` и `quality.md`. До начала работы прочитайте дополнительные правила из таблицы, если они относятся к задаче.
 
-| Задача | Обязательные правила |
-| --- | --- |
-| Любое изменение кода | `architecture.md`, `quality.md` |
-| App Router, маршруты, layouts, metadata, providers, Route Handlers | `nextjs.md`, `architecture.md` |
-| React-компоненты, hooks, Context, события, локальное UI-состояние | `react.md`, `frontend.md` |
-| TypeScript, типы, схемы, API-контракты | `typescript.md`, `quality.md` |
-| UI, SCSS Modules, доступность, формы, loading/error/empty states | `frontend.md` |
-| База данных, Prisma, миграции, товары, остатки, корзина, заказы | `data.md` |
-| Авторизация, роли, Supabase, secrets, Storage, внешние API | `security-and-api.md` |
-| PaymentProvider, Visa/Mastercard, checkout, payment webhooks | `payment.md`, `security-and-api.md` |
-| Тесты, зависимости, документация, коммиты, релизы | `workflow.md`, `quality.md` |
+| Задача                                                             | Обязательные правила                |
+| ------------------------------------------------------------------ | ----------------------------------- |
+| Любое изменение кода                                               | `architecture.md`, `quality.md`     |
+| App Router, маршруты, layouts, metadata, providers, Route Handlers | `nextjs.md`, `architecture.md`      |
+| React-компоненты, hooks, Context, события, локальное UI-состояние  | `react.md`, `frontend.md`           |
+| TypeScript, типы, схемы, API-контракты                             | `typescript.md`, `quality.md`       |
+| UI, SCSS Modules, доступность, формы, loading/error/empty states   | `frontend.md`                       |
+| База данных, Prisma, миграции, товары, остатки, корзина, заказы    | `data.md`                           |
+| Авторизация, роли, Supabase, secrets, Storage, внешние API         | `security-and-api.md`               |
+| PaymentProvider, Visa/Mastercard, checkout, payment webhooks       | `payment.md`, `security-and-api.md` |
+| Тесты, зависимости, документация, коммиты, релизы                  | `workflow.md`, `quality.md`         |
 
 ## Обязательное чтение документации
 
@@ -50,3 +50,8 @@
 - For sequential work, end with: “Фича реализована. Проверяем работу, или я могу выполнить слияние (merge) с главной веткой?”
 - For isolated parallel work, end with: “Изолированная работа завершена. Могу ли я слить ветку в main и удалить временный worktree?”
 - Never run `git merge`, delete a worktree, or create a pull request without explicit user authorization: “Да, сливай”.
+
+# Тестирование
+
+При создании нового функционала создавай только самые важные unit, integration и component тесты.
+При редактировании уже существующего функционала, тесты редактировать нельзя.
