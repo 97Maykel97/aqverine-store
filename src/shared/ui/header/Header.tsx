@@ -62,7 +62,7 @@ export function Header() {
         <nav className={styles.navigation} aria-label="Основная навигация"><Link href="/catalog">Каталог</Link><Link href="/#about">О бренде</Link></nav>
         <div className={styles.actions}>
           <button aria-label="Поиск товаров" className={styles.iconButton} onClick={() => { setActiveSuggestion(-1); setPanel("search"); }} type="button"><SearchIcon /></button>
-          <Link aria-label="Личный кабинет — демо" className={styles.iconButton} href="/account" title="Личный кабинет"><AccountIcon /></Link>
+          <Link aria-label="Личный кабинет" className={styles.iconButton} href="/account" title="Личный кабинет"><AccountIcon /></Link>
           <button aria-label={`Открыть корзину, товаров: ${count}`} className={`${styles.iconButton} ${styles.cart}`} onClick={() => { closePanel(); openCart(); }} type="button"><BagIcon /><span>{count}</span></button>
           <button aria-label="Открыть меню" className={styles.iconButton} onClick={() => setPanel("menu")} type="button"><MenuIcon /></button>
         </div>

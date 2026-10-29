@@ -3,8 +3,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 import {
   loginSchema,
@@ -33,9 +35,26 @@ const pages: Record<AuthMode, { eyebrow: string; heading: string; subheading: st
   reset: {
     eyebrow: "ВОССТАНОВЛЕНИЕ",
     heading: "ВЕРНЁМСЯ\nВМЕСТЕ.",
-    subheading: "Укажи email, чтобы восстановить доступ после подключения сервиса.",
+    subheading: "Укажи email, и мы отправим ссылку для восстановления доступа.",
   },
 };
+
+const responseSchema = z.object({ message: z.string().optional(), role: z.enum(["user", "admin"]).optional() });
+
+async function submitAuth(path: string, payload: object) {
+  const response = await fetch(path, {
+    method: "POST",
+    credentials: "same-origin",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  const parsed = responseSchema.safeParse(await response.json());
+  return {
+    ok: response.ok,
+    message: parsed.success ? parsed.data.message : undefined,
+    role: parsed.success ? parsed.data.role : undefined,
+  };
+}
 
 export function AuthExperience({ mode }: { mode: AuthMode }) {
   const content = pages[mode];
@@ -66,7 +85,6 @@ export function AuthExperience({ mode }: { mode: AuthMode }) {
               <h2>{mode === "login" ? "Войти в аккаунт" : mode === "register" ? "Создать аккаунт" : "Восстановить доступ"}</h2>
               {mode === "login" ? <Link href="/register">Нет аккаунта? Создать ↗</Link> : null}
             </div>
-            <p className={styles.demoNotice}><strong>ДЕМО-РЕЖИМ</strong> Можно посмотреть работу формы на вымышленных данных. Вход, регистрация и отправка письма пока не работают; данные никуда не передаются.</p>
             {mode === "login" ? <LoginForm /> : mode === "register" ? <RegistrationForm /> : <ResetForm />}
             <div className={styles.formFooter}>
               {mode === "register" ? <p>Уже есть аккаунт? <Link href="/login">Войти ↗</Link></p> : null}
@@ -81,33 +99,68 @@ export function AuthExperience({ mode }: { mode: AuthMode }) {
 }
 
 function LoginForm() {
-  const [submitted, setSubmitted] = useState(false);
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm<LoginFields>({
+  const router = useRouter();
+  const [feedback, setFeedback] = useState("");
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginFields>({
     resolver: zodResolver(loginSchema), mode: "onBlur",
   });
 
+  const onSubmit = async (values: LoginFields) => {
+    setFeedback("");
+    try {
+      const result = await submitAuth("/api/auth/login", values);
+      if (!result.ok) {
+        setFeedback(result.message ?? "Вход не удался. Попробуйте позже.");
+        return;
+      }
+      const adminDestination = new URLSearchParams(window.location.search).get("next") === "/aqverine-control";
+      if (adminDestination && result.role !== "admin") {
+        setFeedback("Для панели управления нужны права администратора.");
+        return;
+      }
+      router.replace(adminDestination ? "/aqverine-control" : "/account");
+      router.refresh();
+    } catch {
+      setFeedback("Не удалось связаться с сервером. Попробуйте позже.");
+    }
+  };
+
   return (
-    <form className={styles.form} noValidate onSubmit={handleSubmit(() => { setSubmitted(true); setValue("password", ""); })}>
+    <form className={styles.form} noValidate onSubmit={handleSubmit(onSubmit)}>
       <label htmlFor="login-email">Электронная почта</label>
       <input aria-invalid={Boolean(errors.email)} autoComplete="email" id="login-email" placeholder="you@example.com" type="email" {...register("email")} />
       {errors.email ? <span className={styles.error} role="alert">{errors.email.message}</span> : null}
       <div className={styles.labelRow}><label htmlFor="login-password">Пароль</label><Link href="/forgot-password">Забыли пароль?</Link></div>
       <input aria-invalid={Boolean(errors.password)} autoComplete="current-password" id="login-password" placeholder="Не менее 8 символов" type="password" {...register("password")} />
       {errors.password ? <span className={styles.error} role="alert">{errors.password.message}</span> : null}
-      <button className={styles.submit} type="submit">Продолжить в демо <span aria-hidden="true">↗</span></button>
-      {submitted ? <p className={styles.confirmation} role="status">Форма заполнена верно. Вход не выполнен: серверная авторизация ещё не подключена.</p> : null}
+      <button className={styles.submit} disabled={isSubmitting} type="submit">{isSubmitting ? "Входим…" : "Войти"} <span aria-hidden="true">↗</span></button>
+      {feedback ? <p className={styles.errorNotice} role="alert">{feedback}</p> : null}
     </form>
   );
 }
 
 function RegistrationForm() {
-  const [submitted, setSubmitted] = useState(false);
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<RegistrationFields>({
+  const [feedback, setFeedback] = useState("");
+  const [succeeded, setSucceeded] = useState(false);
+  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<RegistrationFields>({
     resolver: zodResolver(registrationSchema), mode: "onBlur",
   });
 
+  const onSubmit = async (values: RegistrationFields) => {
+    setFeedback("");
+    try {
+      const result = await submitAuth("/api/auth/register", values);
+      setSucceeded(result.ok);
+      setFeedback(result.message ?? (result.ok ? "Проверьте почту." : "Регистрация пока недоступна."));
+      if (result.ok) reset();
+    } catch {
+      setSucceeded(false);
+      setFeedback("Не удалось связаться с сервером. Попробуйте позже.");
+    }
+  };
+
   return (
-    <form className={styles.form} noValidate onSubmit={handleSubmit(() => { setSubmitted(true); reset(); })}>
+    <form className={styles.form} noValidate onSubmit={handleSubmit(onSubmit)}>
       <label htmlFor="register-name">Имя</label>
       <input aria-invalid={Boolean(errors.name)} autoComplete="name" id="register-name" placeholder="Ваше имя" {...register("name")} />
       {errors.name ? <span className={styles.error} role="alert">{errors.name.message}</span> : null}
@@ -120,25 +173,39 @@ function RegistrationForm() {
       <label htmlFor="register-confirmation">Повтори пароль</label>
       <input aria-invalid={Boolean(errors.confirmation)} autoComplete="new-password" id="register-confirmation" placeholder="Повтори пароль" type="password" {...register("confirmation")} />
       {errors.confirmation ? <span className={styles.error} role="alert">{errors.confirmation.message}</span> : null}
-      <button className={styles.submit} type="submit">Продолжить в демо <span aria-hidden="true">↗</span></button>
-      {submitted ? <p className={styles.confirmation} role="status">Поля прошли проверку. Аккаунт не создан: Supabase Auth ещё не подключён.</p> : null}
+      <button className={styles.submit} disabled={isSubmitting} type="submit">{isSubmitting ? "Отправляем…" : "Создать аккаунт"} <span aria-hidden="true">↗</span></button>
+      {feedback ? <p className={succeeded ? styles.confirmation : styles.errorNotice} role={succeeded ? "status" : "alert"}>{feedback}</p> : null}
     </form>
   );
 }
 
 function ResetForm() {
-  const [submitted, setSubmitted] = useState(false);
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<PasswordResetFields>({
+  const [feedback, setFeedback] = useState("");
+  const [succeeded, setSucceeded] = useState(false);
+  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<PasswordResetFields>({
     resolver: zodResolver(passwordResetSchema), mode: "onBlur",
   });
 
+  const onSubmit = async (values: PasswordResetFields) => {
+    setFeedback("");
+    try {
+      const result = await submitAuth("/api/auth/password-reset", values);
+      setSucceeded(result.ok);
+      setFeedback(result.message ?? (result.ok ? "Проверьте почту." : "Восстановление пока недоступно."));
+      if (result.ok) reset();
+    } catch {
+      setSucceeded(false);
+      setFeedback("Не удалось связаться с сервером. Попробуйте позже.");
+    }
+  };
+
   return (
-    <form className={styles.form} noValidate onSubmit={handleSubmit(() => { setSubmitted(true); reset(); })}>
+    <form className={styles.form} noValidate onSubmit={handleSubmit(onSubmit)}>
       <label htmlFor="reset-email">Электронная почта</label>
       <input aria-invalid={Boolean(errors.email)} autoComplete="email" id="reset-email" placeholder="you@example.com" type="email" {...register("email")} />
       {errors.email ? <span className={styles.error} role="alert">{errors.email.message}</span> : null}
-      <button className={styles.submit} type="submit">Продолжить в демо <span aria-hidden="true">↗</span></button>
-      {submitted ? <p className={styles.confirmation} role="status">Формат email проверен. Письмо не отправлено: восстановление доступа ещё не подключено.</p> : null}
+      <button className={styles.submit} disabled={isSubmitting} type="submit">{isSubmitting ? "Отправляем…" : "Получить ссылку"} <span aria-hidden="true">↗</span></button>
+      {feedback ? <p className={succeeded ? styles.confirmation : styles.errorNotice} role={succeeded ? "status" : "alert"}>{feedback}</p> : null}
     </form>
   );
 }

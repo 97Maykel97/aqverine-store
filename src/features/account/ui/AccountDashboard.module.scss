@@ -1,0 +1,15 @@
+.page { max-width: 1800px; min-height: 68svh; margin: 0 auto; padding: 0 var(--page-padding) 5rem; }
+.topline { display: flex; justify-content: space-between; gap: 1rem; padding: 1.2rem 0; border-bottom: 1px solid var(--color-line); font-size: .7rem; font-weight: 800; letter-spacing: .12em; }
+.content { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(300px, .9fr); gap: clamp(2rem, 6vw, 8rem); padding: clamp(4rem, 8vw, 8rem) 0; }
+.eyebrow, .details > span { color: var(--color-accent-text); font-size: .72rem; font-weight: 900; letter-spacing: .13em; }
+.intro h1 { margin: 1.2rem 0 1.5rem; font-size: clamp(4rem, 8vw, 9rem); font-weight: 900; letter-spacing: -.09em; line-height: .86; }
+.intro h1 em { color: var(--color-cobalt); font-style: normal; }
+.intro p, .details p { max-width: 35rem; color: var(--color-muted); }
+.details { align-self: center; display: grid; gap: 1rem; padding: clamp(1.5rem, 3vw, 3rem); border: 1px solid var(--color-line); background: #fff; }
+.details strong { overflow-wrap: anywhere; font-size: clamp(1.25rem, 2vw, 2rem); }
+.details p { margin: 0; }
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; margin-top: 1rem; }
+.actions a:first-child { display: flex; justify-content: space-between; gap: 2rem; padding: 1rem 1.25rem; background: var(--color-ink); color: #fff; font-size: .8rem; font-weight: 900; }
+.actions a:not(:first-child), .actions button { border: 0; border-bottom: 1px solid currentColor; padding: 0; background: transparent; color: var(--color-ink); font: inherit; font-size: .8rem; font-weight: 800; cursor: pointer; }
+@media (max-width: 780px) { .content { grid-template-columns: 1fr; gap: 2rem; padding: 3rem 0; } .intro h1 { font-size: clamp(3.7rem, 13vw, 6rem); } }
+@media (max-width: 430px) { .topline span:last-child { display: none; } .details { padding: 1.25rem; } }
