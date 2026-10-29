@@ -1,5 +1,14 @@
 # Журнал прогресса AQVERINE
 
+## 2026-10-29 — Основа PostgreSQL и Prisma
+
+- Подготовлены типизированная Prisma schema, начальная SQL-миграция и повторно запускаемое заполнение каталога товарами, вариантами и изображениями. Созданы команды проверки схемы, генерации клиента, применения миграций и seed.
+- Архитектурные решения: PostgreSQL хранит цены в целых minor units, остатки по вариантам и snapshots позиций заказа; роль администратора живёт в серверной таблице; браузерным ролям Supabase не предоставлен прямой доступ к таблицам. Текущий frontend продолжает использовать локальный каталог до появления серверного API.
+- Изменены `prisma/schema.prisma`, `prisma.config.ts`, `prisma/migrations/20261029_init/migration.sql`, `prisma/migrations/migration_lock.toml`, `prisma/seed.ts`, `package.json`, `package-lock.json`, `.gitignore`, `eslint.config.mjs`, `docs/architecture.md`, `docs/db-schema.md`, `docs/implementation-plan.md`, `docs/technologies.md`, `README.md` и этот журнал.
+- Новые переменные окружения: нет; существующий `DATABASE_URL` необходим для применения миграции и заполнения БД. Секреты и локальный `.env.local` не добавлены в Git.
+- Изменения БД: описаны 11 таблиц, enum-статусы, индексы, внешние ключи, CHECK-ограничения и RLS без клиентских политик. Миграция и seed пока не применены: в окружении нет подключения к PostgreSQL.
+- Проверено: `db:validate`, генерация Prisma Client, lint, typecheck, 22 существующих теста и production build. Проверка применения миграции и seed к живой БД остаётся до появления `DATABASE_URL`.
+
 ## 2026-10-28 — Автоматические проверки и приоритетные E2E-сценарии
 
 - Добавлен GitHub Actions workflow: при push и pull request запускаются lint, typecheck, отдельные unit-, integration- и component-тесты, затем Playwright E2E в Google Chrome.

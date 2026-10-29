@@ -5,7 +5,7 @@
 | Next.js App Router + React | full-stack маршрутизация, Server Components и Route Handlers |
 | TypeScript strict | безопасные контракты и типы |
 | SCSS Modules | изолированные стили компонентов |
-| PostgreSQL + Prisma | данные, миграции и транзакции |
+| PostgreSQL + Prisma 7 + `@prisma/adapter-pg` | схема данных, миграции, транзакции и серверное подключение к PostgreSQL |
 | Supabase Auth + Storage | авторизация и медиа товаров |
 | React Hook Form + Zod | формы и валидация |
 | TanStack Query | client server-state |
@@ -29,3 +29,5 @@
 Component- и integration-тесты используют `jsdom` только в соответствующих файлах. Пока серверные сценарии авторизации, заказов и платежей не реализованы, тесты проверяют существующий frontend и не имитируют подтверждённую оплату.
 
 Матрица текущих и отложенных проверок, а также правило неизменности созданных тестов описаны в [стратегии тестирования](testing.md).
+
+Команды схемы и миграций: `npm run db:validate`, `npm run db:generate`, `npm run db:migrate`, `npm run db:deploy`, `npm run db:seed`. Для последних трёх требуется действующий `DATABASE_URL`; детали и статус применения описаны в [схеме БД](db-schema.md).
