@@ -43,9 +43,9 @@ prisma/                      # schema, migrations, seed
 
 ## Маршруты
 
-Публичные: `/`, `/catalog`, `/products/[slug]`, `/checkout`, `/payment/success`, `/payment/failure`, `/login`, `/register`, `/forgot-password`. Авторизованный покупатель: `/account` и `/account/update-password`. Администратор: `/aqverine-control` и `/aqverine-control/login`. Серверные auth endpoints — `/api/auth/*`, email callback — `/auth/callback`; будущий платёжный webhook — `/api/payments/webhook`.
+Публичные: `/`, `/catalog`, `/products/[slug]`, `/checkout`, `/payment/success`, `/payment/failure`, `/login`, `/register`, `/forgot-password`. Авторизованный покупатель: `/account` и `/account/update-password`. Администратор: `/aqverine-control` и `/aqverine-control/login`. Серверные auth endpoints — `/api/auth/*`, email callback — `/auth/callback`. API покупателя: `GET/PATCH /api/account/profile`, `GET /api/account/orders`, `GET /api/account/orders/[orderId]`; будущий платёжный webhook — `/api/payments/webhook`.
 
-Формы входа, регистрации и восстановления отправляют данные только в серверные auth endpoints; без настроенных Supabase и PostgreSQL они возвращают 503 без создания аккаунта. При настроенном окружении `/account` показывает данные только после проверки Supabase-сессии, а `/aqverine-control` проверяет роль `admin` из локальной БД. Checkout по-прежнему демонстрирует локальную валидацию: заказ и платёж не создаются. Профиль, история заказов и административный CRUD ожидают доменный API.
+Формы входа, регистрации и восстановления отправляют данные только в серверные auth endpoints; без настроенных Supabase и PostgreSQL они возвращают 503 без создания аккаунта. При настроенном окружении `/account` показывает данные только после проверки Supabase-сессии, а `/aqverine-control` проверяет роль `admin` из локальной БД. API профиля использует email из Supabase Auth и хранит только имя и телефон в `Profile`; API заказов ограничивает выборку текущим пользователем, выдаёт снимки позиций и постраничный список. Интерфейс кабинета пока не подключён к этим API. Checkout по-прежнему демонстрирует локальную валидацию: заказ и платёж не создаются. Административный CRUD ожидает доменный API.
 
 ## Данные и состояния
 
