@@ -1,0 +1,8 @@
+.page { display: grid; align-content: center; justify-items: start; gap: 1.5rem; min-height: 65svh; max-width: 1800px; margin: 0 auto; padding: 4rem var(--page-padding); }
+.page h1 { margin: 0; font-size: clamp(3rem, 8vw, 8rem); font-weight: 900; line-height: .95; letter-spacing: -.08em; }
+.page h1 em { color: var(--color-cobalt); font-style: normal; }
+.page p { margin: 0; color: var(--color-muted); }
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; }
+.actions button { border: 0; padding: 1rem 1.25rem; background: var(--color-ink); color: #fff; font: inherit; font-size: .85rem; font-weight: 800; cursor: pointer; }
+.actions a { border-bottom: 1px solid currentColor; color: var(--color-ink); font-size: .85rem; font-weight: 800; text-decoration: none; }
+.page :is(button, a):focus-visible { outline: 2px solid var(--color-cobalt); outline-offset: 3px; }

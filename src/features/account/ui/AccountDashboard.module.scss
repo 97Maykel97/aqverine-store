@@ -1,15 +1,58 @@
-.page { max-width: 1800px; min-height: 68svh; margin: 0 auto; padding: 0 var(--page-padding) 5rem; }
-.topline { display: flex; justify-content: space-between; gap: 1rem; padding: 1.2rem 0; border-bottom: 1px solid var(--color-line); font-size: .7rem; font-weight: 800; letter-spacing: .12em; }
-.content { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(300px, .9fr); gap: clamp(2rem, 6vw, 8rem); padding: clamp(4rem, 8vw, 8rem) 0; }
-.eyebrow, .details > span { color: var(--color-accent-text); font-size: .72rem; font-weight: 900; letter-spacing: .13em; }
-.intro h1 { margin: 1.2rem 0 1.5rem; font-size: clamp(4rem, 8vw, 9rem); font-weight: 900; letter-spacing: -.09em; line-height: .86; }
-.intro h1 em { color: var(--color-cobalt); font-style: normal; }
-.intro p, .details p { max-width: 35rem; color: var(--color-muted); }
-.details { align-self: center; display: grid; gap: 1rem; padding: clamp(1.5rem, 3vw, 3rem); border: 1px solid var(--color-line); background: #fff; }
-.details strong { overflow-wrap: anywhere; font-size: clamp(1.25rem, 2vw, 2rem); }
-.details p { margin: 0; }
-.actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; margin-top: 1rem; }
-.actions a:first-child { display: flex; justify-content: space-between; gap: 2rem; padding: 1rem 1.25rem; background: var(--color-ink); color: #fff; font-size: .8rem; font-weight: 900; }
-.actions a:not(:first-child), .actions button { border: 0; border-bottom: 1px solid currentColor; padding: 0; background: transparent; color: var(--color-ink); font: inherit; font-size: .8rem; font-weight: 800; cursor: pointer; }
-@media (max-width: 780px) { .content { grid-template-columns: 1fr; gap: 2rem; padding: 3rem 0; } .intro h1 { font-size: clamp(3.7rem, 13vw, 6rem); } }
-@media (max-width: 430px) { .topline span:last-child { display: none; } .details { padding: 1.25rem; } }
+.page { max-width: 1800px; min-height: 68svh; margin: 0 auto; padding: 0 var(--page-padding) 6rem; }
+.topline { display: flex; justify-content: space-between; gap: 1rem; padding: 1.2rem 0; border-bottom: 1px solid var(--color-line); font-size: .68rem; font-weight: 900; letter-spacing: .12em; }
+.heading { display: flex; justify-content: space-between; align-items: end; gap: 2rem; padding: clamp(2.5rem, 5vw, 4.5rem) 0 clamp(2rem, 4vw, 3rem); }
+.heading h1 { margin: 0; font-size: clamp(3rem, 7vw, 7rem); font-weight: 900; letter-spacing: -.09em; line-height: .95; }
+.heading h1 em { color: var(--color-cobalt); font-style: normal; }
+.heading p { margin: 1.5rem 0 0; color: var(--color-muted); font-size: clamp(.95rem, 1.2vw, 1.15rem); }
+.accountActions { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: .85rem 1.3rem; max-width: 29rem; padding-bottom: .2rem; }
+.accountActions a, .accountActions button { border: 0; border-bottom: 1px solid currentColor; padding: .2rem 0; background: transparent; color: var(--color-ink); font: inherit; font-size: .78rem; font-weight: 800; text-decoration: none; cursor: pointer; }
+.accountActions a:first-of-type { color: var(--color-cobalt); }
+.email { width: 100%; overflow-wrap: anywhere; text-align: right; font-weight: 800; }
+.sections { display: grid; grid-template-columns: minmax(280px, .75fr) minmax(0, 1.25fr); gap: clamp(2.5rem, 5vw, 6rem); border-top: 1px solid var(--color-line); }
+.profile, .orders { min-width: 0; padding-top: 2rem; }
+.profile { border-right: 1px solid var(--color-line); padding-right: clamp(2.5rem, 5vw, 6rem); }
+.sectionHeading { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: .35rem 1rem; margin-bottom: 2rem; }
+.sectionHeading h2 { margin: 0; font-size: clamp(1.7rem, 2.5vw, 2.6rem); font-weight: 900; letter-spacing: -.06em; }
+.sectionHeading p { margin: 0; color: var(--color-muted); font-size: .82rem; }
+.profile form { display: grid; gap: .5rem; }
+.profile label { margin-top: .85rem; font-size: .75rem; font-weight: 900; }
+.profile input { width: 100%; min-height: 3.3rem; border: 1px solid var(--color-line); border-radius: 0; padding: .8rem .95rem; background: #fff; color: var(--color-ink); font: inherit; font-size: .95rem; }
+.profile input[readonly] { background: #f1f0ed; color: var(--color-muted); }
+.profile input[aria-invalid="true"] { border-color: var(--color-accent-text); }
+.profile small, .error { color: var(--color-accent-text); font-size: .78rem; }
+.fieldHint { margin: 0; color: var(--color-muted); font-size: .76rem; }
+.saveButton { display: flex; justify-content: space-between; gap: 2rem; min-height: 3.5rem; margin-top: 1.5rem; border: 0; padding: 1rem 1.2rem; background: var(--color-ink); color: #fff; font: inherit; font-size: .82rem; font-weight: 900; cursor: pointer; transition: background .2s ease; }
+.saveButton:hover:not(:disabled) { background: var(--color-cobalt); }
+.saveButton:disabled { opacity: .55; cursor: not-allowed; }
+.success { color: #215d3a; font-size: .8rem; }
+.notice { border: 1px solid var(--color-line); padding: 1rem; color: var(--color-muted); font-size: .88rem; }
+.notice :is(button, a), .orderDetail :is(button, a), .error a { border: 0; border-bottom: 1px solid currentColor; padding: 0; background: none; color: var(--color-cobalt); font: inherit; font-weight: 800; text-decoration: none; cursor: pointer; }
+.empty { display: grid; justify-items: start; gap: 1rem; min-height: 16rem; padding: 2rem; background: #fff; }
+.empty strong { align-self: end; font-size: clamp(1.5rem, 2.4vw, 2.4rem); font-weight: 900; letter-spacing: -.05em; }
+.empty p { margin: 0; color: var(--color-muted); }
+.empty a { border-bottom: 1px solid currentColor; color: var(--color-ink); font-size: .85rem; font-weight: 800; text-decoration: none; }
+.orderList { display: grid; gap: 0; border-top: 1px solid var(--color-line); }
+.order { padding: 1.5rem 0; border-bottom: 1px solid var(--color-line); }
+.orderTop { display: flex; justify-content: space-between; align-items: start; gap: 1rem; }
+.orderTop > div { display: grid; gap: .3rem; }
+.orderTop strong { font-size: 1.35rem; letter-spacing: -.04em; }
+.orderTop time { color: var(--color-muted); font-size: .8rem; }
+.orderNumber { font-size: 1.1rem; font-weight: 900; }
+.orderMeta { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; margin: 1rem 0; color: var(--color-muted); font-size: .82rem; }
+.orderMeta span:first-child { color: var(--color-cobalt); font-weight: 800; }
+.detailButton { display: inline-flex; align-items: center; gap: 1.5rem; border: 0; border-bottom: 1px solid currentColor; padding: .2rem 0; background: none; color: var(--color-ink); font: inherit; font-size: .78rem; font-weight: 800; cursor: pointer; }
+.detailButton:disabled { opacity: .5; cursor: wait; }
+.orderDetail { margin-top: 1.4rem; padding: 1.2rem; background: #fff; font-size: .85rem; }
+.orderDetail ul { display: grid; gap: 1rem; margin: 0; padding: 0; list-style: none; }
+.orderDetail li { display: flex; justify-content: space-between; gap: 1rem; }
+.orderDetail li span { display: grid; gap: .2rem; font-weight: 800; }
+.orderDetail li small { color: var(--color-muted); font-size: .78rem; font-weight: 400; }
+.orderDetail > p { margin: 1.2rem 0 0; color: var(--color-muted); }
+.pagination { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-top: 1.5rem; font-size: .8rem; font-weight: 800; }
+.pagination button { border: 0; border-bottom: 1px solid currentColor; padding: .3rem 0; background: transparent; color: var(--color-ink); font: inherit; cursor: pointer; }
+.pagination button:disabled { opacity: .4; cursor: not-allowed; }
+.loading { color: var(--color-muted); font-size: .8rem; }
+.page :is(a, button, input):focus-visible { outline: 2px solid var(--color-cobalt); outline-offset: 3px; }
+@media (max-width: 900px) { .heading { align-items: start; flex-direction: column; } .accountActions { justify-content: flex-start; } .email { text-align: left; } .sections { grid-template-columns: 1fr; gap: 3rem; } .profile { border-right: 0; border-bottom: 1px solid var(--color-line); padding-right: 0; padding-bottom: 3rem; } }
+@media (max-width: 480px) { .topline span:last-child { display: none; } .heading h1 { font-size: clamp(2.8rem, 13vw, 4rem); } .heading { padding: 2.5rem 0; } .accountActions { gap: .8rem 1rem; } .sectionHeading { margin-bottom: 1.4rem; } .empty { padding: 1.5rem; } }
+@media (prefers-reduced-motion: reduce) { .saveButton { transition: none; } }

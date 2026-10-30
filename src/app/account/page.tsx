@@ -7,6 +7,7 @@ import { getCurrentUser } from "@/features/auth/api/current-user";
 import { isAuthConfigured } from "@/features/auth/model/auth-config";
 import { AccountPreview } from "@/features/account/ui/AccountPreview";
 import { AccountDashboard } from "@/features/account/ui/AccountDashboard";
+import { getAccountProfile, listAccountOrders } from "@/features/account/api/account-service";
 
 export const metadata: Metadata = { title: "Личный кабинет", robots: { index: false } };
 
@@ -15,7 +16,11 @@ async function AccountContent() {
   if (!isAuthConfigured()) return <AccountPreview />;
   const user = await getCurrentUser();
   if (!user) redirect("/login");
-  return <AccountDashboard email={user.email} name={user.profile?.fullName} />;
+  const [initialProfile, initialOrders] = await Promise.all([
+    getAccountProfile(user.id, user.email),
+    listAccountOrders(user.id, 1, 10),
+  ]);
+  return <AccountDashboard initialProfile={initialProfile} initialOrders={initialOrders} />;
 }
 
 export default function AccountPage() {
