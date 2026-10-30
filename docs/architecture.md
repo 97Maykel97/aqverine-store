@@ -43,7 +43,7 @@ prisma/                      # schema, migrations, seed
 
 ## Маршруты
 
-Публичные: `/`, `/catalog`, `/products/[slug]`, `/checkout`, `/payment/success`, `/payment/failure`, `/login`, `/register`, `/forgot-password`. Авторизованный покупатель: `/account` и `/account/update-password`. Администратор: `/aqverine-control` и `/aqverine-control/login`. Серверные auth endpoints — `/api/auth/*`, email callback — `/auth/callback`; будущий платёжный webhook — `/api/payments/webhook`.
+Публичные: `/`, `/catalog`, `/products/[slug]`, `/checkout`, `/payment/success`, `/payment/failure`, `/login`, `/register`, `/forgot-password`. Авторизованный покупатель: `/account` и `/account/update-password`. Администратор: `/aqverine-control` и `/aqverine-control/login`. Серверные auth endpoints — `/api/auth/*`, email callback — `/auth/callback`; серверная корзина — `GET /api/cart`, `PUT /api/cart/items`, `DELETE /api/cart/items/[variantId]`, `POST /api/cart/merge`. Будущий платёжный webhook — `/api/payments/webhook`.
 
 Формы входа, регистрации и восстановления отправляют данные только в серверные auth endpoints; без настроенных Supabase и PostgreSQL они возвращают 503 без создания аккаунта. При настроенном окружении `/account` показывает данные только после проверки Supabase-сессии, а `/aqverine-control` проверяет роль `admin` из локальной БД. Checkout по-прежнему демонстрирует локальную валидацию: заказ и платёж не создаются. Профиль, история заказов и административный CRUD ожидают доменный API.
 
@@ -51,9 +51,9 @@ prisma/                      # schema, migrations, seed
 
 В целевой backend-архитектуре PostgreSQL — единственный источник истины для товаров, вариантов, остатков, серверных корзин, заказов, платежей и webhook-событий. Prisma миграции версионируют схему. Деньги — integer minor units. Заказ создаётся транзакционно и сохраняет `OrderItem` snapshots.
 
-Сейчас Prisma schema, начальная миграция и идемпотентный seed уже подготовлены, но миграция ещё не применена к PostgreSQL и frontend по-прежнему использует mock-каталог. Prisma 7 подключается к PostgreSQL через `@prisma/adapter-pg`; браузер не получает прямой доступ к таблицам. SQL-миграция включает RLS без клиентских политик, а серверные проверки доступа будут реализованы вместе с API.
+Сейчас Prisma schema, миграции и идемпотентный seed уже подготовлены, но миграции ещё не применены к PostgreSQL и frontend по-прежнему использует mock-каталог. Prisma 7 подключается к PostgreSQL через `@prisma/adapter-pg`; браузер не получает прямой доступ к таблицам. SQL-миграции включают RLS без клиентских политик; готовые API проверяют доступ на сервере.
 
-Гостевая корзина хранится в `localStorage`; после входа сервер объединяет её с `Cart` по `variantId` и ограничивает количество остатком. Клиент никогда не определяет цену, остаток, роли и payment status.
+Гостевая корзина хранится в `localStorage`; текущий UI ещё не подключён к серверной корзине. Серверные маршруты читают подтверждённую Supabase-сессию и локального пользователя, проверяют вариант, публикацию товара и остаток, используют транзакцию `Serializable` с повтором конфликтов. При объединении гостевые SKU разрешаются в UUID вариантов, количества складываются в пределах остатка, а `CartMergeEvent` делает повтор с тем же ключом идемпотентным. Клиент никогда не определяет цену, остаток, роли и payment status.
 
 ## Авторизация и безопасность
 
