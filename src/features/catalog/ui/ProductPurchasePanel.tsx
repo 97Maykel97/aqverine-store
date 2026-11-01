@@ -43,9 +43,9 @@ function ProductExperience({ product, initialColor }: ProductPurchasePanelProps 
     setMessage("");
   };
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (!selectedVariant) return;
-    if (addItem(selectedVariant.id, quantity)) {
+    if (await addItem(selectedVariant.id, quantity)) {
       setMessage(`${product.name}, ${color} / ${size} — добавлено в корзину`);
       openCart();
     } else {
@@ -136,7 +136,7 @@ function ProductExperience({ product, initialColor }: ProductPurchasePanelProps 
             <span>{quantity}</span>
             <button aria-label="Увеличить количество" disabled={!selectedVariant || quantity >= selectedVariant.stock} onClick={() => setQuantity(quantity + 1)} type="button">+</button>
           </div>
-          <button className={styles.addButton} disabled={!selectedVariant} onClick={handleAdd} type="button">
+          <button className={styles.addButton} disabled={!selectedVariant} onClick={() => { void handleAdd(); }} type="button">
             <span>{selectedVariant ? "Добавить в корзину" : "Выберите размер"}</span><span aria-hidden="true">↗</span>
           </button>
         </div>

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { startCheckout } from "@/features/checkout/api/checkout-service";
-import { CheckoutError, checkoutRequestSchema } from "@/features/checkout/model/checkout-input";
+import { checkoutRequestSchema, type CheckoutError } from "@/features/checkout/model/checkout-input";
 import type { PaymentProvider } from "@/features/payments/model/payment-provider";
 
 const database = vi.hoisted(() => ({

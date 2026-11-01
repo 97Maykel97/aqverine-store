@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { AUTH_SESSION_CHANGED_EVENT } from "@/shared/constants/auth-events";
+
 export function LogoutButton() {
   const router = useRouter();
   const [pending, setPending] = useState(false);
@@ -14,6 +16,7 @@ export function LogoutButton() {
     try {
       const response = await fetch("/api/auth/logout", { method: "POST", credentials: "same-origin" });
       if (response.ok) {
+        window.dispatchEvent(new Event(AUTH_SESSION_CHANGED_EVENT));
         router.replace("/");
         router.refresh();
         return;

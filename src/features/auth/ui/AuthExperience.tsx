@@ -16,6 +16,7 @@ import {
   type PasswordResetFields,
   type RegistrationFields,
 } from "@/features/auth/model/demo-auth";
+import { AUTH_SESSION_CHANGED_EVENT } from "@/shared/constants/auth-events";
 
 import styles from "./AuthExperience.module.scss";
 
@@ -113,12 +114,14 @@ function LoginForm() {
         setFeedback(result.message ?? "Вход не удался. Попробуйте позже.");
         return;
       }
-      const adminDestination = new URLSearchParams(window.location.search).get("next") === "/aqverine-control";
+      const requestedDestination = new URLSearchParams(window.location.search).get("next");
+      const adminDestination = requestedDestination === "/aqverine-control";
       if (adminDestination && result.role !== "admin") {
         setFeedback("Для панели управления нужны права администратора.");
         return;
       }
-      router.replace(adminDestination ? "/aqverine-control" : "/account");
+      window.dispatchEvent(new Event(AUTH_SESSION_CHANGED_EVENT));
+      router.replace(adminDestination ? "/aqverine-control" : requestedDestination === "/checkout" ? "/checkout" : "/account");
       router.refresh();
     } catch {
       setFeedback("Не удалось связаться с сервером. Попробуйте позже.");

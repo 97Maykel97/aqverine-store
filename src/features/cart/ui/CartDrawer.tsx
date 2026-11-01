@@ -12,7 +12,7 @@ import styles from "./CartDrawer.module.scss";
 
 export function CartDrawer() {
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const { lines, isOpen, closeCart, setQuantity } = useCart();
+  const { lines, serverCart, syncing, error, isOpen, closeCart, setQuantity } = useCart();
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -31,11 +31,35 @@ export function CartDrawer() {
 
   const resolvedLines = lines.flatMap((line) => {
     const match = findCartVariant(line.variantId);
-    return match ? [{ ...line, ...match }] : [];
+    const stored = serverCart?.items.find((item) => item.sku === line.variantId);
+    if (stored) return [{
+      variantId: line.variantId,
+      quantity: stored.quantity,
+      name: stored.name,
+      slug: stored.slug,
+      color: stored.color,
+      size: stored.size,
+      stock: stored.availableStock,
+      unitPriceMinor: stored.unitPriceMinor,
+      image: stored.imageUrl ?? (match ? getProductImage(match.product, stored.color).src : null),
+      imageAlt: `${stored.name}, цвет ${stored.color}`,
+    }];
+    return match ? [{
+      variantId: line.variantId,
+      quantity: line.quantity,
+      name: match.product.name,
+      slug: match.product.slug,
+      color: match.variant.color,
+      size: match.variant.size,
+      stock: match.variant.stock,
+      unitPriceMinor: match.product.price,
+      image: getProductImage(match.product, match.variant.color).src,
+      imageAlt: getProductImage(match.product, match.variant.color).alt,
+    }] : [];
   });
-  const total = resolvedLines.reduce((sum, line) => sum + line.product.price * line.quantity, 0);
+  const total = serverCart?.totalMinor ?? resolvedLines.reduce((sum, line) => sum + line.unitPriceMinor * line.quantity, 0);
   const recommendations = mockProducts.filter(
-    (product) => !resolvedLines.some((line) => line.product.id === product.id),
+    (product) => !resolvedLines.some((line) => line.slug === product.slug),
   ).slice(0, 2);
 
   return (
@@ -60,6 +84,8 @@ export function CartDrawer() {
           </button>
         </div>
 
+        {syncing ? <p className={styles.notice} role="status">Синхронизируем корзину…</p> : null}
+        {error ? <p className={styles.notice} role="alert">{error}</p> : null}
         {resolvedLines.length === 0 ? (
           <div className={styles.empty}>
             <span className={styles.emptyMark}>↗</span>
@@ -70,22 +96,22 @@ export function CartDrawer() {
         ) : (
           <>
             <div className={styles.items}>
-              {resolvedLines.map(({ variantId, quantity, product, variant }) => (
+              {resolvedLines.map(({ variantId, quantity, name, slug, color, size, stock, unitPriceMinor, image, imageAlt }) => (
                 <article className={styles.item} key={variantId}>
                   <div className={styles.photo}>
-                    <Image alt={getProductImage(product, variant.color).alt} fill sizes="96px" src={getProductImage(product, variant.color).src} />
+                    {image ? <Image alt={imageAlt} fill sizes="96px" src={image} /> : <span aria-hidden="true">AQVERINE</span>}
                   </div>
                   <div className={styles.itemDetails}>
-                    <Link href={`/products/${product.slug}?color=${encodeURIComponent(variant.color)}`} onClick={closeCart}>{product.name}</Link>
-                    <span>{variant.color} / {variant.size}</span>
-                    <strong>{formatPrice(product.price * quantity)}</strong>
+                    <Link href={`/products/${slug}?color=${encodeURIComponent(color)}`} onClick={closeCart}>{name}</Link>
+                    <span>{color} / {size}</span>
+                    <strong>{formatPrice(unitPriceMinor * quantity)}</strong>
                     <div className={styles.quantity} aria-label={`Количество: ${quantity}`}>
-                      <button aria-label={`Уменьшить количество ${product.name}`} onClick={() => setQuantity(variantId, quantity - 1)} type="button">−</button>
+                      <button aria-label={`Уменьшить количество ${name}`} onClick={() => { void setQuantity(variantId, quantity - 1); }} type="button">−</button>
                       <span>{quantity}</span>
-                      <button aria-label={`Увеличить количество ${product.name}`} disabled={quantity >= variant.stock} onClick={() => setQuantity(variantId, quantity + 1)} type="button">+</button>
+                      <button aria-label={`Увеличить количество ${name}`} disabled={quantity >= stock} onClick={() => { void setQuantity(variantId, quantity + 1); }} type="button">+</button>
                     </div>
                   </div>
-                  <button aria-label={`Удалить ${product.name}`} className={styles.remove} onClick={() => setQuantity(variantId, 0)} type="button">×</button>
+                  <button aria-label={`Удалить ${name}`} className={styles.remove} onClick={() => { void setQuantity(variantId, 0); }} type="button">×</button>
                 </article>
               ))}
             </div>
@@ -104,8 +130,8 @@ export function CartDrawer() {
             ) : null}
             <div className={styles.summary}>
               <div><span>Итого</span><strong>{formatPrice(total)}</strong></div>
-              <p>Корзина сохранена в этом браузере. Можно посмотреть демо-оформление; заказ и оплата пока недоступны.</p>
-              <Link className={styles.checkoutLink} href="/checkout" onClick={closeCart}>Посмотреть оформление <span aria-hidden="true">↗</span></Link>
+              <p>{serverCart ? "Корзина синхронизирована. Цены и остатки будут повторно проверены при оформлении." : "Корзина сохранена в этом браузере. Можно посмотреть демо-оформление; заказ и оплата пока недоступны."}</p>
+              <Link className={styles.checkoutLink} href="/checkout" onClick={closeCart}>{serverCart ? "Оформить заказ" : "Посмотреть оформление"} <span aria-hidden="true">↗</span></Link>
               <Link href="/catalog" onClick={closeCart}>Продолжить покупки</Link>
             </div>
           </>

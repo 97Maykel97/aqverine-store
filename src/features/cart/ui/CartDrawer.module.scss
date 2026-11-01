@@ -18,6 +18,7 @@
 .drawer::backdrop { background: rgb(0 0 0 / 0); transition: background 240ms ease; }
 .drawer[data-state="open"]::backdrop { background: rgb(0 0 0 / 55%); }
 .panel { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
+.notice { margin: 0; padding: .75rem 2rem; background: #fff0e9; color: var(--color-ink); font-size: .78rem; line-height: 1.4; }
 .heading { display: flex; align-items: flex-start; justify-content: space-between; flex: none; padding: 2rem 2rem 1.45rem; border-bottom: 1px solid var(--color-line); }
 .heading span { color: var(--color-accent-text); font-size: .7rem; font-weight: 800; letter-spacing: .14em; }
 .heading h2 { margin: .38rem 0 0; font-family: var(--font-display); font-size: clamp(2.4rem, 5vw, 3.4rem); font-weight: 900; letter-spacing: -.07em; line-height: 1; text-transform: uppercase; }
@@ -34,6 +35,7 @@
 .item { display: grid; grid-template-columns: 96px minmax(0, 1fr) auto; gap: 1rem; position: relative; border-bottom: 1px solid var(--color-line); padding: 1.25rem 0; }
 .photo { position: relative; aspect-ratio: 4 / 5; align-self: start; background: #e8dfd1; }
 .photo img { object-fit: cover; }
+.photo > span { display: grid; place-items: center; width: 100%; height: 100%; font-size: .55rem; font-weight: 900; letter-spacing: .08em; }
 .itemDetails { display: flex; flex-direction: column; align-items: flex-start; gap: .25rem; min-width: 0; font-size: .88rem; }
 .itemDetails a { font-weight: 800; }
 .itemDetails a:hover { color: var(--color-accent-text); }
