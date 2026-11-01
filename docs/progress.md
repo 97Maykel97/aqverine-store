@@ -1,5 +1,14 @@
 # Журнал прогресса AQVERINE
 
+## 2026-11-01 — Серверный checkout и тестовая оплата Stripe
+
+- В рабочую ветку включены подготовленные API каталога и серверной корзины. Гостевая корзина объединяется с серверной после входа по устойчивому ключу; авторизованный checkout создаёт заказ со снимком позиций, резервирует остатки и открывает тестовый Stripe Checkout. Подписанный webhook идемпотентно обрабатывает оплату, отмену, ошибку и полный возврат. Страница возврата запрашивает статус заказа через защищённый API вместо доверия адресу возврата.
+- Архитектурные решения: `PaymentProvider` отделяет checkout от Stripe SDK; только webhook меняет статус оплаты; цена и остаток повторно проверяются сервером. Публичный каталог остаётся на mock-данных до подключения БД, Storage и admin CRUD. Без настроенных сервисов UI показывает безопасный просмотр формы без создания заказа.
+- Изменены `src/features/{cart,checkout,payments,auth,catalog}/**`, `src/app/api/{checkout,payments}/**`, `src/app/payment/**`, `src/app/aqverine-control/login/page.tsx`, `package.json`, `package-lock.json`, `tests/{checkout-order,payment-webhook}.test.ts`, `docs/{architecture,db-schema,implementation-plan,payment-flow,technologies,progress}.md` и миграция `prisma/migrations/20261030_cart_merge_events/migration.sql`.
+- Новые переменные окружения: нет. Для тестовой оплаты требуются ранее предусмотренные `DATABASE_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `PAYMENT_PROVIDER_SECRET_KEY=sk_test_...`, `PAYMENT_WEBHOOK_SECRET=whsec_...` и `NEXT_PUBLIC_APP_URL`. Секреты не добавлены в Git.
+- Изменения БД: добавлена `cart_merge_events` из подготовленной ветки; миграция не применялась, поскольку тестового PostgreSQL нет.
+- Проверено: lint, typecheck, 40 Vitest-тестов и production build. Playwright: 4 сценария корзины и 6 основных сценариев на desktop/mobile прошли. Страница входа admin теперь сообщает об отсутствии конфигурации, когда сервисы действительно не настроены; существующие тесты не менялись. Живой платёж и миграции остаются непроверенными без сервисов и тестовых ключей.
+
 ## 2026-11-01 — Ревью схемы и правила работы с БД
 
 - Добавлен проектный навык ревью PostgreSQL/Prisma и расширены правила проверки миграций, ограничений, индексов и конкурентных операций.

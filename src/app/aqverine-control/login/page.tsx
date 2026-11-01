@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { isAuthConfigured } from "@/features/auth/model/auth-config";
+
 import styles from "./page.module.scss";
 
 export const metadata: Metadata = { title: "Панель управления", robots: { index: false } };
 
 export default function AdminLoginPage() {
+  const authConfigured = isAuthConfigured();
   return (
     <section className={styles.page} aria-labelledby="admin-title">
       <div className={styles.frame}>
@@ -14,6 +17,7 @@ export default function AdminLoginPage() {
           <span className={styles.eyebrow}>ДОСТУП ДЛЯ КОМАНДЫ</span>
           <h1 id="admin-title">ЗАКРЫТО.<br /><em>ПО ДЕЛУ.</em></h1>
           <p>Вход доступен только подтверждённой учётной записи с ролью администратора. Права проверяются на сервере при каждом открытии панели.</p>
+          {!authConfigured ? <p role="status">Доступ пока не настроен</p> : null}
           <div className={styles.notice}><span aria-hidden="true">●</span><div><strong>Защищённый доступ</strong><span>Логин и пароль покупателя не открывают административные действия.</span></div></div>
           <Link href="/login?next=/aqverine-control">Войти как администратор <span aria-hidden="true">↗</span></Link>
         </div>

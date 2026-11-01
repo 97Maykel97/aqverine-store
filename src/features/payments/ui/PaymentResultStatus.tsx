@@ -59,12 +59,27 @@ export function PaymentResultStatus({ orderId }: { orderId: string }) {
           <p role="status">{description}</p>
           <div className={styles.actions}>
             <Link href="/account">К моим заказам <span aria-hidden="true">↗</span></Link>
-            <Link href={query.error?.message === "UNAUTHORIZED" ? `/login?next=${encodeURIComponent(`/payment/success?order=${orderId}`)}` : "/catalog"}>
+            <Link href={query.error?.message === "UNAUTHORIZED" ? "/login?next=/account" : "/catalog"}>
               {query.error?.message === "UNAUTHORIZED" ? "Войти" : "Вернуться в каталог"}
             </Link>
           </div>
         </div>
         <div className={styles.bottom}><span>СТАТУС ИЗ ЗАЩИЩЁННОГО API</span><span>VISA / MASTERCARD / STRIPE</span></div>
+      </div>
+    </section>
+  );
+}
+
+export function PaymentResultLoading() {
+  return (
+    <section aria-label="Проверка статуса оплаты" className={styles.page}>
+      <div className={styles.panel}>
+        <div className={styles.top}><span>AQVERINE / PAYMENT</span></div>
+        <div className={styles.content}>
+          <span aria-hidden="true" className={styles.symbol}>↗</span>
+          <h1>ПРОВЕРЯЕМ ОПЛАТУ.</h1>
+          <p role="status">Загружаем статус заказа.</p>
+        </div>
       </div>
     </section>
   );
