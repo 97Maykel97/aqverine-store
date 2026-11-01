@@ -1,0 +1,117 @@
+import { OrderStatus, Prisma, ProductStatus } from "@/generated/prisma/client";
+
+import type { AdminProductCreateInput, AdminProductUpdateInput, AdminVariantCreateInput, AdminVariantUpdateInput } from "@/features/admin/model/admin-input";
+import { getPrisma } from "@/shared/lib/prisma";
+
+export class AdminDomainError extends Error {
+  constructor(readonly code: "NOT_FOUND" | "PUBLISH_REQUIREMENTS" | "INVALID_TRANSITION") {
+    super(code);
+  }
+}
+
+const productSelect = {
+  id: true, slug: true, name: true, description: true, category: true, composition: true,
+  careInstructions: true, priceMinor: true, currency: true, status: true, createdAt: true,
+  variants: { orderBy: [{ color: "asc" }, { size: "asc" }], select: {
+    id: true, sku: true, color: true, size: true, stock: true, priceMinor: true, isActive: true,
+  } },
+  images: { orderBy: [{ sortOrder: "asc" }], select: {
+    id: true, color: true, localPath: true, storageKey: true, altText: true, sortOrder: true,
+  } },
+} satisfies Prisma.ProductSelect;
+
+export async function listAdminProducts(page: number, limit: number) {
+  const prisma = getPrisma();
+  const [items, total] = await prisma.$transaction([
+    prisma.product.findMany({ orderBy: [{ createdAt: "desc" }, { id: "desc" }], skip: (page - 1) * limit, take: limit, select: productSelect }),
+    prisma.product.count(),
+  ]);
+  return { items, page, limit, total };
+}
+
+export async function createAdminProduct(input: AdminProductCreateInput) {
+  return getPrisma().product.create({
+    data: {
+      slug: input.slug,
+      name: input.name,
+      description: input.description,
+      category: input.category,
+      composition: input.composition ?? null,
+      careInstructions: input.careInstructions ?? null,
+      priceMinor: input.priceMinor,
+      currency: "USD",
+      status: ProductStatus.DRAFT,
+      variants: { create: input.variants.map((variant) => ({
+        sku: variant.sku, color: variant.color, size: variant.size,
+        stock: variant.stock, priceMinor: variant.priceMinor ?? null,
+      })) },
+    },
+    select: productSelect,
+  });
+}
+
+export async function updateAdminProduct(productId: string, input: AdminProductUpdateInput) {
+  return getPrisma().$transaction(async (transaction) => {
+    const current = await transaction.product.findUnique({
+      where: { id: productId },
+      select: {
+        id: true,
+        variants: { where: { isActive: true }, select: { id: true } },
+        images: { select: { id: true } },
+      },
+    });
+    if (!current) throw new AdminDomainError("NOT_FOUND");
+    if (input.status === ProductStatus.PUBLISHED && (!current.variants.length || !current.images.length)) {
+      throw new AdminDomainError("PUBLISH_REQUIREMENTS");
+    }
+    return transaction.product.update({
+      where: { id: productId },
+      data: {
+        ...input,
+        ...(input.status === ProductStatus.ARCHIVED ? { archivedAt: new Date() } :
+          input.status === ProductStatus.PUBLISHED || input.status === ProductStatus.DRAFT ? { archivedAt: null } : {}),
+      },
+      select: productSelect,
+    });
+  }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
+}
+
+export async function createAdminVariant(productId: string, input: AdminVariantCreateInput) {
+  const product = await getPrisma().product.findUnique({ where: { id: productId }, select: { id: true } });
+  if (!product) throw new AdminDomainError("NOT_FOUND");
+  return getPrisma().productVariant.create({
+    data: { productId, sku: input.sku, color: input.color, size: input.size, stock: input.stock, priceMinor: input.priceMinor ?? null },
+    select: { id: true, sku: true, color: true, size: true, stock: true, priceMinor: true, isActive: true },
+  });
+}
+
+export async function updateAdminVariant(variantId: string, input: AdminVariantUpdateInput) {
+  const result = await getPrisma().productVariant.updateMany({ where: { id: variantId }, data: input });
+  if (!result.count) throw new AdminDomainError("NOT_FOUND");
+  return getPrisma().productVariant.findUniqueOrThrow({
+    where: { id: variantId },
+    select: { id: true, sku: true, color: true, size: true, stock: true, priceMinor: true, isActive: true },
+  });
+}
+
+export async function listAdminOrders(page: number, limit: number) {
+  const prisma = getPrisma();
+  const [items, total] = await prisma.$transaction([
+    prisma.order.findMany({
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }], skip: (page - 1) * limit, take: limit,
+      select: {
+        id: true, number: true, status: true, totalMinor: true, currency: true, createdAt: true,
+        items: { select: { productName: true, color: true, size: true, quantity: true } },
+      },
+    }),
+    prisma.order.count(),
+  ]);
+  return { items, page, limit, total };
+}
+
+export async function advanceAdminOrder(orderId: string, next: "PROCESSING" | "COMPLETED") {
+  const expected = next === OrderStatus.PROCESSING ? OrderStatus.PAID : OrderStatus.PROCESSING;
+  const result = await getPrisma().order.updateMany({ where: { id: orderId, status: expected }, data: { status: next } });
+  if (!result.count) throw new AdminDomainError("INVALID_TRANSITION");
+  return { id: orderId, status: next };
+}
