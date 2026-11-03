@@ -45,7 +45,7 @@ function ProductExperience({ product, initialColor }: ProductPurchasePanelProps 
 
   const handleAdd = async () => {
     if (!selectedVariant) return;
-    if (await addItem(selectedVariant.id, quantity)) {
+    if (await addItem(selectedVariant.id, quantity, product)) {
       setMessage(`${product.name}, ${color} / ${size} — добавлено в корзину`);
       openCart();
     } else {
@@ -90,7 +90,7 @@ function ProductExperience({ product, initialColor }: ProductPurchasePanelProps 
       <div className={styles.panel}>
         <span className={styles.label}>AQVERINE / {product.category.toUpperCase()}</span>
         <h1>{product.name}</h1>
-        <p className={styles.price}>{formatPrice(product.price)}</p>
+        <p className={styles.price}>{formatPrice(selectedVariant?.priceMinor ?? product.price)}</p>
         <p className={styles.description}>{product.description}</p>
 
         <div className={styles.option}>

@@ -67,12 +67,12 @@ export async function listPublishedProducts(query: CatalogQuery) {
   const where: Prisma.ProductWhereInput = {
     status: ProductStatus.PUBLISHED,
     archivedAt: null,
+    variants: { some: variantFilter ?? { isActive: true } },
     ...(query.category ? { category: query.category } : {}),
     ...(query.q ? { OR: [
       { name: { contains: query.q, mode: "insensitive" } },
       { description: { contains: query.q, mode: "insensitive" } },
     ] } : {}),
-    ...(variantFilter ? { variants: { some: variantFilter } } : {}),
   };
 
   const orderBy: Prisma.ProductOrderByWithRelationInput[] = query.sort === "price-asc"
@@ -99,8 +99,16 @@ export async function listPublishedProducts(query: CatalogQuery) {
 
 export async function findPublishedProduct(slug: string) {
   const product = await getPrisma().product.findFirst({
-    where: { slug, status: ProductStatus.PUBLISHED, archivedAt: null },
+    where: { slug, status: ProductStatus.PUBLISHED, archivedAt: null, variants: { some: { isActive: true } } },
     select: productSelect,
   });
   return product ? toPublicProduct(product) : null;
+}
+
+export async function listPublishedProductSlugs() {
+  return getPrisma().product.findMany({
+    where: { status: ProductStatus.PUBLISHED, archivedAt: null, variants: { some: { isActive: true } } },
+    select: { slug: true },
+    orderBy: { slug: "asc" },
+  });
 }

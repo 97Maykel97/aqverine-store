@@ -6,13 +6,13 @@ import { useEffect, useRef } from "react";
 
 import { findCartVariant } from "@/features/cart/model/guest-cart";
 import { useCart } from "@/features/cart/ui/CartProvider";
-import { formatPrice, getProductImage, mockProducts } from "@/features/catalog/model/mock-products";
+import { formatPrice, getProductImage } from "@/features/catalog/model/mock-products";
 
 import styles from "./CartDrawer.module.scss";
 
 export function CartDrawer() {
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const { lines, serverCart, syncing, error, isOpen, closeCart, setQuantity } = useCart();
+  const { lines, catalogProducts, serverCart, syncing, error, isOpen, closeCart, setQuantity } = useCart();
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -30,7 +30,7 @@ export function CartDrawer() {
   }, [isOpen]);
 
   const resolvedLines = lines.flatMap((line) => {
-    const match = findCartVariant(line.variantId);
+    const match = findCartVariant(line.variantId, catalogProducts);
     const stored = serverCart?.items.find((item) => item.sku === line.variantId);
     if (stored) return [{
       variantId: line.variantId,
@@ -52,13 +52,13 @@ export function CartDrawer() {
       color: match.variant.color,
       size: match.variant.size,
       stock: match.variant.stock,
-      unitPriceMinor: match.product.price,
+      unitPriceMinor: match.variant.priceMinor ?? match.product.price,
       image: getProductImage(match.product, match.variant.color).src,
       imageAlt: getProductImage(match.product, match.variant.color).alt,
     }] : [];
   });
   const total = serverCart?.totalMinor ?? resolvedLines.reduce((sum, line) => sum + line.unitPriceMinor * line.quantity, 0);
-  const recommendations = mockProducts.filter(
+  const recommendations = catalogProducts.filter(
     (product) => !resolvedLines.some((line) => line.slug === product.slug),
   ).slice(0, 2);
 

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
-import { categories, mockProducts } from "@/features/catalog/model/mock-products";
+import { listStorefrontProducts } from "@/features/catalog/api/storefront-service";
+import { categories } from "@/features/catalog/model/mock-products";
 import { CatalogClient } from "@/features/catalog/ui/CatalogClient";
 
 import styles from "./page.module.scss";
@@ -21,8 +23,13 @@ interface CatalogPageProps {
   searchParams: Promise<{ category?: string; q?: string }>;
 }
 
-export default async function CatalogPage({ searchParams }: CatalogPageProps) {
+export default function CatalogPage({ searchParams }: CatalogPageProps) {
+  return <Suspense fallback={<section className={styles.catalog} role="status">Загружаем каталог…</section>}><CatalogContent searchParams={searchParams} /></Suspense>;
+}
+
+async function CatalogContent({ searchParams }: CatalogPageProps) {
   const { category, q } = await searchParams;
+  const { products, total } = await listStorefrontProducts();
   const initialCategory = categories.find((item) => item.value === category)?.value ?? "All";
   const query = typeof q === "string" ? q.trim().slice(0, 80) : "";
 
@@ -30,12 +37,12 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
     <section className={styles.catalog}>
       <div className={styles.intro}>
         <div>
-          <span>КАТАЛОГ / {mockProducts.length} ВЕЩЕЙ</span>
+          <span>КАТАЛОГ / {total} ВЕЩЕЙ</span>
           <h1>ВЕЩИ ДЛЯ<br />ТВОЕГО РИТМА.</h1>
         </div>
         <p>Найди свой силуэт. Собери гардероб, который двигается вместе с тобой.</p>
       </div>
-      <CatalogClient key={`${initialCategory}-${query}`} initialCategory={initialCategory} products={mockProducts} query={query} />
+      <CatalogClient key={`${initialCategory}-${query}`} initialCategory={initialCategory} products={products} query={query} />
     </section>
   );
 }

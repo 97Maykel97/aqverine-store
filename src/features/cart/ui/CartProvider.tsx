@@ -13,7 +13,10 @@ import {
   type GuestCartLine,
 } from "@/features/cart/model/guest-cart";
 import { CartDrawer } from "@/features/cart/ui/CartDrawer";
+import { fetchStorefrontProducts } from "@/features/catalog/api/catalog-client";
+import { mockProducts } from "@/features/catalog/model/mock-products";
 import { AUTH_SESSION_CHANGED_EVENT } from "@/shared/constants/auth-events";
+import type { CatalogProduct } from "@/shared/types/catalog";
 
 const MERGE_KEY_STORAGE_KEY = "aqverine-cart-merge-key-v1";
 const CART_QUERY_KEY = ["cart", "current"] as const;
@@ -21,6 +24,7 @@ const SERVER_CART_ENABLED = Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && proc
 
 interface CartContextValue {
   lines: readonly GuestCartLine[];
+  catalogProducts: readonly CatalogProduct[];
   serverCart: ServerCart | null;
   serverEnabled: boolean;
   serverUnavailable: boolean;
@@ -31,16 +35,16 @@ interface CartContextValue {
   isOpen: boolean;
   openCart: () => void;
   closeCart: () => void;
-  addItem: (variantId: string, quantity?: number) => Promise<boolean>;
+  addItem: (variantId: string, quantity?: number, product?: CatalogProduct) => Promise<boolean>;
   setQuantity: (variantId: string, quantity: number) => Promise<void>;
 }
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-function readStoredCart(): GuestCartLine[] {
+function readStoredCart(products: readonly CatalogProduct[]): GuestCartLine[] {
   try {
     const stored = window.localStorage.getItem(GUEST_CART_STORAGE_KEY);
-    return stored ? normalizeGuestCart(JSON.parse(stored) as unknown) : [];
+    return stored ? normalizeGuestCart(JSON.parse(stored) as unknown, products) : [];
   } catch {
     return [];
   }
@@ -56,6 +60,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 function CartProviderContent({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
   const [guestLines, setGuestLines] = useState<GuestCartLine[]>([]);
+  const [seenProducts, setSeenProducts] = useState<CatalogProduct[]>([]);
   const [hydrated, setHydrated] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [error, setError] = useState("");
@@ -67,20 +72,36 @@ function CartProviderContent({ children }: { children: ReactNode }) {
     enabled: SERVER_CART_ENABLED,
     staleTime: 0,
   });
+  const catalogQuery = useQuery({
+    queryKey: ["catalog", "storefront"],
+    queryFn: fetchStorefrontProducts,
+    enabled: SERVER_CART_ENABLED,
+    staleTime: 30_000,
+  });
+  const catalogProducts = [...seenProducts, ...(catalogQuery.data ?? mockProducts).filter(
+    (product) => !seenProducts.some((seen) => seen.slug === product.slug),
+  )];
   const refetchCart = cartQuery.refetch;
 
   useEffect(() => {
+    if (hydrated) return;
+    if (SERVER_CART_ENABLED && catalogQuery.isPending) return;
+    const availableProducts = catalogQuery.data ?? mockProducts;
     const timer = window.setTimeout(() => {
-      setGuestLines((current) => normalizeGuestCart([...readStoredCart(), ...current]));
+      setGuestLines((current) => normalizeGuestCart([...readStoredCart(availableProducts), ...current], availableProducts));
       setHydrated(true);
     }, 0);
-    const onStorage = () => setGuestLines(readStoredCart());
+    return () => window.clearTimeout(timer);
+  }, [catalogQuery.data, catalogQuery.isPending, hydrated]);
+
+  useEffect(() => {
+    const availableProducts = catalogQuery.data ?? mockProducts;
+    const onStorage = () => setGuestLines(readStoredCart(availableProducts));
     window.addEventListener("storage", onStorage);
     return () => {
-      window.clearTimeout(timer);
       window.removeEventListener("storage", onStorage);
     };
-  }, []);
+  }, [catalogQuery.data]);
 
   useEffect(() => {
     if (!SERVER_CART_ENABLED) return;
@@ -126,9 +147,12 @@ function CartProviderContent({ children }: { children: ReactNode }) {
     window.localStorage.setItem(GUEST_CART_STORAGE_KEY, JSON.stringify(guestLines));
   }, [guestLines, hydrated, serverCart]);
 
-  const addItem = async (sku: string, quantity = 1) => {
-    const match = findCartVariant(sku);
+  const addItem = async (sku: string, quantity = 1, product?: CatalogProduct) => {
+    const availableProducts = product
+      ? [product, ...catalogProducts.filter((known) => known.slug !== product.slug)] : catalogProducts;
+    const match = findCartVariant(sku, availableProducts);
     if (!match || quantity < 1) return false;
+    if (product) setSeenProducts((current) => current.some((known) => known.slug === product.slug) ? current : [...current, product]);
     setError("");
     if (serverCart) {
       try {
@@ -145,7 +169,7 @@ function CartProviderContent({ children }: { children: ReactNode }) {
     }
     const current = guestLines.find((line) => line.variantId === sku)?.quantity ?? 0;
     if (current + quantity > match.variant.stock) return false;
-    setGuestLines((previous) => setGuestCartQuantity(previous, sku, current + quantity));
+    setGuestLines((previous) => setGuestCartQuantity(previous, sku, current + quantity, availableProducts));
     setIsOpen(true);
     return true;
   };
@@ -162,13 +186,13 @@ function CartProviderContent({ children }: { children: ReactNode }) {
       }
       return;
     }
-    setGuestLines((previous) => setGuestCartQuantity(previous, sku, quantity));
+    setGuestLines((previous) => setGuestCartQuantity(previous, sku, quantity, catalogProducts));
   };
 
   const count = serverCart?.count ?? lines.reduce((sum, line) => sum + line.quantity, 0);
   return (
     <CartContext.Provider value={{
-      lines, serverCart, serverEnabled: SERVER_CART_ENABLED, serverUnavailable: cartQuery.isError,
+      lines, catalogProducts, serverCart, serverEnabled: SERVER_CART_ENABLED, serverUnavailable: cartQuery.isError,
       count, hydrated, syncing: syncing || (SERVER_CART_ENABLED && cartQuery.isLoading),
       error: error || (cartQuery.isError ? "Серверная корзина временно недоступна." : ""), isOpen,
       openCart: () => setIsOpen(true), closeCart: () => setIsOpen(false), addItem, setQuantity,

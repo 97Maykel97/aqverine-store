@@ -26,4 +26,5 @@ export interface CatalogVariant {
   color: string;
   size: string;
   stock: number;
+  priceMinor?: number;
 }

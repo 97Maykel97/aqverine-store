@@ -7,21 +7,21 @@ import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 
 
 import { useCart } from "@/features/cart/ui/CartProvider";
 import { searchProducts } from "@/features/catalog/model/catalog-discovery";
-import { categories, formatPrice, mockProducts } from "@/features/catalog/model/mock-products";
+import { categories, formatPrice } from "@/features/catalog/model/mock-products";
 
 import styles from "./Header.module.scss";
 
 type Panel = "search" | "menu" | null;
 
 export function Header() {
-  const { count, openCart } = useCart();
+  const { count, openCart, catalogProducts } = useCart();
   const router = useRouter();
   const [panel, setPanel] = useState<Panel>(null);
   const [query, setQuery] = useState("");
   const [activeSuggestion, setActiveSuggestion] = useState(-1);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
-  const results = searchProducts(mockProducts, query).slice(0, 4);
+  const results = searchProducts(catalogProducts, query).slice(0, 4);
 
   useEffect(() => {
     const dialog = dialogRef.current;

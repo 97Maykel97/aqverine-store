@@ -1,7 +1,9 @@
 import Image, { getImageProps } from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
 
-import { categories, mockProducts } from "@/features/catalog/model/mock-products";
+import { listStorefrontProducts } from "@/features/catalog/api/storefront-service";
+import { categories } from "@/features/catalog/model/mock-products";
 import { ProductCard } from "@/features/catalog/ui/ProductCard";
 
 import styles from "./page.module.scss";
@@ -62,11 +64,7 @@ export default function HomePage() {
           </div>
           <Link href="/catalog">Смотреть всё <span aria-hidden="true">↗</span></Link>
         </div>
-        <div className={styles.productGrid}>
-          {mockProducts.slice(0, 4).map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        <div className={styles.productGrid}><Suspense fallback={<p role="status">Загружаем коллекцию…</p>}><FeaturedProducts /></Suspense></div>
       </section>
 
       <section className={styles.benefits} aria-labelledby="benefits-title">
@@ -99,4 +97,10 @@ export default function HomePage() {
       </section>
     </>
   );
+}
+
+async function FeaturedProducts() {
+  const { products } = await listStorefrontProducts();
+  return products.length ? products.slice(0, 4).map((product) => <ProductCard key={product.id} product={product} />)
+    : <p>Новая коллекция скоро появится.</p>;
 }

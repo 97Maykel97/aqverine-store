@@ -20,7 +20,7 @@ interface CatalogClientProps {
 }
 
 export function CatalogClient({ products, initialCategory, query }: CatalogClientProps) {
-  const maximumPrice = Math.max(...products.map((product) => product.price));
+  const maximumPrice = Math.max(1900, ...products.map((product) => product.price));
   const colors = Array.from(new Set(products.flatMap((product) => product.colors)));
   const sizes = ["S", "M", "L", "XL", "ONE SIZE"].filter((size) => products.some((product) => product.variants.some((variant) => variant.size === size)));
   const [filters, setFilters] = useState<CatalogFilterState>({ category: initialCategory, color: null, size: null, maxPrice: maximumPrice, query, sort: "featured" });

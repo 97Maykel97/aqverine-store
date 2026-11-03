@@ -15,7 +15,7 @@ import { checkoutSchema, type CheckoutFields } from "@/features/checkout/model/d
 import styles from "./CheckoutExperience.module.scss";
 
 export function CheckoutExperience() {
-  const { lines, serverCart, serverEnabled, serverUnavailable, syncing, hydrated } = useCart();
+  const { lines, catalogProducts, serverCart, serverEnabled, serverUnavailable, syncing, hydrated } = useCart();
   const [validated, setValidated] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [submissionKey, setSubmissionKey] = useState<string | null>(null);
@@ -25,7 +25,7 @@ export function CheckoutExperience() {
     defaultValues: { comment: "", consent: false },
   });
   const items = serverCart ? serverCart.items.map((item) => {
-    const match = findCartVariant(item.sku);
+    const match = findCartVariant(item.sku, catalogProducts);
     const fallbackImage = match ? getProductImage(match.product, item.color) : null;
     return {
       variantId: item.sku,
@@ -39,7 +39,7 @@ export function CheckoutExperience() {
       imageAlt: fallbackImage?.alt ?? `${item.name}, цвет ${item.color}`,
     };
   }) : lines.flatMap((line) => {
-    const match = findCartVariant(line.variantId);
+    const match = findCartVariant(line.variantId, catalogProducts);
     if (!match) return [];
     const image = getProductImage(match.product, match.variant.color);
     return [{
@@ -49,7 +49,7 @@ export function CheckoutExperience() {
       slug: match.product.slug,
       color: match.variant.color,
       size: match.variant.size,
-      unitPriceMinor: match.product.price,
+      unitPriceMinor: match.variant.priceMinor ?? match.product.price,
       image: image.src,
       imageAlt: image.alt,
     }];

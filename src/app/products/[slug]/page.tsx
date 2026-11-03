@@ -3,7 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
-import { getProductBySlug, mockProducts } from "@/features/catalog/model/mock-products";
+import { listStorefrontProducts, findStorefrontProduct } from "@/features/catalog/api/storefront-service";
+import { mockProducts } from "@/features/catalog/model/mock-products";
 import { ProductCard } from "@/features/catalog/ui/ProductCard";
 import { ProductPurchasePanel } from "@/features/catalog/ui/ProductPurchasePanel";
 
@@ -14,12 +15,12 @@ interface ProductPageProps {
 }
 
 export function generateStaticParams() {
-  return mockProducts.map((product) => ({ slug: product.slug }));
+  return process.env.DATABASE_URL ? [] : mockProducts.map((product) => ({ slug: product.slug }));
 }
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await findStorefrontProduct(slug);
   return product ? {
     title: product.name,
     description: product.description,
@@ -34,11 +35,15 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   } : { title: "Товар не найден", robots: { index: false } };
 }
 
-export default async function ProductPage({ params }: ProductPageProps) {
+export default function ProductPage({ params }: ProductPageProps) {
+  return <Suspense fallback={<div className={styles.productFallback} role="status">Загружаем товар…</div>}><ProductContent params={params} /></Suspense>;
+}
+
+async function ProductContent({ params }: ProductPageProps) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await findStorefrontProduct(slug);
   if (!product) notFound();
-  const related = mockProducts.filter((item) => item.id !== product.id).slice(0, 4);
+  const related = (await listStorefrontProducts()).products.filter((item) => item.id !== product.id).slice(0, 4);
 
   return (
     <>
