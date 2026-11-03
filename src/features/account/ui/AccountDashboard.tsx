@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form";
 import { fetchAccountOrder, fetchAccountOrders, fetchAccountProfile, saveAccountProfile } from "@/features/account/api/account-client";
 import type { AccountOrders, AccountProfile } from "@/features/account/model/account-contracts";
 import { profileFormSchema, type ProfileFormFields } from "@/features/account/model/profile-form";
+import { AccountEmailChangeForm } from "@/features/account/ui/AccountEmailChangeForm";
 import { LogoutButton } from "@/features/auth/ui/LogoutButton";
 import { formatUsdMinor } from "@/shared/lib/format-money";
 import { pluralizeRu } from "@/shared/lib/pluralize-ru";
@@ -132,16 +133,13 @@ function AccountDashboardContent({ initialProfile, initialOrders }: AccountDashb
             <input aria-invalid={Boolean(form.formState.errors.phone)} autoComplete="tel" id="account-phone" placeholder="+1 555 123 4567" type="tel" {...form.register("phone")} />
             {form.formState.errors.phone ? <small role="alert">{form.formState.errors.phone.message}</small> : null}
 
-            <label htmlFor="account-email">Почта</label>
-            <input autoComplete="email" id="account-email" readOnly type="email" value={profileQuery.data.email} />
-            <p className={styles.fieldHint}>Адрес почты привязан к входу в аккаунт.</p>
-
             <button className={styles.saveButton} disabled={saveProfile.isPending || !form.formState.isDirty} type="submit">
               {saveProfile.isPending ? "Сохраняем…" : "Сохранить данные"} <span aria-hidden="true">↗</span>
             </button>
             {feedback === "saved" ? <p className={styles.success} role="status">Данные сохранены.</p> : null}
             {feedback === "error" ? <p className={styles.error} role="alert">{sessionExpired(saveProfile.error) ? <>Сессия завершилась. <Link href="/login">Войти снова</Link></> : "Не удалось сохранить данные. Попробуйте ещё раз."}</p> : null}
           </form>
+          <AccountEmailChangeForm email={profileQuery.data.email} />
         </section>
 
         <section className={styles.orders} aria-labelledby="orders-heading">

@@ -33,6 +33,17 @@ export async function saveAccountProfile(fields: ProfileFormFields) {
   return accountProfileSchema.parse(await readJson(response));
 }
 
+export async function requestAccountEmailChange(email: string): Promise<void> {
+  const response = await fetch("/api/account/email", {
+    method: "POST",
+    credentials: "same-origin",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
+  if (response.status === 429) throw new Error("RATE_LIMITED");
+  await readJson(response);
+}
+
 export async function fetchAccountOrders(page: number) {
   const response = await fetch(`/api/account/orders?page=${page}&limit=10`, {
     credentials: "same-origin", cache: "no-store",
