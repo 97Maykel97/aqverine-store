@@ -16,7 +16,11 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   try {
     return context.finish(adminJson(await updateAdminVariant(id.data, input.data)));
   } catch (error) {
-    if (error instanceof AdminDomainError) return context.finish(adminJson({ message: "Вариант не найден." }, 404));
+    if (error instanceof AdminDomainError) {
+      return context.finish(adminJson({ message: error.code === "PUBLISH_REQUIREMENTS"
+        ? "У опубликованного товара должен остаться активный вариант." : "Вариант не найден." },
+      error.code === "NOT_FOUND" ? 404 : 409));
+    }
     return context.finish(adminErrorResponse(error));
   }
 }

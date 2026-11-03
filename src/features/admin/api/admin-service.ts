@@ -86,12 +86,24 @@ export async function createAdminVariant(productId: string, input: AdminVariantC
 }
 
 export async function updateAdminVariant(variantId: string, input: AdminVariantUpdateInput) {
-  const result = await getPrisma().productVariant.updateMany({ where: { id: variantId }, data: input });
-  if (!result.count) throw new AdminDomainError("NOT_FOUND");
-  return getPrisma().productVariant.findUniqueOrThrow({
-    where: { id: variantId },
-    select: { id: true, sku: true, color: true, size: true, stock: true, priceMinor: true, isActive: true },
-  });
+  return getPrisma().$transaction(async (transaction) => {
+    const variant = await transaction.productVariant.findUnique({
+      where: { id: variantId },
+      select: { id: true, isActive: true, productId: true, product: { select: { status: true } } },
+    });
+    if (!variant) throw new AdminDomainError("NOT_FOUND");
+    if (input.isActive === false && variant.isActive && variant.product.status === ProductStatus.PUBLISHED) {
+      const otherActiveVariants = await transaction.productVariant.count({
+        where: { productId: variant.productId, id: { not: variantId }, isActive: true },
+      });
+      if (otherActiveVariants === 0) throw new AdminDomainError("PUBLISH_REQUIREMENTS");
+    }
+    return transaction.productVariant.update({
+      where: { id: variantId },
+      data: input,
+      select: { id: true, sku: true, color: true, size: true, stock: true, priceMinor: true, isActive: true },
+    });
+  }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
 }
 
 export async function listAdminOrders(page: number, limit: number) {
