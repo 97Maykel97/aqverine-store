@@ -9,7 +9,8 @@ export async function POST(request: NextRequest) {
   if (!context) return authJson({ message: "Выход пока недоступен." }, 503);
 
   try {
-    await context.client.auth.signOut();
+    const { error } = await context.client.auth.signOut({ scope: "global" });
+    if (error) throw error;
     return context.finish(authJson({ ok: true }));
   } catch {
     console.error("Authentication service failed during sign-out");

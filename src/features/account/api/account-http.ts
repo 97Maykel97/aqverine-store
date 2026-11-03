@@ -6,7 +6,7 @@ import { getPrisma } from "@/shared/lib/prisma";
 
 type AccountRequestContext =
   | { ok: false; response: NextResponse }
-  | { ok: true; userId: string; email: string; finish: (response: NextResponse) => NextResponse };
+  | { ok: true; userId: string; email: string; authClient: NonNullable<ReturnType<typeof createRouteAuthClient>>["client"]; finish: (response: NextResponse) => NextResponse };
 
 export function accountJson(body: Record<string, unknown>, status = 200) {
   return NextResponse.json(body, {
@@ -38,7 +38,7 @@ export async function getAccountRequestContext(request: NextRequest): Promise<Ac
     }
     const user = await getPrisma().user.findUnique({ where: { id: data.user.id }, select: { id: true } });
     if (!user) return { ok: false, response: context.finish(accountJson({ message: "Войдите в аккаунт." }, 401)) };
-    return { ok: true, userId: user.id, email: data.user.email ?? "", finish: context.finish };
+    return { ok: true, userId: user.id, email: data.user.email ?? "", authClient: context.client, finish: context.finish };
   } catch {
     console.error("Account authorization failed");
     return { ok: false, response: context.finish(accountJson({ message: "Сервис временно недоступен." }, 503)) };

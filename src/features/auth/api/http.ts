@@ -20,6 +20,8 @@ export async function readAuthBody(request: NextRequest): Promise<unknown | null
 }
 
 export function isSameOrigin(request: NextRequest): boolean {
+  const fetchSite = request.headers.get("sec-fetch-site");
+  if (fetchSite && fetchSite !== "same-origin" && fetchSite !== "none") return false;
   const origin = request.headers.get("origin");
   if (!origin) return true;
   try {

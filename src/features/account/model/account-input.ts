@@ -7,6 +7,10 @@ export const profileUpdateSchema = z.object({
 
 export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>;
 
+export const accountEmailChangeSchema = z.object({
+  email: z.email().max(254),
+}).strict();
+
 const orderListSchema = z.object({
   page: z.coerce.number().int().min(1).max(10000).default(1),
   limit: z.coerce.number().int().min(1).max(20).default(10),

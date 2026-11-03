@@ -1,5 +1,14 @@
 # Журнал прогресса AQVERINE
 
+## 2026-11-03 — Доработка API авторизации и каталога
+
+- Добавлен защищённый `POST /api/account/email` для смены почты с Zod-валидацией, ограничением попыток, подтверждением через Supabase Auth и нейтральным ответом без раскрытия доступности адреса. Проверка Fetch Metadata отклоняет запросы с чужого сайта даже без заголовка Origin; выход из аккаунта явно отзывает все сессии и проверяет ошибку провайдера.
+- Архитектурные решения: email остаётся в Supabase Auth и не дублируется в PostgreSQL; опубликованный товар не может потерять последний активный вариант через admin API. Для живой проверки смены email требуется включить Secure Email Change и настроить callback в Supabase.
+- Изменены `src/app/api/account/email/route.ts`, `src/app/api/auth/logout/route.ts`, `src/app/api/admin/variants/[variantId]/route.ts`, `src/features/account/{api/account-http.ts,model/account-input.ts}`, `src/features/admin/api/admin-service.ts`, `src/features/auth/api/http.ts`, `tests/{account-email-change,fetch-metadata-security}.test.ts`, `.gitignore`, `.env.example`, `README.md`, `docs/architecture.md` и `docs/progress.md`. Безопасный `.env.example` теперь включён в Git как шаблон с пустыми значениями; `.env.local` остаётся исключённым.
+- Новые переменные окружения: отсутствуют. Используются ранее предусмотренные `NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` и `DATABASE_URL`.
+- Изменения БД: отсутствуют; миграции не применялись без PostgreSQL.
+- Проверено: lint, typecheck, 54 теста и production build. Сканирование не обнаружило ключей в исходниках или документации; живой Supabase-сценарий остаётся непроверенным без окружения.
+
 ## 2026-11-03 — Подключение публичной витрины к каталогу БД
 
 - Главная, каталог, карточка товара, поиск, корзина и sitemap используют опубликованные товары из PostgreSQL, когда настроен `DATABASE_URL`. Серверный слой преобразует публичные товары и варианты в существующий интерфейс; цветовые фото, SKU и индивидуальные цены вариантов сохраняются. Без БД остаётся прежний демонстрационный каталог.
