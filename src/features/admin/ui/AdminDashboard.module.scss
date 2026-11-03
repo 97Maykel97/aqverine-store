@@ -1,0 +1,78 @@
+.page { min-height: 80svh; padding: 0 clamp(1rem, 4vw, 4rem) 5rem; background: var(--color-canvas); color: var(--color-ink); }
+.topline { display: flex; justify-content: space-between; gap: 1rem; padding: 1.1rem 0; border-bottom: 1px solid #d9d5cc; font-size: .73rem; font-weight: 900; letter-spacing: .12em; }
+.hero { display: flex; justify-content: space-between; align-items: end; gap: 2rem; padding: clamp(2.5rem, 5vw, 5rem) 0 2rem; }
+.hero h1 { margin: .75rem 0 0; font-size: clamp(3.1rem, 7.7vw, 8rem); font-weight: 900; letter-spacing: -.085em; line-height: .85; }
+.hero h1 em { color: var(--color-cobalt); font-style: normal; }
+.hero p { max-width: 20rem; margin: 0 0 .3rem; font-size: clamp(.95rem, 1.2vw, 1.15rem); line-height: 1.5; }
+.eyebrow { display: block; font-size: .7rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
+.tabs { display: flex; gap: 0; border-bottom: 1px solid #cfcac0; }
+.tabs button { display: flex; align-items: center; gap: .75rem; padding: 1rem 1.5rem; border: 0; border-bottom: 3px solid transparent; background: transparent; color: inherit; font-size: .95rem; font-weight: 900; cursor: pointer; }
+.tabs button[aria-selected='true'] { border-color: var(--color-accent); }
+.tabs span { color: var(--color-cobalt); font-size: .75rem; }
+.notice, .state { padding: 1.2rem; border: 1px solid #d7d2c9; background: #fff; }
+.state { margin-top: 1.5rem; }
+.state button { border: 0; background: transparent; font-weight: 900; text-decoration: underline; cursor: pointer; }
+.createPanel { display: grid; grid-template-columns: 1fr auto; align-items: start; gap: 1.5rem; margin: 1.5rem 0; padding: clamp(1.2rem, 3vw, 2.5rem); background: #171717; color: #fff; }
+.createPanel h2 { margin: .4rem 0; font-size: clamp(1.5rem, 3vw, 2.4rem); letter-spacing: -.05em; }
+.createPanel p { margin: .2rem 0 0; color: #ccc; }
+.primaryButton { min-height: 44px; padding: .75rem 1.2rem; border: 0; background: var(--color-accent); color: #171717; font-size: .8rem; font-weight: 900; cursor: pointer; }
+.primaryButton:disabled { opacity: .55; cursor: not-allowed; }
+.formGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-column: 1 / -1; gap: .8rem; padding-top: 1rem; }
+.formGrid label, .inlineForm label, .variant label, .imageRow label { display: grid; gap: .35rem; font-size: .75rem; font-weight: 800; }
+.formGrid input, .formGrid select, .formGrid textarea, .inlineForm input, .variant input, .imageRow input { width: 100%; min-width: 0; min-height: 42px; padding: .65rem .8rem; border: 1px solid #bcb8af; border-radius: 0; background: #fff; color: #171717; font: inherit; }
+.formGrid textarea { resize: vertical; }
+.formGrid .wide { grid-column: 1 / -1; }
+.formGrid [role='alert'] { color: #ff9e8b; }
+.productList, .orderList { display: grid; gap: .8rem; }
+.productCard, .orderCard { border: 1px solid #d7d2c9; background: #fff; }
+.productSummary { display: grid; grid-template-columns: 76px minmax(0, 1fr) auto; align-items: center; gap: 1.2rem; padding: 1rem; }
+.productSummary h3, .orderCard h3 { margin: .2rem 0; font-size: clamp(1.15rem, 2vw, 1.5rem); letter-spacing: -.04em; }
+.productSummary > button, .details button, .variant button, .imageRow button { min-height: 40px; padding: .55rem .75rem; border: 1px solid #171717; background: #fff; color: #171717; font-weight: 800; cursor: pointer; }
+.productSummary button:hover, .details button:hover, .variant button:hover, .imageRow button:hover { background: #171717; color: #fff; }
+.productSummary button:disabled, .details button:disabled, .variant button:disabled, .imageRow button:disabled { opacity: .45; cursor: not-allowed; }
+.productThumb { position: relative; display: grid; place-items: center; width: 76px; height: 86px; overflow: hidden; background: #e7e3db; font-size: .6rem; font-weight: 900; }
+.productThumb img { object-fit: cover; }
+.details { display: grid; gap: 2rem; padding: 1.2rem; border-top: 1px solid #d7d2c9; }
+.details .formGrid { padding: 0; }
+.details .formGrid button { justify-self: start; }
+.subsection { display: grid; gap: .9rem; }
+.subsection h4 { margin: 0; font-size: 1.15rem; }
+.variantList, .imageList { display: grid; gap: .5rem; }
+.variant, .imageRow { display: grid; grid-template-columns: minmax(140px, 1fr) 110px 110px auto auto; align-items: center; gap: .7rem; padding: .7rem 0; border-top: 1px solid #e3ded5; }
+.variant small, .imageRow small { display: block; margin-top: .2rem; color: #6b6965; }
+.imageRow { grid-template-columns: 76px minmax(120px, 1fr) 100px auto auto; }
+.inlineForm { display: flex; flex-wrap: wrap; align-items: end; gap: .6rem; }
+.inlineForm > input { flex: 1 1 110px; }
+.inlineForm label { flex: 1 1 190px; }
+.inlineForm button { min-height: 42px; }
+.orderCard { padding: clamp(1rem, 2.5vw, 2rem); }
+.orderTop { display: flex; justify-content: space-between; align-items: start; gap: 1rem; }
+.orderTop > strong { font-size: 1.4rem; }
+.orderInfo { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; padding: .8rem 0; color: #555; font-size: .84rem; }
+.orderCard ul { margin: .5rem 0 1.2rem; padding-left: 1.2rem; }
+.orderCard li { margin: .35rem 0; }
+.pagination { display: flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 1.5rem; }
+.pagination button { padding: .6rem; border: 1px solid #171717; background: transparent; cursor: pointer; }
+.pagination button:disabled { opacity: .4; }
+@media (max-width: 760px) {
+  .hero { display: block; }
+  .hero p { margin-top: 1.5rem; }
+  .createPanel { grid-template-columns: 1fr; }
+  .createPanel > button { justify-self: start; }
+  .formGrid { grid-template-columns: 1fr; }
+  .formGrid .wide { grid-column: 1; }
+  .productSummary { grid-template-columns: 60px minmax(0, 1fr); }
+  .productThumb { width: 60px; height: 70px; }
+  .productSummary > button { grid-column: 1 / -1; }
+  .variant, .imageRow { grid-template-columns: minmax(0, 1fr) 90px; }
+  .variant button, .imageRow button { min-width: 0; }
+  .imageRow .productThumb { grid-column: 1; }
+  .imageRow > span { grid-column: 2; }
+}
+@media (max-width: 430px) {
+  .topline span { display: none; }
+  .hero h1 { font-size: clamp(2.8rem, 12vw, 4rem); }
+  .tabs button { flex: 1; justify-content: center; padding: 1rem .6rem; }
+  .productSummary { gap: .7rem; }
+  .orderTop > strong { font-size: 1rem; }
+}

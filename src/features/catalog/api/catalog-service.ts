@@ -1,5 +1,6 @@
 import { ProductStatus, type Prisma } from "@/generated/prisma/client";
 import type { CatalogQuery } from "@/features/catalog/model/catalog-query";
+import { getStorageImageUrl } from "@/features/catalog/api/storage-image-url";
 import { getPrisma } from "@/shared/lib/prisma";
 
 const productSelect = {
@@ -21,7 +22,7 @@ const productSelect = {
   },
   images: {
     orderBy: [{ sortOrder: "asc" }],
-    select: { color: true, localPath: true, altText: true, sortOrder: true },
+    select: { color: true, localPath: true, storageKey: true, altText: true, sortOrder: true },
   },
 } satisfies Prisma.ProductSelect;
 
@@ -48,7 +49,7 @@ function toPublicProduct(product: SelectedProduct) {
     })),
     images: product.images.map((image) => ({
       color: image.color,
-      url: image.localPath,
+      url: image.localPath ?? getStorageImageUrl(image.storageKey),
       alt: image.altText,
       sortOrder: image.sortOrder,
     })),

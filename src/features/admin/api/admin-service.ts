@@ -101,7 +101,9 @@ export async function listAdminOrders(page: number, limit: number) {
       orderBy: [{ createdAt: "desc" }, { id: "desc" }], skip: (page - 1) * limit, take: limit,
       select: {
         id: true, number: true, status: true, totalMinor: true, currency: true, createdAt: true,
+        contactName: true, contactEmail: true, contactPhone: true,
         items: { select: { productName: true, color: true, size: true, quantity: true } },
+        payments: { orderBy: { createdAt: "desc" }, take: 1, select: { status: true } },
       },
     }),
     prisma.order.count(),

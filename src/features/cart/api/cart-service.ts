@@ -1,5 +1,6 @@
 import { Prisma, ProductStatus } from "@/generated/prisma/client";
 import { CartDomainError, planGuestCartMerge, type MergeCartInput, type SetCartItemInput } from "@/features/cart/model/server-cart";
+import { getStorageImageUrl } from "@/features/catalog/api/storage-image-url";
 import { getPrisma } from "@/shared/lib/prisma";
 
 async function withCartTransaction<T>(run: (transaction: Prisma.TransactionClient) => Promise<T>): Promise<T> {
@@ -32,7 +33,7 @@ export async function getCartSnapshot(userId: string) {
               product: {
                 select: {
                   slug: true, name: true, priceMinor: true, currency: true, status: true, archivedAt: true,
-                  images: { orderBy: { sortOrder: "asc" }, select: { color: true, localPath: true } },
+                  images: { orderBy: { sortOrder: "asc" }, select: { color: true, localPath: true, storageKey: true } },
                 },
               },
             },
@@ -59,7 +60,7 @@ export async function getCartSnapshot(userId: string) {
       unitPriceMinor: priceMinor,
       lineTotalMinor: priceMinor * quantity,
       currency: variant.product.currency,
-      imageUrl: image?.localPath ?? null,
+      imageUrl: image?.localPath ?? getStorageImageUrl(image?.storageKey ?? null),
     };
   });
 
