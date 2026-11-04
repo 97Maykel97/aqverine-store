@@ -11,12 +11,12 @@ type ReservedPayment = {
   orderId: string;
   providerPaymentId: string | null;
   status: PaymentStatus;
+  provider: string;
+  orderStatus: OrderStatus;
   orderUserId: string;
   customerEmail: string;
   lines: { name: string; color: string; size: string; quantity: number; unitPriceMinor: number }[];
 };
-
-const STALE_UNSTARTED_PAYMENT_MS = 45 * 60 * 1000;
 
 async function withCheckoutTransaction<T>(run: (transaction: Prisma.TransactionClient) => Promise<T>): Promise<T> {
   for (let attempt = 0; attempt < 3; attempt += 1) {
@@ -35,10 +35,10 @@ async function findReservedPayment(idempotencyKey: string): Promise<ReservedPaym
   const payment = await getPrisma().payment.findUnique({
     where: { idempotencyKey },
     select: {
-      id: true, orderId: true, providerPaymentId: true, status: true,
+      id: true, orderId: true, providerPaymentId: true, status: true, provider: true,
       order: {
         select: {
-          userId: true, contactEmail: true,
+          userId: true, contactEmail: true, status: true,
           items: { select: { productName: true, color: true, size: true, quantity: true, unitPriceMinor: true } },
         },
       },
@@ -49,6 +49,8 @@ async function findReservedPayment(idempotencyKey: string): Promise<ReservedPaym
     orderId: payment.orderId,
     providerPaymentId: payment.providerPaymentId,
     status: payment.status,
+    provider: payment.provider,
+    orderStatus: payment.order.status,
     orderUserId: payment.order.userId,
     customerEmail: payment.order.contactEmail,
     lines: payment.order.items.map((item) => ({
@@ -153,6 +155,8 @@ async function reserveOrder(userId: string, input: CheckoutRequest, providerName
       orderId: order.id,
       providerPaymentId: null,
       status: PaymentStatus.PENDING,
+      provider: providerName,
+      orderStatus: OrderStatus.PENDING_PAYMENT,
       orderUserId: userId,
       customerEmail: input.email,
       lines: lines.map((line) => ({
@@ -166,46 +170,81 @@ async function reserveOrder(userId: string, input: CheckoutRequest, providerName
   });
 }
 
-async function cancelUnstartedPayment(paymentId: string) {
-  await withCheckoutTransaction(async (transaction) => {
-    const payment = await transaction.payment.findUnique({
-      where: { id: paymentId },
+async function reserveRetryPayment(userId: string, orderId: string, idempotencyKey: string, providerName: string): Promise<ReservedPayment> {
+  return withCheckoutTransaction(async (transaction) => {
+    const existing = await transaction.payment.findUnique({ where: { idempotencyKey }, select: { id: true } });
+    if (existing) throw new CheckoutError("RETRY_CONFLICT");
+
+    const order = await transaction.order.findFirst({
+      where: { id: orderId, userId, status: OrderStatus.CANCELLED },
       select: {
-        status: true, providerPaymentId: true, orderId: true,
-        order: { select: { status: true, items: { select: { variantId: true, quantity: true } } } },
+        id: true, userId: true, status: true, contactEmail: true, totalMinor: true, subtotalMinor: true, currency: true,
+        items: { select: { variantId: true, productName: true, color: true, size: true, quantity: true, unitPriceMinor: true } },
+        payments: { orderBy: [{ createdAt: "desc" }, { id: "desc" }], take: 1, select: { status: true } },
       },
     });
-    if (!payment || payment.status !== PaymentStatus.PENDING || payment.providerPaymentId ||
-      payment.order.status !== OrderStatus.PENDING_PAYMENT) return;
-
-    for (const item of payment.order.items) {
-      if (!item.variantId) throw new CheckoutError("PRODUCT_UNAVAILABLE");
-      await transaction.productVariant.update({
-        where: { id: item.variantId }, data: { stock: { increment: item.quantity } },
-      });
+    if (!order || !order.items.length || !order.payments.length ||
+      (order.payments[0].status !== PaymentStatus.CANCELLED && order.payments[0].status !== PaymentStatus.FAILED)) {
+      throw new CheckoutError("ORDER_UNAVAILABLE");
     }
-    await transaction.payment.update({ where: { id: paymentId }, data: { status: PaymentStatus.FAILED } });
-    await transaction.order.update({ where: { id: payment.orderId }, data: { status: OrderStatus.CANCELLED } });
-  });
-}
+    if (order.currency !== "USD") throw new CheckoutError("PRODUCT_UNAVAILABLE");
 
-async function releaseStaleUnstartedPayments(userId: string) {
-  const stale = await getPrisma().payment.findMany({
-    where: {
-      status: PaymentStatus.PENDING,
+    const items = [...order.items].sort((left, right) => (left.variantId ?? "").localeCompare(right.variantId ?? ""));
+    let currentTotal = 0;
+    for (const item of items) {
+      if (!item.variantId) throw new CheckoutError("PRODUCT_UNAVAILABLE");
+      const variant = await transaction.productVariant.findUnique({
+        where: { id: item.variantId },
+        select: {
+          isActive: true, stock: true, priceMinor: true,
+          product: { select: { status: true, archivedAt: true, currency: true, priceMinor: true } },
+        },
+      });
+      if (!variant?.isActive || variant.product.status !== ProductStatus.PUBLISHED || variant.product.archivedAt ||
+        variant.product.currency !== "USD") throw new CheckoutError("PRODUCT_UNAVAILABLE");
+      if ((variant.priceMinor ?? variant.product.priceMinor) !== item.unitPriceMinor) throw new CheckoutError("PRICE_CHANGED");
+      if (variant.stock < item.quantity) throw new CheckoutError("INSUFFICIENT_STOCK");
+      currentTotal += item.unitPriceMinor * item.quantity;
+    }
+    if (!Number.isSafeInteger(currentTotal) || currentTotal !== order.totalMinor || currentTotal !== order.subtotalMinor) {
+      throw new CheckoutError("INVALID_TOTAL");
+    }
+
+    for (const item of items) {
+      if (!item.variantId) throw new CheckoutError("PRODUCT_UNAVAILABLE");
+      const result = await transaction.productVariant.updateMany({
+        where: { id: item.variantId, isActive: true, stock: { gte: item.quantity } },
+        data: { stock: { decrement: item.quantity } },
+      });
+      if (result.count !== 1) throw new CheckoutError("INSUFFICIENT_STOCK");
+    }
+    const resumed = await transaction.order.updateMany({
+      where: { id: order.id, userId, status: OrderStatus.CANCELLED },
+      data: { status: OrderStatus.PENDING_PAYMENT },
+    });
+    if (resumed.count !== 1) throw new CheckoutError("ORDER_UNAVAILABLE");
+    const payment = await transaction.payment.create({
+      data: { orderId: order.id, provider: providerName, idempotencyKey, amountMinor: order.totalMinor, currency: "USD" },
+      select: { id: true },
+    });
+    return {
+      id: payment.id,
+      orderId: order.id,
       providerPaymentId: null,
-      createdAt: { lt: new Date(Date.now() - STALE_UNSTARTED_PAYMENT_MS) },
-      order: { userId, status: OrderStatus.PENDING_PAYMENT },
-    },
-    orderBy: { createdAt: "asc" },
-    take: 20,
-    select: { id: true },
+      status: PaymentStatus.PENDING,
+      provider: providerName,
+      orderStatus: OrderStatus.PENDING_PAYMENT,
+      orderUserId: userId,
+      customerEmail: order.contactEmail,
+      lines: items.map((item) => ({
+        name: item.productName, color: item.color, size: item.size,
+        quantity: item.quantity, unitPriceMinor: item.unitPriceMinor,
+      })),
+    };
   });
-  for (const payment of stale) await cancelUnstartedPayment(payment.id);
 }
 
 export async function startCheckout(userId: string, input: CheckoutRequest, provider: PaymentProvider) {
-  await releaseStaleUnstartedPayments(userId);
   let reservation = await findReservedPayment(input.idempotencyKey);
   if (!reservation) {
     try {
@@ -218,7 +257,28 @@ export async function startCheckout(userId: string, input: CheckoutRequest, prov
     }
   }
   if (reservation.orderUserId !== userId) throw new CheckoutError("RETRY_CONFLICT");
-  if (reservation.status !== PaymentStatus.PENDING) throw new CheckoutError("PAYMENT_UNAVAILABLE");
+  return activateReservedPayment(reservation, provider);
+}
+
+export async function retryOrderPayment(userId: string, orderId: string, idempotencyKey: string, provider: PaymentProvider) {
+  let reservation = await findReservedPayment(idempotencyKey);
+  if (!reservation) {
+    try {
+      reservation = await reserveRetryPayment(userId, orderId, idempotencyKey, provider.name);
+    } catch (error) {
+      const duplicateKey = error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002";
+      if (!duplicateKey && (!(error instanceof CheckoutError) || error.code !== "RETRY_CONFLICT")) throw error;
+      reservation = await findReservedPayment(idempotencyKey);
+      if (!reservation) throw error;
+    }
+  }
+  if (reservation.orderUserId !== userId || reservation.orderId !== orderId) throw new CheckoutError("RETRY_CONFLICT");
+  return activateReservedPayment(reservation, provider);
+}
+
+async function activateReservedPayment(reservation: ReservedPayment, provider: PaymentProvider) {
+  if (reservation.status !== PaymentStatus.PENDING || reservation.orderStatus !== OrderStatus.PENDING_PAYMENT ||
+    reservation.provider !== provider.name) throw new CheckoutError("PAYMENT_UNAVAILABLE");
 
   if (reservation.providerPaymentId) {
     const redirectUrl = await provider.recoverRedirectUrl(reservation.providerPaymentId);

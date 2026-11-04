@@ -27,6 +27,7 @@ export interface PaymentProvider {
   readonly name: string;
   createPayment(input: CreatePaymentInput): Promise<{ providerPaymentId: string; redirectUrl: string }>;
   recoverRedirectUrl(providerPaymentId: string): Promise<string | null>;
+  expireOpenPayment?(providerPaymentId: string): Promise<boolean>;
   verifyWebhook(rawBody: string, signature: string): Promise<VerifiedPaymentEvent | null>;
 }
 

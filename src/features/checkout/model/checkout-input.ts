@@ -12,7 +12,7 @@ export const checkoutRequestSchema = z.object({
 export type CheckoutRequest = z.infer<typeof checkoutRequestSchema>;
 
 export class CheckoutError extends Error {
-  constructor(readonly code: "EMPTY_CART" | "PRODUCT_UNAVAILABLE" | "INSUFFICIENT_STOCK" | "INVALID_TOTAL" | "PAYMENT_UNAVAILABLE" | "RETRY_CONFLICT") {
+  constructor(readonly code: "EMPTY_CART" | "PRODUCT_UNAVAILABLE" | "INSUFFICIENT_STOCK" | "INVALID_TOTAL" | "PAYMENT_UNAVAILABLE" | "RETRY_CONFLICT" | "ORDER_UNAVAILABLE" | "PRICE_CHANGED") {
     super(code);
   }
 }

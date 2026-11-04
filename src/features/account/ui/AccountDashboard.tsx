@@ -11,6 +11,7 @@ import type { AccountOrders, AccountProfile } from "@/features/account/model/acc
 import { profileFormSchema, type ProfileFormFields } from "@/features/account/model/profile-form";
 import { AccountEmailChangeForm } from "@/features/account/ui/AccountEmailChangeForm";
 import { LogoutButton } from "@/features/auth/ui/LogoutButton";
+import { RetryPaymentButton } from "@/features/payments/ui/RetryPaymentButton";
 import { formatUsdMinor } from "@/shared/lib/format-money";
 import { pluralizeRu } from "@/shared/lib/pluralize-ru";
 
@@ -169,6 +170,8 @@ function AccountDashboardContent({ initialProfile, initialOrders }: AccountDashb
                       <strong>{formatUsdMinor(order.totalMinor)}</strong>
                     </div>
                     <div className={styles.orderMeta}><span>{orderLabels[order.status]}</span><span>Оплата: {order.paymentStatus ? paymentLabels[order.paymentStatus] : "не создана"}</span><span>{order.items.length} {pluralizeRu(order.items.length, { one: "позиция", few: "позиции", many: "позиций" })}</span></div>
+                    {order.status === "CANCELLED" && (order.paymentStatus === "FAILED" || order.paymentStatus === "CANCELLED")
+                      ? <RetryPaymentButton orderId={order.id} /> : null}
                     <button aria-expanded={selectedOrderId === order.id} className={styles.detailButton} disabled={showingPreviousPage} onClick={() => setSelectedOrderId(selectedOrderId === order.id ? null : order.id)} type="button">
                       {selectedOrderId === order.id ? "Скрыть детали" : "Посмотреть детали"} <span aria-hidden="true">↗</span>
                     </button>

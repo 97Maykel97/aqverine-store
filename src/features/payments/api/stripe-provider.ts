@@ -47,6 +47,13 @@ export class StripePaymentProvider implements PaymentProvider {
     return session.status === "open" ? session.url : null;
   }
 
+  async expireOpenPayment(providerPaymentId: string): Promise<boolean> {
+    const session = await this.stripe.checkout.sessions.retrieve(providerPaymentId);
+    if (session.status !== "open") return false;
+    await this.stripe.checkout.sessions.expire(providerPaymentId);
+    return true;
+  }
+
   async verifyWebhook(rawBody: string, signature: string): Promise<VerifiedPaymentEvent | null> {
     let event: Stripe.Event;
     try {

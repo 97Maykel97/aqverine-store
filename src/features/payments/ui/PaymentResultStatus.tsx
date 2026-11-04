@@ -1,13 +1,16 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
+import { useState } from "react";
 import { z } from "zod";
+
+import { RetryPaymentButton } from "@/features/payments/ui/RetryPaymentButton";
 
 import styles from "./PaymentResultPreview.module.scss";
 
 const orderStatusSchema = z.object({
-  number: z.string(),
+  number: z.number().int().positive(),
   status: z.enum(["PENDING_PAYMENT", "PAID", "PROCESSING", "COMPLETED", "CANCELLED", "REFUNDED"]),
   paymentStatus: z.enum(["PENDING", "PAID", "FAILED", "CANCELLED", "REFUNDED"]).nullable(),
 });
@@ -25,6 +28,11 @@ async function fetchOrderStatus(orderId: string): Promise<OrderStatus> {
 }
 
 export function PaymentResultStatus({ orderId }: { orderId: string }) {
+  const [queryClient] = useState(() => new QueryClient({ defaultOptions: { queries: { retry: 1 } } }));
+  return <QueryClientProvider client={queryClient}><PaymentResultContent orderId={orderId} /></QueryClientProvider>;
+}
+
+function PaymentResultContent({ orderId }: { orderId: string }) {
   const query = useQuery({
     queryKey: ["payment-result", orderId],
     queryFn: () => fetchOrderStatus(orderId),
@@ -33,15 +41,20 @@ export function PaymentResultStatus({ orderId }: { orderId: string }) {
   });
   const status = query.data;
   const paid = status && ["PAID", "PROCESSING", "COMPLETED"].includes(status.status) && status.paymentStatus === "PAID";
-  const ended = status && ["CANCELLED", "REFUNDED"].includes(status.status);
+  const cancelled = status?.status === "CANCELLED";
+  const refunded = status?.status === "REFUNDED";
+  const canRetry = status?.status === "CANCELLED" &&
+    (status.paymentStatus === "CANCELLED" || status.paymentStatus === "FAILED");
   const title = paid ? "ОПЛАТА ПОДТВЕРЖДЕНА."
-    : ended ? "ЗАКАЗ НЕ ОПЛАЧЕН."
+    : refunded ? "ВОЗВРАТ ОФОРМЛЕН."
+      : cancelled ? "ЗАКАЗ НЕ ОПЛАЧЕН."
       : query.error?.message === "UNAUTHORIZED" ? "ВОЙДИ В АККАУНТ."
         : query.isError ? "СТАТУС НЕДОСТУПЕН."
           : "ПРОВЕРЯЕМ ОПЛАТУ.";
   const description = paid
     ? `Заказ ${status.number} оплачен. Подтверждение получено от платёжного провайдера.`
-    : ended ? `Заказ ${status.number} не ожидает оплаты. Вернись к покупкам или свяжись с поддержкой.`
+    : refunded ? `По заказу ${status.number} оформлен возврат.`
+      : cancelled ? `Заказ ${status.number} не ожидает оплаты. Можно повторить оплату, если товары ещё доступны.`
       : query.error?.message === "UNAUTHORIZED"
         ? "Статус заказа доступен только в аккаунте, с которого он был оформлен."
         : query.isError
@@ -53,11 +66,12 @@ export function PaymentResultStatus({ orderId }: { orderId: string }) {
       <div className={styles.panel}>
         <div className={styles.top}><span>AQVERINE / PAYMENT</span><span>ЗАКАЗ {status?.number ?? ""}</span></div>
         <div className={styles.content}>
-          <span aria-hidden="true" className={styles.symbol}>{paid ? "✓" : ended ? "×" : "↗"}</span>
+          <span aria-hidden="true" className={styles.symbol}>{paid ? "✓" : cancelled ? "×" : "↗"}</span>
           <span className={styles.eyebrow}>СТАТУС ЗАКАЗА</span>
           <h1 id="payment-result-title">{title}</h1>
           <p role="status">{description}</p>
           <div className={styles.actions}>
+            {canRetry ? <RetryPaymentButton orderId={orderId} theme="light" /> : null}
             <Link href="/account">К моим заказам <span aria-hidden="true">↗</span></Link>
             <Link href={query.error?.message === "UNAUTHORIZED" ? "/login?next=/account" : "/catalog"}>
               {query.error?.message === "UNAUTHORIZED" ? "Войти" : "Вернуться в каталог"}
