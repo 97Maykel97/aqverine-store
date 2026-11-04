@@ -1,5 +1,14 @@
 # Журнал прогресса AQVERINE
 
+## 2026-11-05 — Смена email в кабинете и восстановление оплаты
+
+- В кабинете добавлена форма подтверждаемой смены email. Для отменённого заказа добавлена повторная оплата через новый Stripe Checkout Session с проверкой владельца, текущей цены и остатка; кнопка доступна в истории заказов и на странице результата оплаты. Исправлено чтение числового номера заказа и подключение TanStack Query на странице результата. Добавлено защищённое задание закрытия старых открытых Stripe-сессий.
+- Архитектурные решения: повторная оплата сохраняет исходный `Order` и создаёт новый `Payment` с отдельным ключом идемпотентности; повторное резервирование происходит в Serializable-транзакции. Задание закрывает только сессию у Stripe, не меняя локальные платёжные статусы и остатки; это делает только подписанный webhook. Удалено прежнее локальное завершение платежей без webhook. Для задания нужен внешний планировщик; при недоставленном webhook требуется повторная доставка или диагностика.
+- Изменены `src/features/account/{api/account-client.ts,ui/AccountDashboard.tsx,ui/AccountEmailChangeForm.*}`, `src/features/checkout/{api/checkout-service.ts,model/checkout-input.ts}`, `src/features/payments/{api/stripe-provider.ts,api/expire-stale-sessions.ts,api/retry-payment-client.ts,model/payment-provider.ts,ui/PaymentResultStatus.tsx,ui/PaymentResultPreview.module.scss,ui/RetryPaymentButton.*}`, `src/app/api/account/orders/[orderId]/retry-payment/route.ts`, `src/app/api/internal/payments/expire-stale/route.ts`, `.env.example`, `README.md`, `docs/{architecture,payment-flow,implementation-plan,progress}.md` и новые тесты этих сценариев.
+- Новые переменные окружения: `CRON_SECRET` — серверный секрет для вызова задания; в `.env.example` оставлено пустое значение.
+- Изменения БД: схема и миграции не менялись; применение существующих миграций всё ещё ожидает доступный PostgreSQL.
+- Проверено: lint и typecheck прошли; 8 целевых тестов повторной оплаты, маршрута и закрытия сессий прошли до последующих правок. Новый компонентный тест не запущен: запуск Vitest вне песочницы отклонён, внутри — `spawn EPERM`. Production build скомпилировал приложение, но также остановился на `spawn EPERM`; dev-сервер и browser-проверка по той же причине недоступны. Живая интеграция Stripe/Supabase/PostgreSQL не проверялась без настроенных сервисов.
+
 ## 2026-11-03 — Доработка API авторизации и каталога
 
 - Добавлен защищённый `POST /api/account/email` для смены почты с Zod-валидацией, ограничением попыток, подтверждением через Supabase Auth и нейтральным ответом без раскрытия доступности адреса. Проверка Fetch Metadata отклоняет запросы с чужого сайта даже без заголовка Origin; выход из аккаунта явно отзывает все сессии и проверяет ошибку провайдера.
