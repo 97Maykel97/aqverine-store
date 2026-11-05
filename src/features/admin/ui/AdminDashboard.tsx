@@ -84,8 +84,9 @@ function useAdminAction(onMessage: (message: string) => void) {
   const client = useQueryClient();
   return useMutation({
     mutationFn: async ({ path, method, body }: { path: string; method: string; body?: unknown }) => adminFetch(path, method, body),
-    onSuccess: async () => {
-      onMessage("Изменения сохранены.");
+    onSuccess: async (_result, variables) => {
+      onMessage(variables.method === "DELETE" && variables.path.startsWith("/api/admin/products/")
+        ? "Черновик товара удалён." : "Изменения сохранены.");
       await Promise.all([client.invalidateQueries({ queryKey: ["admin-products"] }), client.invalidateQueries({ queryKey: ["admin-orders"] })]);
     },
     onError: (error: Error) => onMessage(error.message),
@@ -270,6 +271,11 @@ function ProductEditor({ product, action }: { product: AdminProduct; action: Ret
             action.mutate({ path: `/api/admin/products/${product.id}`, method: "PATCH", body: { status: "ARCHIVED" } });
           }
         }} type="button">Архивировать</button> : null}
+        {product.status === "DRAFT" ? <button className={styles.dangerButton} disabled={action.isPending} onClick={() => {
+          if (window.confirm(`Удалить черновик «${product.name}» навсегда? Если товар уже добавлен в корзину или заказ, удаление будет отклонено.`)) {
+            action.mutate({ path: `/api/admin/products/${product.id}`, method: "DELETE" });
+          }
+        }} type="button">Удалить черновик</button> : null}
       </div>
       <div className={styles.subsection}><h4>Варианты и остатки</h4>
         <div className={styles.variantList}>{product.variants.map((variant) => <VariantEditor action={action} key={variant.id} variant={variant} />)}</div>

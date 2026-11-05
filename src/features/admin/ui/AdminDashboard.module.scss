@@ -35,6 +35,8 @@
 .details { display: grid; gap: 2rem; padding: 1.2rem; border-top: 1px solid #d7d2c9; }
 .details .formGrid { padding: 0; }
 .details .formGrid button { justify-self: start; }
+.details .formGrid .dangerButton { border-color: #b43225; color: #a2291f; }
+.details .formGrid .dangerButton:hover { background: #b43225; color: #fff; }
 .subsection { display: grid; gap: .9rem; }
 .subsection h4 { margin: 0; font-size: 1.15rem; }
 .variantList, .imageList { display: grid; gap: .5rem; }

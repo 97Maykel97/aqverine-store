@@ -19,6 +19,25 @@ function getStorageClient() {
   return createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
 }
 
+export function isProductStorageAvailable() {
+  return getStorageClient() !== null;
+}
+
+export async function cleanupProductStorageImages(keys: string[]) {
+  if (!keys.length) return;
+  const storage = getStorageClient();
+  if (!storage) {
+    console.error("Product image storage cleanup failed");
+    return;
+  }
+  try {
+    const removed = await storage.storage.from(PRODUCT_IMAGE_BUCKET).remove(keys);
+    if (removed.error) console.error("Product image storage cleanup failed");
+  } catch {
+    console.error("Product image storage cleanup failed");
+  }
+}
+
 export class AdminStorageError extends Error {
   constructor(readonly code: "UNAVAILABLE" | "INVALID_FILE" | "PRODUCT_NOT_FOUND") {
     super(code);

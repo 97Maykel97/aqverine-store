@@ -1,10 +1,11 @@
 import { OrderStatus, Prisma, ProductStatus } from "@/generated/prisma/client";
 
 import type { AdminProductCreateInput, AdminProductUpdateInput, AdminVariantCreateInput, AdminVariantUpdateInput } from "@/features/admin/model/admin-input";
+import { cleanupProductStorageImages, isProductStorageAvailable } from "@/features/admin/api/admin-storage";
 import { getPrisma } from "@/shared/lib/prisma";
 
 export class AdminDomainError extends Error {
-  constructor(readonly code: "NOT_FOUND" | "PUBLISH_REQUIREMENTS" | "INVALID_TRANSITION") {
+  constructor(readonly code: "NOT_FOUND" | "PUBLISH_REQUIREMENTS" | "INVALID_TRANSITION" | "DELETE_REQUIRES_DRAFT" | "PRODUCT_IN_USE" | "STORAGE_UNAVAILABLE") {
     super(code);
   }
 }
@@ -74,6 +75,37 @@ export async function updateAdminProduct(productId: string, input: AdminProductU
       select: productSelect,
     });
   }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
+}
+
+export async function deleteAdminProduct(productId: string) {
+  const storageKeys = await getPrisma().$transaction(async (transaction) => {
+    const product = await transaction.product.findUnique({ where: { id: productId }, select: { status: true } });
+    if (!product) throw new AdminDomainError("NOT_FOUND");
+    if (product.status !== ProductStatus.DRAFT) throw new AdminDomainError("DELETE_REQUIRES_DRAFT");
+
+    // Lock the product and its variants before checking references, so concurrent cart and order writes wait.
+    const locked = await transaction.product.updateMany({
+      where: { id: productId, status: ProductStatus.DRAFT }, data: { updatedAt: new Date() },
+    });
+    if (!locked.count) throw new AdminDomainError("DELETE_REQUIRES_DRAFT");
+    await transaction.productVariant.updateMany({ where: { productId }, data: { updatedAt: new Date() } });
+
+    const [orderItems, cartItems, images] = await Promise.all([
+      transaction.orderItem.count({ where: { OR: [{ productId }, { variant: { productId } }] } }),
+      transaction.cartItem.count({ where: { variant: { productId } } }),
+      transaction.productImage.findMany({ where: { productId }, select: { storageKey: true } }),
+    ]);
+    if (orderItems || cartItems) throw new AdminDomainError("PRODUCT_IN_USE");
+    const keys = images.flatMap((image) => image.storageKey ? [image.storageKey] : []);
+    if (keys.length && !isProductStorageAvailable()) throw new AdminDomainError("STORAGE_UNAVAILABLE");
+
+    await transaction.productVariant.deleteMany({ where: { productId } });
+    await transaction.product.delete({ where: { id: productId } });
+    return keys;
+  }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
+
+  await cleanupProductStorageImages(storageKeys);
+  return { deleted: true };
 }
 
 export async function createAdminVariant(productId: string, input: AdminVariantCreateInput) {
