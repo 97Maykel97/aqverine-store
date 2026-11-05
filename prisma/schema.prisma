@@ -138,6 +138,19 @@ model ProductImage {
   @@map("product_images")
 }
 
+model ProductImageCleanupJob {
+  id            String    @id @default(uuid()) @db.Uuid
+  storageKey    String    @unique @map("storage_key")
+  attempts      Int       @default(0)
+  nextAttemptAt DateTime  @default(now()) @map("next_attempt_at") @db.Timestamptz(6)
+  leaseUntil    DateTime? @map("lease_until") @db.Timestamptz(6)
+  completedAt   DateTime? @map("completed_at") @db.Timestamptz(6)
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([completedAt, nextAttemptAt, createdAt], map: "image_cleanup_due_idx")
+  @@map("product_image_cleanup_jobs")
+}
+
 model Cart {
   id        String   @id @default(uuid()) @db.Uuid
   userId    String   @unique @map("user_id") @db.Uuid

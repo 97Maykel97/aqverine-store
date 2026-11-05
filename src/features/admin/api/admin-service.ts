@@ -99,6 +99,11 @@ export async function deleteAdminProduct(productId: string) {
     const keys = images.flatMap((image) => image.storageKey ? [image.storageKey] : []);
     if (keys.length && !isProductStorageAvailable()) throw new AdminDomainError("STORAGE_UNAVAILABLE");
 
+    if (keys.length) {
+      await transaction.productImageCleanupJob.createMany({
+        data: keys.map((storageKey) => ({ storageKey })), skipDuplicates: true,
+      });
+    }
     await transaction.productVariant.deleteMany({ where: { productId } });
     await transaction.product.delete({ where: { id: productId } });
     return keys;

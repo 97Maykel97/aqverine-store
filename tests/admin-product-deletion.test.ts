@@ -5,7 +5,7 @@ import { deleteAdminProduct } from "@/features/admin/api/admin-service";
 const database = vi.hoisted(() => ({
   productFindUnique: vi.fn(), productUpdateMany: vi.fn(), variantUpdateMany: vi.fn(),
   orderItemCount: vi.fn(), cartItemCount: vi.fn(), imageFindMany: vi.fn(),
-  variantDeleteMany: vi.fn(), productDelete: vi.fn(), transaction: vi.fn(),
+  variantDeleteMany: vi.fn(), productDelete: vi.fn(), cleanupJobCreateMany: vi.fn(), transaction: vi.fn(),
   storageAvailable: vi.fn(), storageCleanup: vi.fn(),
 }));
 
@@ -32,6 +32,7 @@ beforeEach(() => {
     orderItem: { count: database.orderItemCount },
     cartItem: { count: database.cartItemCount },
     productImage: { findMany: database.imageFindMany },
+    productImageCleanupJob: { createMany: database.cleanupJobCreateMany },
   }));
 });
 
@@ -44,6 +45,9 @@ describe("admin product deletion", () => {
       where: { id: "product-id", status: "DRAFT" }, data: { updatedAt: expect.any(Date) },
     });
     expect(database.variantDeleteMany).toHaveBeenCalledWith({ where: { productId: "product-id" } });
+    expect(database.cleanupJobCreateMany).toHaveBeenCalledWith({
+      data: [{ storageKey: "draft/image.webp" }], skipDuplicates: true,
+    });
     expect(database.productDelete).toHaveBeenCalledWith({ where: { id: "product-id" } });
     expect(database.storageCleanup).toHaveBeenCalledWith(["draft/image.webp"]);
   });

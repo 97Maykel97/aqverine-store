@@ -86,7 +86,7 @@ function useAdminAction(onMessage: (message: string) => void) {
     mutationFn: async ({ path, method, body }: { path: string; method: string; body?: unknown }) => adminFetch(path, method, body),
     onSuccess: async (_result, variables) => {
       onMessage(variables.method === "DELETE" && variables.path.startsWith("/api/admin/products/")
-        ? "Черновик товара удалён." : "Изменения сохранены.");
+        ? "Черновик удалён. Фотографии поставлены в очередь очистки." : "Изменения сохранены.");
       await Promise.all([client.invalidateQueries({ queryKey: ["admin-products"] }), client.invalidateQueries({ queryKey: ["admin-orders"] })]);
     },
     onError: (error: Error) => onMessage(error.message),
