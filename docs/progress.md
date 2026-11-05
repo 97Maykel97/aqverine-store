@@ -1,5 +1,14 @@
 # Журнал прогресса AQVERINE
 
+## 2026-11-05 — Проверка интеграций и восстановление browser-проверки
+
+- Проверено окружение: `DATABASE_URL`, ключи Supabase, Stripe и `CRON_SECRET` не настроены; локальные PostgreSQL, Docker, Supabase CLI и Stripe CLI отсутствуют. Поэтому миграции, вход пользователя, реальный checkout и доставка webhook не запускались. Prisma schema прошла `db:validate`.
+- Исправлены устаревшие ожидания проверок: компонентный тест ищет актуальный текст кнопки повтора оплаты; browser-скрипт использует `localhost`, текущие названия элементов кабинета и входа и ожидает асинхронное завершение переходов. Логика приложения и схема БД не менялись.
+- Изменены `tests/component/payment-retry-result.component.test.tsx`, `scripts/verify-frontend.mjs`, `README.md`, `docs/implementation-plan.md` и `docs/progress.md`.
+- Новые переменные окружения: нет. Для живой проверки требуются уже документированные `DATABASE_URL`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `PAYMENT_PROVIDER_SECRET_KEY`, `PAYMENT_WEBHOOK_SECRET` и `CRON_SECRET`; значения в Git не добавлялись.
+- Изменения БД: нет; миграции к серверу не применялись.
+- Проверено: `npm run db:validate`, `npm run lint`, `npm run typecheck`, `npm run test:run` (64 из 64), `npm run build`, `npm run test:browser` (все сценарии прошли на предусмотренных ширинах) и `npm run test:e2e` (10 из 10 на desktop/mobile). Для Vitest, Chrome и production build требовался запуск вне песочницы из-за `spawn EPERM`.
+
 ## 2026-11-05 — Смена email в кабинете и восстановление оплаты
 
 - В кабинете добавлена форма подтверждаемой смены email. Для отменённого заказа добавлена повторная оплата через новый Stripe Checkout Session с проверкой владельца, текущей цены и остатка; кнопка доступна в истории заказов и на странице результата оплаты. Исправлено чтение числового номера заказа и подключение TanStack Query на странице результата. Добавлено защищённое задание закрытия старых открытых Stripe-сессий.
