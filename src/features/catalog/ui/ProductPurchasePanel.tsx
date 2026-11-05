@@ -19,11 +19,11 @@ interface ProductPurchasePanelProps {
 
 export function ProductPurchasePanel({ product }: ProductPurchasePanelProps) {
   const requestedColor = useSearchParams().get("color");
-  const initialColor = requestedColor && product.colors.includes(requestedColor) ? requestedColor : product.colors[0];
-  return <ProductExperience initialColor={initialColor} key={initialColor} product={product} />;
+  const initialColor = requestedColor && product.colors.includes(requestedColor) ? requestedColor : null;
+  return <ProductExperience initialColor={initialColor} key={initialColor ?? "unselected"} product={product} />;
 }
 
-function ProductExperience({ product, initialColor }: ProductPurchasePanelProps & { initialColor: string }) {
+function ProductExperience({ product, initialColor }: ProductPurchasePanelProps & { initialColor: string | null }) {
   const { addItem, openCart } = useCart();
   const zoomDialogRef = useRef<HTMLDialogElement>(null);
   const fitDialogRef = useRef<HTMLDialogElement>(null);
@@ -31,11 +31,12 @@ function ProductExperience({ product, initialColor }: ProductPurchasePanelProps 
   const [size, setSize] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [message, setMessage] = useState("");
-  const image = getProductImage(product, color);
+  const previewColor = color ?? product.colors[0];
+  const image = getProductImage(product, previewColor);
   const hasFitGuide = Boolean(getProductFitProfile(product.slug));
-  const sizes = [...new Set(product.variants.filter((variant) => variant.color === color).map((variant) => variant.size))];
+  const sizes = [...new Set(product.variants.filter((variant) => variant.color === previewColor).map((variant) => variant.size))];
   const selectedVariant = product.variants.find((variant) => variant.color === color && variant.size === size);
-  const colorSoldOut = product.variants.filter((variant) => variant.color === color).every((variant) => variant.stock === 0);
+  const colorSoldOut = color ? product.variants.filter((variant) => variant.color === color).every((variant) => variant.stock === 0) : false;
 
   const selectColor = (nextColor: string) => {
     setColor(nextColor);
@@ -67,7 +68,7 @@ function ProductExperience({ product, initialColor }: ProductPurchasePanelProps 
             sizes="(max-width: 820px) 100vw, (max-width: 1600px) 48vw, 740px"
             src={image.src}
           />
-          <button aria-label={`Увеличить фото: ${product.name}, ${color}`} className={styles.zoomTrigger} onClick={() => zoomDialogRef.current?.showModal()} type="button">Увеличить фото <span aria-hidden="true">↗</span></button>
+          <button aria-label={`Увеличить фото: ${product.name}, ${previewColor}`} className={styles.zoomTrigger} onClick={() => zoomDialogRef.current?.showModal()} type="button">Увеличить фото <span aria-hidden="true">↗</span></button>
         </div>
         <div aria-label="Фотографии цветов" className={styles.thumbnails} role="group">
           {product.colors.map((item) => {
@@ -95,7 +96,7 @@ function ProductExperience({ product, initialColor }: ProductPurchasePanelProps 
         <p className={styles.description}>{product.description}</p>
 
         <div className={styles.option}>
-          <div className={styles.optionHeading}><strong>ЦВЕТ</strong><span>{color}</span></div>
+          <div className={styles.optionHeading}><strong>ЦВЕТ</strong><span>{color ?? "Выберите цвет"}</span></div>
           <div className={styles.colors} role="group" aria-label="Цвет товара">
             {product.colors.map((item) => (
               <button
@@ -109,11 +110,11 @@ function ProductExperience({ product, initialColor }: ProductPurchasePanelProps 
               ><span /></button>
             ))}
           </div>
-          <small>На фото — выбранный цвет.</small>
+          <small>{color ? "На фото — выбранный цвет." : `На фото — ${previewColor.toLowerCase()}. Выберите цвет.`}</small>
         </div>
 
         <div className={styles.option}>
-          <div className={styles.optionHeading}><strong>РАЗМЕР</strong><span>{size ?? "Выберите размер"}</span></div>
+          <div className={styles.optionHeading}><strong>РАЗМЕР</strong><span>{color ? size ?? "Выберите размер" : "После выбора цвета"}</span></div>
           <div className={styles.sizes} role="group" aria-label="Размер товара">
             {sizes.map((item) => {
               const variant = product.variants.find((entry) => entry.color === color && entry.size === item);
@@ -122,7 +123,7 @@ function ProductExperience({ product, initialColor }: ProductPurchasePanelProps 
                   aria-pressed={size === item}
                   aria-label={variant?.stock === 0 ? `${item}, нет в наличии` : item}
                   className={variant?.stock === 0 ? styles.soldOutSize : undefined}
-                  disabled={!variant || variant.stock === 0}
+                  disabled={!color || !variant || variant.stock === 0}
                   key={item}
                   onClick={() => { setSize(item); setQuantity(1); setMessage(""); }}
                   type="button"
@@ -140,20 +141,20 @@ function ProductExperience({ product, initialColor }: ProductPurchasePanelProps 
             <button aria-label="Увеличить количество" disabled={!selectedVariant || quantity >= selectedVariant.stock} onClick={() => setQuantity(quantity + 1)} type="button">+</button>
           </div>
           <button className={styles.addButton} disabled={!selectedVariant} onClick={() => { void handleAdd(); }} type="button">
-            <span>{selectedVariant ? "Добавить в корзину" : "Выберите размер"}</span><span aria-hidden="true">↗</span>
+            <span>{selectedVariant ? "Добавить в корзину" : color ? "Выберите размер" : "Выберите цвет"}</span><span aria-hidden="true">↗</span>
           </button>
         </div>
-        <p className={styles.feedback} role="status">{message || (colorSoldOut ? "Нет в наличии в этом цвете. Выберите другой цвет." : selectedVariant ? `В наличии: ${selectedVariant.stock} шт.` : "Выберите размер, чтобы добавить товар")}</p>
+        <p className={styles.feedback} role="status">{message || (!color ? "Выберите цвет, затем размер, чтобы добавить товар." : colorSoldOut ? "Нет в наличии в этом цвете. Выберите другой цвет." : selectedVariant ? `В наличии: ${selectedVariant.stock} шт.` : "Выберите размер, чтобы добавить товар")}</p>
         <div className={styles.extra}>
           <div><span>СОСТАВ</span><strong>{product.composition}</strong></div>
           <div><span>УХОД</span><strong>{product.careInstructions || "Рекомендации по уходу уточняются."}</strong></div>
         </div>
       </div>
-      <dialog aria-label={`Фото товара ${product.name}, цвет ${color}`} className={styles.zoomDialog} onClick={(event) => { if (event.target === zoomDialogRef.current) zoomDialogRef.current.close(); }} ref={zoomDialogRef}>
-        <div className={styles.dialogHeader}><strong>{product.name} · {color}</strong><form method="dialog"><button aria-label="Закрыть увеличенное фото" type="submit">×</button></form></div>
+      <dialog aria-label={`Фото товара ${product.name}, цвет ${previewColor}`} className={styles.zoomDialog} onClick={(event) => { if (event.target === zoomDialogRef.current) zoomDialogRef.current.close(); }} ref={zoomDialogRef}>
+        <div className={styles.dialogHeader}><strong>{product.name} · {previewColor}</strong><form method="dialog"><button aria-label="Закрыть увеличенное фото" type="submit">×</button></form></div>
         <div className={styles.zoomedPhoto}><Image alt={image.alt} fill sizes="(max-width: 700px) 90vw, 600px" src={image.src} /></div>
       </dialog>
-      {hasFitGuide ? <ProductFitGuide color={color} dialogRef={fitDialogRef} onSelectSize={(nextSize) => { setSize(nextSize); setQuantity(1); setMessage(""); }} product={product} selectedSize={size} /> : null}
+      {hasFitGuide ? <ProductFitGuide color={color ?? ""} dialogRef={fitDialogRef} onSelectSize={(nextSize) => { setSize(nextSize); setQuantity(1); setMessage(""); }} product={product} selectedSize={size} /> : null}
     </section>
   );
 }

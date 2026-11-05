@@ -37,6 +37,7 @@ export function ProductFitGuide({ dialogRef, product, color, selectedSize, onSel
         <strong>Ориентировочные замеры, см</strong>
         <span>По изделию, не по телу</span>
       </div>
+      {!color ? <p className={styles.chooseColorHint}>Сначала выберите цвет товара, затем размер в таблице.</p> : null}
       <p className={styles.mobileHint}>Листай таблицу вправо →</p>
       <div aria-label="Таблица размеров, прокрутите горизонтально при необходимости" className={styles.tableScroll} role="region" tabIndex={0}>
         <table>

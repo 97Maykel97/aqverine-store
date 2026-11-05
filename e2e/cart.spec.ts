@@ -29,7 +29,8 @@ test("selected product variant reaches the cart and quantity changes update the 
   await page.goto("/products/essential-t-shirt");
   await page.waitForLoadState("networkidle");
   await expect(page).toHaveTitle(/AQVERINE/);
-  await expect(page.getByRole("button", { name: "Выберите размер" })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Выберите цвет" })).toBeDisabled();
+  await expect(page.getByRole("group", { name: "Цвет товара" }).getByRole("button", { name: "Белый" })).toHaveAttribute("aria-pressed", "false");
 
   const blueButton = page.getByRole("group", { name: "Цвет товара" }).getByRole("button", { name: "Синий" });
   await blueButton.click();

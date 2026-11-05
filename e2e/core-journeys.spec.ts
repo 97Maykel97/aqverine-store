@@ -38,6 +38,7 @@ test("checkout blocks an empty cart and validates a demo without creating an ord
 
   await page.goto("/products/essential-t-shirt");
   await page.waitForLoadState("networkidle");
+  await page.getByRole("group", { name: "Цвет товара" }).getByRole("button", { name: "Белый" }).click();
   const medium = page.getByRole("group", { name: "Размер товара" }).getByRole("button", { name: "M" });
   await medium.click();
   await expect(medium).toHaveAttribute("aria-pressed", "true");

@@ -9,6 +9,7 @@
 .tableHeading strong { font-size: .9rem; }
 .tableHeading span { color: var(--color-muted); font-size: .73rem; }
 .mobileHint { display: none; }
+.chooseColorHint { margin: .6rem 0; color: var(--color-accent-text); font-size: .82rem; font-weight: 700; }
 .tableScroll { max-width: 100%; overflow-x: auto; scrollbar-width: thin; }
 .tableScroll:focus-visible { outline: 2px solid var(--color-accent-text); outline-offset: 3px; }
 .tableScroll table { width: 100%; min-width: 540px; border-collapse: collapse; text-align: left; font-size: .85rem; }

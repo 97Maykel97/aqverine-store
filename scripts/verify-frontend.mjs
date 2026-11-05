@@ -182,6 +182,7 @@ try {
       if (screenshotDir) await cartPage.screenshot({ path: join(screenshotDir, "fit-guide-1440.png"), fullPage: false });
       await desktopFitGuide.getByRole("button", { name: "Закрыть таблицу размеров" }).click();
     }
+    await cartPage.getByRole("group", { name: "Цвет товара" }).getByRole("button", { name: "Белый" }).click();
     await cartPage.getByRole("group", { name: "Размер товара" }).getByRole("button", { name: "M", exact: true }).click();
     await cartPage.getByRole("button", { name: "Добавить в корзину" }).click();
     const drawer = cartPage.getByRole("dialog", { name: "Корзина" });
