@@ -24,7 +24,7 @@ async function seedCatalog() {
             description: product.description,
             category: product.category,
             composition: product.composition,
-            careInstructions: "Бережная стирка при 30°C",
+            careInstructions: product.careInstructions ?? null,
             priceMinor: product.price,
             currency: "USD",
             status: ProductStatus.PUBLISHED,

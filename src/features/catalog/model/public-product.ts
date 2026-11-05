@@ -39,6 +39,7 @@ export function toCatalogProduct(raw: PublicProduct): CatalogProduct {
     description: raw.description,
     category: raw.category,
     composition: raw.composition ?? "",
+    careInstructions: raw.careInstructions?.trim() || undefined,
     price: raw.priceMinor,
     colors,
     image: first.url,

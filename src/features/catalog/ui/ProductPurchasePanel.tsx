@@ -35,6 +35,7 @@ function ProductExperience({ product, initialColor }: ProductPurchasePanelProps 
   const hasFitGuide = Boolean(getProductFitProfile(product.slug));
   const sizes = [...new Set(product.variants.filter((variant) => variant.color === color).map((variant) => variant.size))];
   const selectedVariant = product.variants.find((variant) => variant.color === color && variant.size === size);
+  const colorSoldOut = product.variants.filter((variant) => variant.color === color).every((variant) => variant.stock === 0);
 
   const selectColor = (nextColor: string) => {
     setColor(nextColor);
@@ -119,11 +120,13 @@ function ProductExperience({ product, initialColor }: ProductPurchasePanelProps 
               return (
                 <button
                   aria-pressed={size === item}
+                  aria-label={variant?.stock === 0 ? `${item}, нет в наличии` : item}
+                  className={variant?.stock === 0 ? styles.soldOutSize : undefined}
                   disabled={!variant || variant.stock === 0}
                   key={item}
                   onClick={() => { setSize(item); setQuantity(1); setMessage(""); }}
                   type="button"
-                >{item}</button>
+                >{item}{variant?.stock === 0 ? <small>Нет в наличии</small> : null}</button>
               );
             })}
           </div>
@@ -140,10 +143,10 @@ function ProductExperience({ product, initialColor }: ProductPurchasePanelProps 
             <span>{selectedVariant ? "Добавить в корзину" : "Выберите размер"}</span><span aria-hidden="true">↗</span>
           </button>
         </div>
-        <p className={styles.feedback} role="status">{message || (selectedVariant ? `В наличии: ${selectedVariant.stock} шт.` : "Выберите размер, чтобы добавить товар")}</p>
+        <p className={styles.feedback} role="status">{message || (colorSoldOut ? "Нет в наличии в этом цвете. Выберите другой цвет." : selectedVariant ? `В наличии: ${selectedVariant.stock} шт.` : "Выберите размер, чтобы добавить товар")}</p>
         <div className={styles.extra}>
           <div><span>СОСТАВ</span><strong>{product.composition}</strong></div>
-          <div><span>УХОД</span><strong>Бережная стирка при 30°C</strong></div>
+          <div><span>УХОД</span><strong>{product.careInstructions || "Рекомендации по уходу уточняются."}</strong></div>
         </div>
       </div>
       <dialog aria-label={`Фото товара ${product.name}, цвет ${color}`} className={styles.zoomDialog} onClick={(event) => { if (event.target === zoomDialogRef.current) zoomDialogRef.current.close(); }} ref={zoomDialogRef}>

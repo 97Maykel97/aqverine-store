@@ -37,6 +37,7 @@ export const mockProducts: readonly CatalogProduct[] = [
     },
     description: "Чистая форма на каждый день. Свободная посадка и плотный хлопок, который держит силуэт.",
     composition: "100% хлопок",
+    careInstructions: "Стирка наизнанку при 30 °C. Не отбеливать.",
     variants: createVariants("essential-t-shirt", ["Белый", "Чёрный", "Графит", "Синий"], ["S", "M", "L", "XL"]),
   },
   {
@@ -54,6 +55,7 @@ export const mockProducts: readonly CatalogProduct[] = [
     },
     description: "Мягкое худи свободного кроя для маршрутов без расписания.",
     composition: "80% хлопок, 20% полиэстер",
+    careInstructions: "Деликатная стирка при 30 °C. Сушить в расправленном виде.",
     variants: createVariants("everyday-hoodie", ["Чёрный", "Бежевый"], ["S", "M", "L", "XL"]),
   },
   {
@@ -71,6 +73,7 @@ export const mockProducts: readonly CatalogProduct[] = [
     },
     description: "Лёгкая рубашка с выразительным объёмом. Работает самостоятельно и поверх базового слоя.",
     composition: "100% хлопок",
+    careInstructions: "Стирка при 30 °C. Гладить с изнаночной стороны.",
     variants: createVariants("oversize-shirt", ["Голубой", "Молочный"], ["S", "M", "L"]),
   },
   {
@@ -88,6 +91,7 @@ export const mockProducts: readonly CatalogProduct[] = [
     },
     description: "Широкая посадка и выверенные линии: комфорт на весь день без компромисса в силуэте.",
     composition: "65% вискоза, 35% полиэстер",
+    careInstructions: "Деликатная стирка при 30 °C. Не сушить в машине.",
     variants: createVariants("relaxed-trousers", ["Чёрный", "Песочный"], ["S", "M", "L", "XL"]),
   },
   {
@@ -102,6 +106,7 @@ export const mockProducts: readonly CatalogProduct[] = [
     imagesByColor: { "Голубой": "/images/products/core-denim-jacket.png" },
     description: "Деним в правильной пропорции: расслабленный крой и уверенная фактура.",
     composition: "100% хлопок",
+    careInstructions: "Стирка наизнанку при 30 °C. Сушить вдали от прямого солнца.",
     variants: createVariants("core-denim-jacket", ["Голубой"], ["S", "M", "L", "XL"]),
   },
   {
@@ -119,6 +124,7 @@ export const mockProducts: readonly CatalogProduct[] = [
     },
     description: "Вместительная сумка из плотного холста для всего, что нужно в городе.",
     composition: "100% хлопок",
+    careInstructions: "Ручная стирка. Сушить в расправленном виде.",
     variants: createVariants("canvas-tote", ["Натуральный", "Чёрный"], ["ONE SIZE"]),
   },
 ];
