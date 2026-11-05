@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
+import { listPublishedProductSlugs } from "@/features/catalog/api/catalog-service";
 import { listStorefrontProducts, findStorefrontProduct } from "@/features/catalog/api/storefront-service";
 import { mockProducts } from "@/features/catalog/model/mock-products";
 import { ProductCard } from "@/features/catalog/ui/ProductCard";
@@ -14,8 +15,11 @@ interface ProductPageProps {
   params: Promise<{ slug: string }>;
 }
 
-export function generateStaticParams() {
-  return process.env.DATABASE_URL ? [] : mockProducts.map((product) => ({ slug: product.slug }));
+export async function generateStaticParams() {
+  if (!process.env.DATABASE_URL) return mockProducts.map((product) => ({ slug: product.slug }));
+
+  const [product] = await listPublishedProductSlugs(1);
+  return [{ slug: product?.slug ?? "__build_validation__" }];
 }
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {

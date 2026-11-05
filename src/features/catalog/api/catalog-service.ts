@@ -105,10 +105,11 @@ export async function findPublishedProduct(slug: string) {
   return product ? toPublicProduct(product) : null;
 }
 
-export async function listPublishedProductSlugs() {
+export async function listPublishedProductSlugs(limit?: number) {
   return getPrisma().product.findMany({
     where: { status: ProductStatus.PUBLISHED, archivedAt: null, variants: { some: { isActive: true } } },
     select: { slug: true },
     orderBy: { slug: "asc" },
+    take: limit,
   });
 }
