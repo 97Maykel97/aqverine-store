@@ -2,7 +2,7 @@ import { existsSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 import { chromium } from "playwright-core";
 
-const baseUrl = process.argv[2] ?? process.env.AQVERINE_QA_BASE_URL ?? "http://127.0.0.1:3000";
+const baseUrl = process.argv[2] ?? process.env.AQVERINE_QA_BASE_URL ?? "http://localhost:3000";
 const chromePath = process.env.AQVERINE_CHROME_PATH
   ?? (process.platform === "win32"
     ? "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
@@ -53,10 +53,10 @@ try {
     const { context, page } = await checkPage("/", width, `home-${width}.png`);
     if (width === 320 || width === 1440) {
       await page.evaluate(() => { window.__aqverineNavigationProbe = "preserved"; });
-      await page.getByRole("link", { name: "Личный кабинет — демо" }).click();
+      await page.getByRole("link", { name: "Личный кабинет" }).click();
       await page.waitForURL("**/account");
       if (!(await page.evaluate(() => window.__aqverineNavigationProbe === "preserved"))) failures.push(`Account navigation reloaded the document at ${width}px`);
-      if (!(await page.getByText("Это открытый предпросмотр кабинета").count())) failures.push(`Account preview was not reached from header at ${width}px`);
+      await page.getByText(/Пока сервис входа не настроен/).waitFor();
       if (await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)) failures.push(`Account preview overflows at ${width}px`);
       if (screenshotDir) await page.screenshot({ path: join(screenshotDir, `account-from-header-${width}.png`), fullPage: false });
     }
@@ -100,15 +100,12 @@ try {
   for (const width of [320, 390, 768, 1440, 2560]) {
     const { context, page } = await checkPage("/login", width, `login-${width}.png`);
     if (width === 390) {
-      await page.getByRole("button", { name: "Продолжить в демо" }).click();
+      await page.getByRole("button", { name: "Войти", exact: true }).click();
       if (await page.getByRole("alert").count() < 2) failures.push("Login validation errors were not shown");
       await page.getByLabel("Электронная почта").fill("demo@example.com");
       await page.getByLabel("Пароль", { exact: true }).fill("password123");
-      await page.getByRole("button", { name: "Продолжить в демо" }).click();
-      const loginStatus = page.getByRole("status");
-      if (await loginStatus.count() === 0 || !(await loginStatus.first().textContent())?.includes("Вход не выполнен")) {
-        failures.push(`Login demo status was not shown: ${await page.locator("form").last().innerText()}`);
-      }
+      await page.getByRole("button", { name: "Войти", exact: true }).click();
+      await page.getByRole("alert").filter({ hasText: "Вход пока недоступен" }).waitFor();
     }
     await context.close();
   }
@@ -203,7 +200,7 @@ try {
       if (previewText.includes("Контакты и настройки") || previewText.includes("История и статусы")) {
         failures.push("Account preview still shows inactive profile and order placeholders");
       }
-      if (!(await page.getByRole("link", { name: /Посмотреть демо-форму входа/ }).isVisible())) {
+      if (!(await page.getByRole("link", { name: /Войти в аккаунт/ }).isVisible())) {
         failures.push("Account preview lost its useful login action");
       }
     }

@@ -22,7 +22,7 @@ describe("payment result", () => {
 
     render(<PaymentResultStatus orderId={orderId} />);
 
-    expect(await screen.findByRole("button", { name: /Повторить оплату/ })).toBeTruthy();
+    expect(await screen.findByRole("button", { name: /Попробовать оплатить снова/ })).toBeTruthy();
     expect(screen.getByText(/Заказ 42 не ожидает оплаты/)).toBeTruthy();
     expect(request).toHaveBeenCalledWith(`/api/account/orders/${orderId}`, expect.objectContaining({
       credentials: "same-origin",
