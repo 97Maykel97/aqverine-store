@@ -6,7 +6,7 @@ import { isAuthConfigured } from "@/features/auth/model/auth-config";
 import { registrationSchema } from "@/features/auth/model/demo-auth";
 import { allowAuthAttempt } from "@/features/auth/model/rate-limit";
 
-const confirmation = "Если адрес доступен для регистрации, проверьте почту для подтверждения.";
+const confirmation = "Проверьте почту — если вы создаёте новый аккаунт, вам придёт письмо с подтверждением.";
 
 export async function POST(request: NextRequest) {
   if (!isSameOrigin(request)) return authJson({ message: "Недопустимый запрос." }, 403);
