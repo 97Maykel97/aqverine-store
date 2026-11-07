@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 
 import Stripe from "stripe";
 
+import { LocalPaymentProvider } from "@/features/payments/api/local-payment-provider";
 import { InvalidPaymentSignatureError, verifiedPaymentEventSchema, type CreatePaymentInput, type PaymentProvider, type VerifiedPaymentEvent } from "@/features/payments/model/payment-provider";
 
 const SESSION_LIFETIME_SECONDS = 30 * 60;
@@ -104,6 +105,15 @@ export class StripePaymentProvider implements PaymentProvider {
 }
 
 export function getPaymentProvider(): PaymentProvider | null {
+  if (process.env.PAYMENT_PROVIDER === "local") {
+    if (process.env.NODE_ENV !== "development" || !process.env.PAYMENT_LOCAL_SECRET || !process.env.NEXT_PUBLIC_APP_URL) return null;
+    try {
+      return new LocalPaymentProvider(process.env.PAYMENT_LOCAL_SECRET, new URL(process.env.NEXT_PUBLIC_APP_URL).origin);
+    } catch {
+      return null;
+    }
+  }
+  if (process.env.PAYMENT_PROVIDER && process.env.PAYMENT_PROVIDER !== "stripe") return null;
   const secretKey = process.env.PAYMENT_PROVIDER_SECRET_KEY;
   const webhookSecret = process.env.PAYMENT_WEBHOOK_SECRET;
   const appUrl = process.env.NEXT_PUBLIC_APP_URL;

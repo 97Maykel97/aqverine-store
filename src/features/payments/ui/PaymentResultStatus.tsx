@@ -78,7 +78,7 @@ function PaymentResultContent({ orderId }: { orderId: string }) {
             </Link>
           </div>
         </div>
-        <div className={styles.bottom}><span>СТАТУС ИЗ ЗАЩИЩЁННОГО API</span><span>VISA / MASTERCARD / STRIPE</span></div>
+        <div className={styles.bottom}><span>СТАТУС ИЗ ЗАЩИЩЁННОГО API</span><span>AQVERINE / PAYMENT</span></div>
       </div>
     </section>
   );

@@ -3,7 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -14,8 +15,9 @@ import { checkoutSchema, type CheckoutFields } from "@/features/checkout/model/d
 
 import styles from "./CheckoutExperience.module.scss";
 
-export function CheckoutExperience() {
+export function CheckoutExperience({ localPayment = false }: { localPayment?: boolean }) {
   const { lines, catalogProducts, serverCart, serverEnabled, serverUnavailable, syncing, hydrated } = useCart();
+  const [localDestination, setLocalDestination] = useState("");
   const [validated, setValidated] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [submissionKey, setSubmissionKey] = useState<string | null>(null);
@@ -86,7 +88,13 @@ export function CheckoutExperience() {
         return;
       }
       const result = z.object({ redirectUrl: z.url(), orderId: z.uuid() }).parse(raw);
-      window.location.assign(result.redirectUrl);
+      if (localPayment) {
+        const destination = new URL(result.redirectUrl);
+        if (destination.origin !== window.location.origin) throw new Error("Unexpected payment destination");
+        setLocalDestination(`${destination.pathname}${destination.search}`);
+      } else {
+        window.location.assign(result.redirectUrl);
+      }
     } catch {
       setSubmitError("Не удалось связаться с сервером. Повторите попытку.");
     }
@@ -94,6 +102,7 @@ export function CheckoutExperience() {
 
   return (
     <section className={styles.page} aria-labelledby="checkout-title">
+      {localDestination ? <LocalPaymentRedirect destination={localDestination} /> : null}
       <div className={styles.topline}><span>CHECKOUT / AQVERINE</span><span>ТВОЙ ГОРОД. ТВОИ ПРАВИЛА.</span></div>
       <div className={styles.intro}>
         <div><span>ФИНАЛЬНЫЙ ШТРИХ</span><h1 id="checkout-title">ТВОЙ ВЫБОР.<br />ТВОЙ РИТМ.</h1></div>
@@ -110,7 +119,7 @@ export function CheckoutExperience() {
         <div className={styles.columns}>
           <div className={styles.mainColumn}>
             <div className={styles.sectionHeading}><h2>Контактные данные</h2></div>
-            <p className={styles.supportText}>{serverCart ? "Проверь контактные данные. После оформления ты перейдёшь на защищённую страницу Stripe Checkout." : "В реальном заказе сюда придёт информация о платеже. Сейчас это только локальная демонстрация формы."}</p>
+            <p className={styles.supportText}>{serverCart ? localPayment ? "Проверь контактные данные. После оформления ты перейдёшь к локальной проверке заказа без списания денег." : "Проверь контактные данные. После оформления ты перейдёшь на защищённую страницу Stripe Checkout." : "В реальном заказе сюда придёт информация о платеже. Сейчас это только локальная демонстрация формы."}</p>
             {serverEnabled && !serverCart ? (
               <div className={styles.authNotice}>
                 <p>{serverUnavailable ? "Серверная корзина временно недоступна. Попробуй обновить страницу позже." : "Войди в аккаунт, чтобы перенести корзину и перейти к оплате."}</p>
@@ -141,12 +150,12 @@ export function CheckoutExperience() {
               </div>
               <div className={styles.paymentBlock}>
                 <div className={styles.sectionHeading}><h2>Оплата</h2></div>
-                <p>{serverCart ? "Visa / Mastercard через защищённый Stripe Checkout. Реквизиты карты не проходят через AQVERINE." : "Visa / Mastercard через защищённую страницу платёжного провайдера — после подключения backend. Реквизиты карты здесь не вводятся и не сохраняются."}</p>
+                <p>{serverCart ? localPayment ? "Локальная проверка оплаты без банковской карты и списания денег. Выбери результат на следующем экране." : "Visa / Mastercard через защищённый Stripe Checkout. Реквизиты карты не проходят через AQVERINE." : "Visa / Mastercard через защищённую страницу платёжного провайдера — после подключения backend. Реквизиты карты здесь не вводятся и не сохраняются."}</p>
                 <span>{serverCart ? "ТЕСТОВЫЙ РЕЖИМ ОПЛАТЫ" : "ОПЛАТА НЕДОСТУПНА В ДЕМО"}</span>
               </div>
               <label className={styles.consent}>
                 <input aria-invalid={Boolean(errors.consent)} type="checkbox" {...register("consent")} />
-                <span>{serverCart ? "Я подтверждаю контактные данные и состав заказа. Оплата выполняется в тестовом режиме Stripe." : "Я понимаю, что это демонстрация: заказ не создаётся и оплата не списывается."}</span>
+                <span>{serverCart ? localPayment ? "Я подтверждаю контактные данные и состав заказа. Понимаю, что это локальная проверка без реальной оплаты." : "Я подтверждаю контактные данные и состав заказа. Оплата выполняется в тестовом режиме Stripe." : "Я понимаю, что это демонстрация: заказ не создаётся и оплата не списывается."}</span>
               </label>
               {errors.consent ? <span className={styles.consentError} role="alert">{errors.consent.message}</span> : null}
               <button className={styles.submit} disabled={isSubmitting} type="submit">{isSubmitting ? "Подготавливаем оплату…" : serverCart ? "Перейти к оплате" : "Продолжить в демо"} <span aria-hidden="true">↗</span></button>
@@ -167,11 +176,17 @@ export function CheckoutExperience() {
               })}
             </div>
             <div className={styles.total}><span>Итого</span><strong>{formatPrice(total)}</strong></div>
-            <p>{serverCart ? "Цена и наличие будут повторно подтверждены сервером перед переходом к Stripe Checkout." : "Финальная цена и наличие будут подтверждены сервером при настоящем оформлении. В демо списаний нет."}</p>
+            <p>{serverCart ? localPayment ? "Цена и наличие будут повторно подтверждены сервером перед локальной проверкой оплаты." : "Цена и наличие будут повторно подтверждены сервером перед переходом к Stripe Checkout." : "Финальная цена и наличие будут подтверждены сервером при настоящем оформлении. В демо списаний нет."}</p>
             <Link className={styles.backLink} href="/catalog">← Продолжить покупки</Link>
           </aside>
         </div>
       )}
     </section>
   );
+}
+
+function LocalPaymentRedirect({ destination }: { destination: string }) {
+  const router = useRouter();
+  useEffect(() => { router.push(destination); }, [destination, router]);
+  return <span className={styles.state} role="status">Переходим к проверке оплаты…</span>;
 }
