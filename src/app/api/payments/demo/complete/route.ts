@@ -6,7 +6,7 @@ import { isSameOrigin } from "@/features/auth/api/http";
 import { allowAuthAttempt } from "@/features/auth/model/rate-limit";
 import { LocalPaymentProvider } from "@/features/payments/api/local-payment-provider";
 import { getPaymentProvider } from "@/features/payments/api/stripe-provider";
-import { OrderStatus, PaymentStatus } from "@/generated/prisma/client";
+import { OrderStatus, PaymentStatus, UserRole } from "@/generated/prisma/client";
 import { getPrisma } from "@/shared/lib/prisma";
 
 const inputSchema = z.object({
@@ -28,6 +28,9 @@ export async function POST(request: NextRequest) {
 
   const context = await getAccountRequestContext(request);
   if (!context.ok) return context.response;
+  if (context.role === UserRole.USER) {
+    return context.finish(accountJson({ message: "Недоступный запрос." }, 403));
+  }
   if (!allowAuthAttempt("payment-demo", context.userId, 10)) {
     return context.finish(accountJson({ message: "Слишком много попыток. Повторите позже." }, 429));
   }

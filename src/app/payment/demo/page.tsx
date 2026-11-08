@@ -7,7 +7,7 @@ import { getCurrentUser } from "@/features/auth/api/current-user";
 import { LocalPaymentProvider } from "@/features/payments/api/local-payment-provider";
 import { getPaymentProvider } from "@/features/payments/api/stripe-provider";
 import { LocalPaymentExperience } from "@/features/payments/ui/LocalPaymentExperience";
-import { OrderStatus, PaymentStatus } from "@/generated/prisma/client";
+import { OrderStatus, PaymentStatus, UserRole } from "@/generated/prisma/client";
 import { getPrisma } from "@/shared/lib/prisma";
 
 export const metadata: Metadata = { title: "Проверка оплаты", robots: { index: false }, referrer: "no-referrer" };
@@ -28,6 +28,7 @@ async function LocalPaymentContent({ searchParams }: { searchParams: Promise<{ s
 
   const user = await getCurrentUser();
   if (!user) redirect("/login?next=/account");
+  if (user.role !== UserRole.ADMIN) notFound();
   const payment = await getPrisma().payment.findUnique({
     where: { id: session.paymentId },
     select: {

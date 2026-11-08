@@ -6,6 +6,7 @@ import { allowAuthAttempt } from "@/features/auth/model/rate-limit";
 import { startCheckout } from "@/features/checkout/api/checkout-service";
 import { CheckoutError, checkoutRequestSchema } from "@/features/checkout/model/checkout-input";
 import { getPaymentProvider } from "@/features/payments/api/stripe-provider";
+import { UserRole } from "@/generated/prisma/client";
 
 function response(message: string, status: number) {
   return NextResponse.json({ message }, { status, headers: { "Cache-Control": "private, no-store" } });
@@ -23,6 +24,9 @@ export async function POST(request: NextRequest) {
   }
   const provider = getPaymentProvider();
   if (!provider) return context.finish(response("Оплата пока недоступна.", 503));
+  if (provider.name === "local" && context.role === UserRole.USER) {
+    return context.finish(response("Оплата пока недоступна.", 503));
+  }
 
   try {
     const result = await startCheckout(context.userId, parsed.data, provider);

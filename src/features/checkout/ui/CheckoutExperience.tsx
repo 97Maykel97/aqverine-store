@@ -15,7 +15,7 @@ import { checkoutSchema, type CheckoutFields } from "@/features/checkout/model/d
 
 import styles from "./CheckoutExperience.module.scss";
 
-export function CheckoutExperience({ localPayment = false }: { localPayment?: boolean }) {
+export function CheckoutExperience({ localPayment = false, paymentUnavailable = false }: { localPayment?: boolean; paymentUnavailable?: boolean }) {
   const { lines, catalogProducts, serverCart, serverEnabled, serverUnavailable, syncing, hydrated } = useCart();
   const [localDestination, setLocalDestination] = useState("");
   const [validated, setValidated] = useState(false);
@@ -60,6 +60,7 @@ export function CheckoutExperience({ localPayment = false }: { localPayment?: bo
 
   const submit = async (values: CheckoutFields) => {
     setSubmitError("");
+    if (paymentUnavailable) return;
     if (!serverCart) {
       setValidated(true);
       reset();
@@ -105,8 +106,8 @@ export function CheckoutExperience({ localPayment = false }: { localPayment?: bo
       {localDestination ? <LocalPaymentRedirect destination={localDestination} /> : null}
       <div className={styles.topline}><span>CHECKOUT / AQVERINE</span><span>ТВОЙ ГОРОД. ТВОИ ПРАВИЛА.</span></div>
       <div className={styles.intro}>
-        <div><span>ФИНАЛЬНЫЙ ШТРИХ</span><h1 id="checkout-title">ТВОЙ ВЫБОР.<br />ТВОЙ РИТМ.</h1></div>
-        <p>Проверь вещи и контактные данные. Доставка не требуется — здесь только состав заказа и подготовка к оплате.</p>
+        <div><span>{serverCart && paymentUnavailable ? "ТВОЯ КОРЗИНА" : "ФИНАЛЬНЫЙ ШТРИХ"}</span><h1 id="checkout-title">ТВОЙ ВЫБОР.<br />ТВОЙ РИТМ.</h1></div>
+        <p>{serverCart && paymentUnavailable ? "Выбранные вещи останутся в корзине, пока мы подключаем оплату картой." : "Проверь вещи и контактные данные. Доставка не требуется — здесь только состав заказа и подготовка к оплате."}</p>
       </div>
 
       {!hydrated || (serverEnabled && syncing) ? <p className={styles.state} role="status">Загружаем твою корзину…</p> : items.length === 0 ? (
@@ -118,9 +119,11 @@ export function CheckoutExperience({ localPayment = false }: { localPayment?: bo
       ) : (
         <div className={styles.columns}>
           <div className={styles.mainColumn}>
-            <div className={styles.sectionHeading}><h2>Контактные данные</h2></div>
-            <p className={styles.supportText}>{serverCart ? localPayment ? "Проверь контактные данные. После оформления ты перейдёшь к локальной проверке заказа без списания денег." : "Проверь контактные данные. После оформления ты перейдёшь на защищённую страницу Stripe Checkout." : "В реальном заказе сюда придёт информация о платеже. Сейчас это только локальная демонстрация формы."}</p>
-            {serverEnabled && !serverCart ? (
+            <div className={styles.sectionHeading}><h2>{serverCart && paymentUnavailable ? "Оформление пока закрыто" : "Контактные данные"}</h2></div>
+            <p className={styles.supportText}>{serverCart && paymentUnavailable ? "Платёжный сервис ещё не подключён. Состав корзины показан рядом." : serverCart ? localPayment ? "Проверь контактные данные. После оформления ты перейдёшь к локальной проверке заказа без списания денег." : "Проверь контактные данные. После оформления ты перейдёшь на защищённую страницу Stripe Checkout." : "В реальном заказе сюда придёт информация о платеже. Сейчас это только локальная демонстрация формы."}</p>
+            {serverCart && paymentUnavailable ? (
+              <div className={styles.authNotice} role="status"><p>Оплата пока недоступна. Продолжай выбирать вещи — корзина сохранится.</p><Link href="/catalog">Вернуться в каталог <span aria-hidden="true">↗</span></Link></div>
+            ) : serverEnabled && !serverCart ? (
               <div className={styles.authNotice}>
                 <p>{serverUnavailable ? "Серверная корзина временно недоступна. Попробуй обновить страницу позже." : "Войди в аккаунт, чтобы перенести корзину и перейти к оплате."}</p>
                 {!serverUnavailable ? <Link href="/login?next=/checkout">Войти для оформления <span aria-hidden="true">↗</span></Link> : null}
@@ -176,7 +179,7 @@ export function CheckoutExperience({ localPayment = false }: { localPayment?: bo
               })}
             </div>
             <div className={styles.total}><span>Итого</span><strong>{formatPrice(total)}</strong></div>
-            <p>{serverCart ? localPayment ? "Цена и наличие будут повторно подтверждены сервером перед локальной проверкой оплаты." : "Цена и наличие будут повторно подтверждены сервером перед переходом к Stripe Checkout." : "Финальная цена и наличие будут подтверждены сервером при настоящем оформлении. В демо списаний нет."}</p>
+            <p>{serverCart && paymentUnavailable ? "Это состав твоей корзины. Заказ и платёж пока не создаются." : serverCart ? localPayment ? "Цена и наличие будут повторно подтверждены сервером перед локальной проверкой оплаты." : "Цена и наличие будут повторно подтверждены сервером перед переходом к Stripe Checkout." : "Финальная цена и наличие будут подтверждены сервером при настоящем оформлении. В демо списаний нет."}</p>
             <Link className={styles.backLink} href="/catalog">← Продолжить покупки</Link>
           </aside>
         </div>

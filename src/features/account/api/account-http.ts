@@ -2,11 +2,12 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { createRouteAuthClient } from "@/features/auth/api/supabase-server";
 import { isAuthConfigured } from "@/features/auth/model/auth-config";
+import type { UserRole } from "@/generated/prisma/client";
 import { getPrisma } from "@/shared/lib/prisma";
 
 type AccountRequestContext =
   | { ok: false; response: NextResponse }
-  | { ok: true; userId: string; email: string; authClient: NonNullable<ReturnType<typeof createRouteAuthClient>>["client"]; finish: (response: NextResponse) => NextResponse };
+  | { ok: true; userId: string; role: UserRole; email: string; authClient: NonNullable<ReturnType<typeof createRouteAuthClient>>["client"]; finish: (response: NextResponse) => NextResponse };
 
 export function accountJson(body: Record<string, unknown>, status = 200) {
   return NextResponse.json(body, {
@@ -36,9 +37,9 @@ export async function getAccountRequestContext(request: NextRequest): Promise<Ac
     if (error || !data.user) {
       return { ok: false, response: context.finish(accountJson({ message: "Войдите в аккаунт." }, 401)) };
     }
-    const user = await getPrisma().user.findUnique({ where: { id: data.user.id }, select: { id: true } });
+    const user = await getPrisma().user.findUnique({ where: { id: data.user.id }, select: { id: true, role: true } });
     if (!user) return { ok: false, response: context.finish(accountJson({ message: "Войдите в аккаунт." }, 401)) };
-    return { ok: true, userId: user.id, email: data.user.email ?? "", authClient: context.client, finish: context.finish };
+    return { ok: true, userId: user.id, role: user.role, email: data.user.email ?? "", authClient: context.client, finish: context.finish };
   } catch {
     console.error("Account authorization failed");
     return { ok: false, response: context.finish(accountJson({ message: "Сервис временно недоступен." }, 503)) };

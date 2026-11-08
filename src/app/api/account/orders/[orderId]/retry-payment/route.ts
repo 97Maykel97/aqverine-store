@@ -7,6 +7,7 @@ import { allowAuthAttempt } from "@/features/auth/model/rate-limit";
 import { retryOrderPayment } from "@/features/checkout/api/checkout-service";
 import { CheckoutError } from "@/features/checkout/model/checkout-input";
 import { getPaymentProvider } from "@/features/payments/api/stripe-provider";
+import { UserRole } from "@/generated/prisma/client";
 
 const retrySchema = z.object({ idempotencyKey: z.uuid() }).strict();
 
@@ -23,6 +24,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   }
   const provider = getPaymentProvider();
   if (!provider) return context.finish(accountJson({ message: "Оплата пока недоступна." }, 503));
+  if (provider.name === "local" && context.role === UserRole.USER) {
+    return context.finish(accountJson({ message: "Оплата пока недоступна." }, 503));
+  }
 
   try {
     return context.finish(accountJson(await retryOrderPayment(context.userId, orderId.data, body.data.idempotencyKey, provider)));
