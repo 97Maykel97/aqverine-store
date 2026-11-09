@@ -11,12 +11,15 @@ npm run dev
 npm run lint
 npm run typecheck
 npm run test:run
+npm run test:e2e
 npm run build
 npm run db:validate
 npm run test:browser -- http://localhost:3000
 ```
 
 Для работы с БД укажите прямое PostgreSQL-подключение `DATABASE_URL` в `.env.local` (не коммитьте файл). Затем выполните `npm run db:deploy` и `npm run db:seed`. Первый создаёт таблицы, второй один раз заполняет каталог; повторный seed не перезаписывает отредактированные товары. Без `DATABASE_URL` эти команды не применяются. Подробности — в `docs/db-schema.md`.
+
+`npm run test:e2e` собирает приложение с отключёнными переменными PostgreSQL, Supabase и оплаты и запускает браузерные сценарии на изолированной демо-витрине. Этот прогон не обращается к подключённым локальным сервисам.
 
 Для авторизации также задайте `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` и `NEXT_PUBLIC_APP_URL`, затем пересоберите приложение. В настройках Supabase Auth включите подтверждение email и Secure Email Change, разрешите callback URL `<адрес сайта>/auth/callback` и `<адрес сайта>/auth/callback?next=/account/update-password`. `POST /api/account/email` принимает JSON `{ "email": "new@example.com" }` только от авторизованного пользователя и отправляет подтверждение через Supabase; текущий адрес действует до подтверждения. После подтверждения регистрации пользователь должен войти хотя бы один раз: сервер создаст его строку `User` с ролью `user`. Назначить роль `admin` существующему подтверждённому пользователю может только оператор с доступом к серверу: `npm run db:grant-admin -- --user-id <supabase-user-uuid> --confirm`. Значения ключей и строку подключения храните только в локальном окружении или секретах платформы.
 
@@ -29,6 +32,8 @@ npm run test:browser -- http://localhost:3000
 ## Перед публикацией
 
 Задайте `NEXT_PUBLIC_APP_URL` с публичным HTTPS-адресом сайта и проверьте `robots.txt`, `sitemap.xml` и canonical URL. Пока переменная не задана, `robots.txt` намеренно закрывает сайт от индексации; локальное значение `http://localhost:3000` из `.env.example` нельзя оставлять в production.
+
+Локальная база `aqverine_dev` и Supabase Auth/Storage проверены, но это не означает, что миграции применены к облачной базе: текущий `DATABASE_URL` указывает на локальный PostgreSQL. Для отдельного окружения задайте его серверную строку подключения, выполните `npm run db:deploy`, настройте Supabase redirect URLs под публичный HTTPS-адрес, установите серверные secrets и подключите планировщик для двух `/api/internal/*` маршрутов. Нужны также резервное копирование БД и мониторинг ошибок фоновых заданий. `PAYMENT_PROVIDER=local` в production отключён; до подключения доступного карточного провайдера покупательское оформление остаётся закрытым.
 
 ## Документация
 
