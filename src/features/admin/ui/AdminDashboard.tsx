@@ -115,7 +115,10 @@ export function AdminDashboard() {
       <div className={styles.topline}><strong>AQVERINE / CONTROL</strong><span>ДОСТУП АДМИНИСТРАТОРА</span></div>
       <div className={styles.hero}>
         <div><span className={styles.eyebrow}>УПРАВЛЕНИЕ МАГАЗИНОМ</span><h1 id="admin-title">ВСЁ<br /><em>ПОД КОНТРОЛЕМ.</em></h1></div>
-        <p>Товары, варианты, фотографии и заказы. Оплату подтверждает только платёжный провайдер.</p>
+        <div className={styles.heroAside}>
+          <p>Товары, варианты, фотографии и заказы. Оплату подтверждает только платёжный провайдер.</p>
+          <Link className={styles.accountSwitch} href="/account">← В личный кабинет</Link>
+        </div>
       </div>
       <div aria-label="Разделы панели" className={styles.tabs} role="tablist">
         <button aria-selected={tab === "products"} onClick={() => setTab("products")} role="tab" type="button">Товары <span>{products.data?.total ?? ""}</span></button>
