@@ -60,7 +60,7 @@ export function CheckoutExperience({ localPayment = false, paymentUnavailable = 
 
   const submit = async (values: CheckoutFields) => {
     setSubmitError("");
-    if (paymentUnavailable) return;
+    if (paymentUnavailable && serverCart) return;
     if (!serverCart) {
       setValidated(true);
       reset();
