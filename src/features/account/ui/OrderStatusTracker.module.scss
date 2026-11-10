@@ -1,0 +1,71 @@
+.steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 1.4rem 0 1.2rem;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  position: relative;
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: .55rem;
+  min-width: 0;
+  padding-right: .55rem;
+  color: var(--color-muted);
+}
+
+.step:not(:last-child)::after {
+  position: absolute;
+  top: .9rem;
+  right: .55rem;
+  left: 2.15rem;
+  height: 1px;
+  background: var(--color-line);
+  content: "";
+}
+
+.step.done::after { background: var(--color-cobalt); }
+
+.marker {
+  display: grid;
+  width: 1.8rem;
+  height: 1.8rem;
+  place-items: center;
+  border: 1px solid var(--color-line);
+  border-radius: 50%;
+  background: #fff;
+  font-size: .65rem;
+  font-weight: 900;
+  letter-spacing: -.02em;
+}
+
+.done .marker { border-color: var(--color-cobalt); background: var(--color-cobalt); color: #fff; }
+.current .marker { border-color: var(--color-cobalt); color: var(--color-cobalt); box-shadow: 0 0 0 3px rgb(40 75 209 / 12%); }
+
+.label { max-width: 7rem; font-size: .71rem; font-weight: 700; line-height: 1.35; }
+.current .label { color: var(--color-ink); font-weight: 900; }
+.done .label { color: var(--color-cobalt); }
+
+.exception {
+  display: flex;
+  align-items: start;
+  gap: .8rem;
+  margin: 1.3rem 0;
+  padding: 1rem;
+  background: #f5f1ed;
+}
+
+.refunded { background: #edf1fb; }
+.exceptionIcon { display: grid; width: 1.7rem; height: 1.7rem; flex: 0 0 auto; place-items: center; border: 1px solid currentColor; border-radius: 50%; color: var(--color-ink); font-size: 1.1rem; line-height: 1; }
+.exception strong { font-size: .85rem; }
+.exception p { margin: .25rem 0 0; color: var(--color-muted); font-size: .78rem; line-height: 1.4; }
+
+@media (max-width: 580px) {
+  .steps { grid-template-columns: 1fr; gap: 0; margin: 1.25rem 0; }
+  .step { grid-template-columns: 1.8rem minmax(0, 1fr); align-items: center; gap: .75rem; min-height: 2.65rem; padding-right: 0; }
+  .step:not(:last-child)::after { top: 2rem; bottom: -.1rem; left: .9rem; width: 1px; height: auto; }
+  .label { max-width: none; font-size: .78rem; }
+}

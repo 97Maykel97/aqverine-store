@@ -10,6 +10,7 @@ import { fetchAccountOrder, fetchAccountOrders, fetchAccountProfile, saveAccount
 import type { AccountOrders, AccountProfile } from "@/features/account/model/account-contracts";
 import { profileFormSchema, type ProfileFormFields } from "@/features/account/model/profile-form";
 import { AccountEmailChangeForm } from "@/features/account/ui/AccountEmailChangeForm";
+import { OrderStatusTracker } from "@/features/account/ui/OrderStatusTracker";
 import { LogoutButton } from "@/features/auth/ui/LogoutButton";
 import { RetryPaymentButton } from "@/features/payments/ui/RetryPaymentButton";
 import { formatUsdMinor } from "@/shared/lib/format-money";
@@ -51,6 +52,7 @@ function AccountDashboardContent({ initialProfile, initialOrders }: AccountDashb
   const [page, setPage] = useState(1);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<"saved" | "error" | null>(null);
+  const [ordersRefreshed, setOrdersRefreshed] = useState(false);
 
   const profileQuery = useQuery({
     queryKey: ["account", "profile"],
@@ -64,6 +66,10 @@ function AccountDashboardContent({ initialProfile, initialOrders }: AccountDashb
     initialData: page === 1 ? initialOrders : undefined,
     placeholderData: keepPreviousData,
     staleTime: 30_000,
+    refetchInterval: (query) => query.state.status !== "error" && query.state.data?.items.some((order) =>
+      order.status === "PENDING_PAYMENT" || order.status === "PAID" || order.status === "PROCESSING"
+    ) ? 30_000 : false,
+    refetchIntervalInBackground: false,
   });
   const detailQuery = useQuery({
     queryKey: ["account", "order", selectedOrderId],
@@ -102,6 +108,11 @@ function AccountDashboardContent({ initialProfile, initialOrders }: AccountDashb
 
   const orders = ordersQuery.data;
   const showingPreviousPage = ordersQuery.isPlaceholderData;
+  const refreshOrders = async () => {
+    setOrdersRefreshed(false);
+    const result = await ordersQuery.refetch();
+    if (!result.isError) setOrdersRefreshed(true);
+  };
 
   return (
     <section className={styles.page} aria-labelledby="account-title">
@@ -148,18 +159,25 @@ function AccountDashboardContent({ initialProfile, initialOrders }: AccountDashb
             <h2 id="orders-heading">Твои заказы</h2>
             <p>{orders && orders.total > 0 ? `${orders.total} ${pluralizeRu(orders.total, { one: "заказ", few: "заказа", many: "заказов" })}` : "История покупок"}</p>
           </div>
+          <div className={styles.orderControls}>
+            <p>Активные заказы обновляются каждые 30 секунд</p>
+            <button disabled={ordersQuery.isFetching || showingPreviousPage} onClick={() => void refreshOrders()} type="button">
+              {ordersQuery.isFetching ? "Обновляем…" : "Обновить статусы"} <span aria-hidden="true">↻</span>
+            </button>
+          </div>
+          {ordersRefreshed ? <p className={styles.refreshFeedback} role="status">Статусы проверены.</p> : null}
           {ordersQuery.isPending ? <p className={styles.notice} role="status">Загружаем заказы…</p> : null}
           {ordersQuery.isError ? (
             <div className={styles.notice} role="alert">{sessionExpired(ordersQuery.error) ? "Сессия завершилась." : "Не удалось загрузить заказы."} {sessionExpired(ordersQuery.error) ? <Link href="/login">Войти снова</Link> : <button onClick={() => void ordersQuery.refetch()} type="button">Повторить</button>}</div>
           ) : null}
-          {orders && !ordersQuery.isError && orders.items.length === 0 ? (
+          {orders && orders.items.length === 0 ? (
             <div className={styles.empty}>
               <strong>Пока нет заказов.</strong>
               <p>Когда покупка будет оформлена, здесь появятся её состав и статус.</p>
               <Link href="/catalog">Открыть каталог <span aria-hidden="true">↗</span></Link>
             </div>
           ) : null}
-          {orders && !ordersQuery.isError && orders.items.length > 0 ? (
+          {orders && orders.items.length > 0 ? (
             <>
               {showingPreviousPage ? <p className={styles.loading} role="status">Загружаем следующую страницу…</p> : null}
               <div className={styles.orderList} aria-busy={showingPreviousPage}>
@@ -170,6 +188,7 @@ function AccountDashboardContent({ initialProfile, initialOrders }: AccountDashb
                       <strong>{formatUsdMinor(order.totalMinor)}</strong>
                     </div>
                     <div className={styles.orderMeta}><span>{orderLabels[order.status]}</span><span>Оплата: {order.paymentStatus ? paymentLabels[order.paymentStatus] : "не создана"}</span><span>{order.items.length} {pluralizeRu(order.items.length, { one: "позиция", few: "позиции", many: "позиций" })}</span></div>
+                    <OrderStatusTracker order={order} />
                     {order.status === "CANCELLED" && (order.paymentStatus === "FAILED" || order.paymentStatus === "CANCELLED")
                       ? <RetryPaymentButton orderId={order.id} /> : null}
                     <button aria-expanded={selectedOrderId === order.id} className={styles.detailButton} disabled={showingPreviousPage} onClick={() => setSelectedOrderId(selectedOrderId === order.id ? null : order.id)} type="button">

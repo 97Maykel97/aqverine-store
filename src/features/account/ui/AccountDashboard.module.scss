@@ -14,6 +14,13 @@
 .sectionHeading { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: .35rem 1rem; margin-bottom: 2rem; }
 .sectionHeading h2 { margin: 0; font-size: clamp(1.7rem, 2.5vw, 2.6rem); font-weight: 900; letter-spacing: -.06em; }
 .sectionHeading p { margin: 0; color: var(--color-muted); font-size: .82rem; }
+.orderControls { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem 1rem; margin: -1.2rem 0 1.4rem; }
+.orderControls p { margin: 0; color: var(--color-muted); font-size: .78rem; }
+.orderControls button { display: inline-flex; align-items: center; gap: .7rem; border: 1px solid var(--color-line); padding: .55rem .75rem; background: #fff; color: var(--color-ink); font: inherit; font-size: .74rem; font-weight: 800; cursor: pointer; transition: border-color .2s ease, color .2s ease; }
+.orderControls button:hover:not(:disabled) { border-color: var(--color-cobalt); color: var(--color-cobalt); }
+.orderControls button:disabled { opacity: .55; cursor: wait; }
+.orderControls button span { font-size: 1rem; line-height: 1; }
+.refreshFeedback { margin: -.7rem 0 1rem; color: #215d3a; font-size: .76rem; }
 .profile form { display: grid; gap: .5rem; }
 .profile label { margin-top: .85rem; font-size: .75rem; font-weight: 900; }
 .profile input { width: 100%; min-height: 3.3rem; border: 1px solid var(--color-line); border-radius: 0; padding: .8rem .95rem; background: #fff; color: var(--color-ink); font: inherit; font-size: .95rem; }
@@ -55,4 +62,4 @@
 .page :is(a, button, input):focus-visible { outline: 2px solid var(--color-cobalt); outline-offset: 3px; }
 @media (max-width: 900px) { .heading { align-items: start; flex-direction: column; } .accountActions { justify-content: flex-start; } .email { text-align: left; } .sections { grid-template-columns: 1fr; gap: 3rem; } .profile { border-right: 0; border-bottom: 1px solid var(--color-line); padding-right: 0; padding-bottom: 3rem; } }
 @media (max-width: 480px) { .topline span:last-child { display: none; } .heading h1 { font-size: clamp(2.8rem, 13vw, 4rem); } .heading { padding: 2.5rem 0; } .accountActions { gap: .8rem 1rem; } .sectionHeading { margin-bottom: 1.4rem; } .empty { padding: 1.5rem; } }
-@media (prefers-reduced-motion: reduce) { .saveButton { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .saveButton, .orderControls button { transition: none; } }
