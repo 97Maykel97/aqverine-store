@@ -4,6 +4,10 @@
 .hero h1 { margin: .75rem 0 0; font-size: clamp(3.1rem, 7.7vw, 8rem); font-weight: 900; letter-spacing: -.085em; line-height: .85; }
 .hero h1 em { color: var(--color-cobalt); font-style: normal; }
 .hero p { max-width: 20rem; margin: 0 0 .3rem; font-size: clamp(.95rem, 1.2vw, 1.15rem); line-height: 1.5; }
+.heroAside { display: grid; justify-items: start; gap: 1.25rem; max-width: 20rem; }
+.accountSwitch { display: inline-flex; align-items: center; min-height: 44px; border-bottom: 2px solid var(--color-cobalt); color: var(--color-cobalt); font-size: .82rem; font-weight: 900; text-decoration: none; }
+.accountSwitch:hover { border-color: var(--color-ink); color: var(--color-ink); }
+.accountSwitch:focus-visible { outline: 2px solid var(--color-cobalt); outline-offset: 4px; }
 .eyebrow { display: block; font-size: .7rem; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
 .tabs { display: flex; gap: 0; border-bottom: 1px solid #cfcac0; }
 .tabs button { display: flex; align-items: center; gap: .75rem; padding: 1rem 1.5rem; border: 0; border-bottom: 3px solid transparent; background: transparent; color: inherit; font-size: .95rem; font-weight: 900; cursor: pointer; }
@@ -58,7 +62,7 @@
 .pagination button:disabled { opacity: .4; }
 @media (max-width: 760px) {
   .hero { display: block; }
-  .hero p { margin-top: 1.5rem; }
+  .heroAside { max-width: none; margin-top: 1.5rem; }
   .createPanel { grid-template-columns: 1fr; }
   .createPanel > button { justify-self: start; }
   .formGrid { grid-template-columns: 1fr; }

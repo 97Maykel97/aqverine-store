@@ -8,6 +8,7 @@ import { isAuthConfigured } from "@/features/auth/model/auth-config";
 import { AccountPreview } from "@/features/account/ui/AccountPreview";
 import { AccountDashboard } from "@/features/account/ui/AccountDashboard";
 import { getAccountProfile, listAccountOrders } from "@/features/account/api/account-service";
+import { UserRole } from "@/generated/prisma/client";
 
 export const metadata: Metadata = { title: "Личный кабинет", robots: { index: false } };
 
@@ -20,7 +21,7 @@ async function AccountContent() {
     getAccountProfile(user.id, user.email),
     listAccountOrders(user.id, 1, 10),
   ]);
-  return <AccountDashboard initialProfile={initialProfile} initialOrders={initialOrders} />;
+  return <AccountDashboard initialProfile={initialProfile} initialOrders={initialOrders} isAdmin={user.role === UserRole.ADMIN} />;
 }
 
 export default function AccountPage() {

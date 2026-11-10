@@ -38,7 +38,7 @@ function sessionExpired(error: unknown): boolean {
   return error instanceof Error && error.message === "SESSION_EXPIRED";
 }
 
-type AccountDashboardProps = { initialProfile: AccountProfile; initialOrders: AccountOrders };
+type AccountDashboardProps = { initialProfile: AccountProfile; initialOrders: AccountOrders; isAdmin?: boolean };
 
 export function AccountDashboard(props: AccountDashboardProps) {
   const [queryClient] = useState(() => new QueryClient({
@@ -47,7 +47,7 @@ export function AccountDashboard(props: AccountDashboardProps) {
   return <QueryClientProvider client={queryClient}><AccountDashboardContent {...props} /></QueryClientProvider>;
 }
 
-function AccountDashboardContent({ initialProfile, initialOrders }: AccountDashboardProps) {
+function AccountDashboardContent({ initialProfile, initialOrders, isAdmin = false }: AccountDashboardProps) {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
@@ -124,6 +124,7 @@ function AccountDashboardContent({ initialProfile, initialOrders }: AccountDashb
         </div>
         <div className={styles.accountActions}>
           <span className={styles.email}>{initialProfile.email}</span>
+          {isAdmin ? <Link className={styles.adminSwitch} href="/aqverine-control">Панель управления <span aria-hidden="true">↗</span></Link> : null}
           <Link href="/catalog">Вернуться к вещам <span aria-hidden="true">↗</span></Link>
           <Link href="/account/update-password">Изменить пароль</Link>
           <LogoutButton />
